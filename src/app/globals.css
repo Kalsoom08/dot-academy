@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+
+:root {
+  --font-anton: 'Anton', sans-serif;
+  --font-inter: 'Inter';
+}
+
+html {
+  font-family: var(--font-inter);
+}
+
+
+.anton {
+  font-family: var(--font-anton), sans-serif;
+}
