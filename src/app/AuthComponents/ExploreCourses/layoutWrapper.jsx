@@ -1,4 +1,3 @@
-// app/AuthComponents/ExploreCourses/LayoutWrapper.jsx
 'use client';
 
 import { useState } from 'react';

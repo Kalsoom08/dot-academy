@@ -16,7 +16,7 @@ export default function ClientWrapper({ children }) {
     '/AuthComponents/profile',
     '/AuthComponents/profile/unattemptedTest',
     '/profile/setupProfile',
-    
+    '/admin',
     '/login',
     '/signup'
   ];
