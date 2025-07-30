@@ -3,7 +3,7 @@ import AddCourse from './addcourse/page';
 
 const page = () => {
   return (
-    <div>
+    <div >
         <AddCourse/>
     </div>
   )
