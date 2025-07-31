@@ -14,7 +14,7 @@ const LatestPurchasesCard = () => {
     { id: 7, plan: 'Annual Plan', user: 'Ali', device: 'IOS', amount: 'RS. 5000' },
   ];
 
-  // Show only first 5 if not expanded
+
   const visiblePurchases = showAll ? purchases : purchases.slice(0, 5);
 
   return (
