@@ -15,7 +15,7 @@ const CourseInfo = ({
     <div className="bg-white rounded-xl shadow-lg p-6">
       <h2 className="text-lg text-gray-800 mb-4">Course Information</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Course Name */}
+      
         <div>
           <label htmlFor="courseName" className="block text-gray-700 text-sm font-medium mb-2">
             Course Name*
@@ -30,7 +30,7 @@ const CourseInfo = ({
           />
         </div>
 
-        {/* Price & Type */}
+    
         <div>
           <div className="flex items-center justify-between">
             <label htmlFor="coursePrice" className="text-gray-700 text-sm font-medium mb-2">
@@ -71,7 +71,6 @@ const CourseInfo = ({
           </div>
         </div>
 
-        {/* Exam Category */}
         <div>
           <label htmlFor="examCategory" className="block text-gray-700 text-sm font-medium mb-2">
             Select Exam Category*

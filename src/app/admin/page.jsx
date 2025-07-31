@@ -1,15 +1,12 @@
+import React from 'react'
 import Dashboard from './dashboard/page';
 
-const App = () => {
+const page = () => {
   return (
-    <div className=" bg-gray-100 font-inter">
-  
-
-   
-        <Dashboard />
-      
+    <div >
+      <Dashboard/>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default page
