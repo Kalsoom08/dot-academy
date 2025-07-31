@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { FaEye, FaEdit } from 'react-icons/fa';
-import course from '../../../../public/Courses/course.png';
+import course from '../../../../../public/Courses/course.png';
 
 const Courses = () => {
   const [filter, setFilter] = useState('All');
