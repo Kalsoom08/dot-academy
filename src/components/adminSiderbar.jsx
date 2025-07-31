@@ -49,7 +49,7 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
       className={`bg-white border-r p-6 fixed md:static top-0 left-0 h-full w-64 z-40 transition-transform duration-300
         ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
     >
-      {/* Logo & Close */}
+      
       <div className="flex justify-between items-center mb-6">
         <Image src={Logo} width={130} height={40} alt="Logo" />
         {onClose && (
@@ -59,7 +59,7 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
         )}
       </div>
 
-      {/* Navigation */}
+    
       <nav className="flex flex-col gap-3">
         {navItems.map((item) => {
           const isActive = pathname === item.path;
@@ -69,7 +69,7 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
               <button
                 key={item.name}
                 onClick={item.onClick}
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-800 hover:text-purple-700 transition font-medium"
+                className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-800 hover:text-[#7D287E] transition font-medium"
               >
                 {item.icon}
                 {item.name}
@@ -81,11 +81,11 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
             <Link
               key={item.name}
               href={item.path}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md transition font-medium
+              className={`flex items-center gap-3 px-3 py-2 rounded-4xl transition font-medium
                 ${
                   isActive
-                    ? 'text-purple-700 border-l-4 border-purple-600 bg-purple-50'
-                    : 'text-gray-800 hover:text-purple-700'
+                    ? 'text-[#7D287E] border border-[#7D287E] bg-purple-50'
+                    : 'text-gray-800 hover:text-[#7D287E]'
                 }`}
             >
               {item.icon}
