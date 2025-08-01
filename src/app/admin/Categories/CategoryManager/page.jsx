@@ -137,7 +137,7 @@ function CategoryManager() {
           <h1 className="text-2xl font-semibold">Category Manager</h1>
          <button
           onClick={() => setShowAddPopup(true)}
-          className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2 rounded flex items-center gap-2"
+          className="bg-[#7D287E] hover:bg-[#7D287E] text-white px-4 py-2 rounded flex items-center gap-2"
           >
             <FaPlus size={14} /> Add Category
           </button>
