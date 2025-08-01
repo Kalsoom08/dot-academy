@@ -1,6 +1,9 @@
+'use client'
 import React from 'react';
+import {useRouter} from 'next/navigation';
 
 const NewUsersCard = () => {
+  const router = useRouter()
   const users = [
     { id: 1, name: 'Anyname', enrolledCourses: 1, date: '17 July 2025' },
     { id: 2, name: 'Anyname', enrolledCourses: 1, date: '17 July 2025' },
@@ -36,7 +39,8 @@ const NewUsersCard = () => {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <button className="bg-[#7D287E] hover:bg-[#6b226e] text-white font-semibold py-2.5 px-6 rounded-xl shadow hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+        <button onClick={() => router.push('/admin/users')}
+        className="bg-[#7D287E] hover:bg-[#6b226e] text-white font-semibold py-2.5 px-6 rounded-xl shadow hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
           View All
         </button>
       </div>

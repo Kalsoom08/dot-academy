@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import Logo from '../../public/NavBar/logo.png';
+import Logo from '../../../public/NavBar/logo.png';
 
 import {
   FaHome,
@@ -17,17 +17,14 @@ import {
   FaStar,
   FaCommentDots,
   FaCog,
-  FaSignOutAlt
+
 } from 'react-icons/fa';
 
 export default function AdminSidebar({ isOpen = true, onClose }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    router.push('/');
-  };
+
 
   const navItems = [
     { name: 'Dashboard', icon: <FaHome size={18} />, path: '/admin/dashboard' },
@@ -41,7 +38,7 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
     { name: 'Reviews', icon: <FaStar size={18} />, path: '/admin/reviews' },
     { name: 'Doubts', icon: <FaCommentDots size={18} />, path: '/admin/doubts' },
     { name: 'Settings', icon: <FaCog size={18} />, path: '/admin/settings' },
-    { name: 'Log Out', icon: <FaSignOutAlt size={18} />, onClick: handleLogout }
+
   ];
 
   return (
@@ -51,7 +48,7 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
     >
       
       <div className="flex justify-between items-center mb-6">
-        <Image src={Logo} width={130} height={40} alt="Logo" />
+        <Image src={Logo} width={100} height={30} alt="Logo" />
         {onClose && (
           <button onClick={onClose} className="md:hidden text-2xl font-bold text-gray-800">
             ×
@@ -69,7 +66,7 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
               <button
                 key={item.name}
                 onClick={item.onClick}
-                className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-800 hover:text-[#7D287E] transition font-medium"
+                className="flex items-center gap-3 px-3 py-1 rounded-md text-gray-800 hover:text-[#7D287E] transition font-medium"
               >
                 {item.icon}
                 {item.name}
@@ -81,7 +78,7 @@ export default function AdminSidebar({ isOpen = true, onClose }) {
             <Link
               key={item.name}
               href={item.path}
-              className={`flex items-center gap-3 px-3 py-2 rounded-4xl transition font-medium
+              className={`flex items-center gap-3 px-3 py-1 rounded-4xl transition font-medium
                 ${
                   isActive
                     ? 'text-[#7D287E] border border-[#7D287E] bg-purple-50'
