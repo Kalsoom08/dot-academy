@@ -14,4 +14,12 @@ html {
 .anton {
   font-family: var(--font-anton), sans-serif;
 }
+.custom-scroll::-webkit-scrollbar {
+  display: none;
+}
+.custom-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 

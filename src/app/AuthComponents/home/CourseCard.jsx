@@ -75,31 +75,25 @@ export default function CoursesSection() {
         <h2 className="text-2xl font-bold">Your Courses</h2>
       </div>
 
-    
       <div className="relative mb-6">
-        {!isExpanded && (
-          <>
-            <button
-              onClick={prevSlide}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-200 hover:bg-gray-300 rounded-full z-10"
-              disabled={currentSlide === 0}
-            >
-              <FiChevronLeft className="w-5 h-5" />
-            </button>
+        <button
+          onClick={() => tabScrollRef.current?.scrollBy({ left: -150, behavior: 'smooth' })}
+          className="absolute left-0 z-10 p-2 bg-gray-200 hover:bg-gray-300 rounded-full top-1/2 -translate-y-1/2"
+        >
+          <FiChevronLeft className="w-5 h-5" />
+        </button>
 
-            <button
-              onClick={nextSlide}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-200 hover:bg-gray-300 rounded-full z-10"
-              disabled={currentSlide >= totalSlides - 1}
-            >
-              <FiChevronRight className="w-5 h-5" />
-            </button>
-          </>
-        )}
+        <button
+          onClick={() => tabScrollRef.current?.scrollBy({ left: 150, behavior: 'smooth' })}
+          className="absolute right-0 z-10 p-2 bg-gray-200 hover:bg-gray-300 rounded-full top-1/2 -translate-y-1/2"
+        >
+          <FiChevronRight className="w-5 h-5" />
+        </button>
 
         <div
           ref={tabScrollRef}
-          className="flex items-center justify-center overflow-x-auto scrollbar-hide px-10"
+          className="flex items-center overflow-x-auto px-10 space-x-2 custom-scroll"
+          style={{ scrollBehavior: 'smooth' }}
         >
           {tabs.map((tab) => (
             <button
@@ -110,7 +104,7 @@ export default function CoursesSection() {
                 setCurrentSlide(0);
                 setIsExpanded(false);
               }}
-              className={`px-4 py-2 mr-2 rounded-sm whitespace-nowrap text-sm font-medium transition-colors duration-200 border ${
+              className={`px-4 py-2 rounded-sm whitespace-nowrap text-sm font-medium transition-colors duration-200 border ${
                 activeTab === tab
                   ? "bg-blue-600 text-white"
                   : "bg-white text-black hover:bg-gray-300"
@@ -122,7 +116,6 @@ export default function CoursesSection() {
         </div>
       </div>
 
-
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 transition-all duration-500">
         {visibleCoursesToRender.map((course, index) => (
           <div
@@ -131,16 +124,14 @@ export default function CoursesSection() {
               course.type === "GUIDE" ? "bg-blue-50" : "bg-white"
             }`}
           >
-           
             <Image src={course.icon} alt="Icon" />
-             <div className="text-md font-semibold text-center mb-1 py-2">
+            <div className="text-md font-semibold text-center mb-1 py-2">
               {course.type}
             </div>
           </div>
         ))}
       </div>
 
-   
       {filteredCourses.length > 8 && (
         <div className="text-center">
           <button
@@ -158,8 +149,6 @@ export default function CoursesSection() {
             )}
           </button>
         </div>
-
-
       )}
     </div>
   );
