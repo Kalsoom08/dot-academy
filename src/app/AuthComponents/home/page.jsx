@@ -23,7 +23,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowExploreModal(true);
-    }, 200); // Optional delay
+    }, 200); 
     return () => clearTimeout(timer);
   }, []);
 
