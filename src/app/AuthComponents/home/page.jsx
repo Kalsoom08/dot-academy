@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '../../../components/AuthSiderbar';
 import Header from '../../../components/AuthHeader';
 import CourseCard from '../../AuthComponents/home/CourseCard';
@@ -13,15 +13,29 @@ import DoubtsCard from '../../AuthComponents/home/doubtsCard';
 import Options from '../../AuthComponents/home/otherOptions';
 import DashboardFooter from '../../AuthComponents/home/footer';
 
+import Modal from './modal';
+import ExamPopup from './examPopup';
+
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showExploreModal, setShowExploreModal] = useState(true); 
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowExploreModal(true);
+    }, 200); // Optional delay
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="flex h-screen flex-col">
-     
+      <Modal isOpen={showExploreModal} onClose={() => setShowExploreModal(false)}>
+        <ExamPopup />
+      </Modal>
+
       <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        
+
         <div className="flex-1 flex flex-col overflow-y-auto">
           <Header onMenuClick={() => setSidebarOpen(true)} />
           <main className="flex-1">
@@ -31,21 +45,14 @@ export default function Home() {
             <CourseCard />
             <TopContent />
             <StudyPkg />
-            <DoubtsCard/>
-            <Options/>
-            <DashboardFooter/>
-
+            <DoubtsCard />
+            <Options />
+            <DashboardFooter />
           </main>
         </div>
       </div>
 
-      <Footer/>
+      <Footer />
     </div>
   );
 }
-
-
-
-
-
-

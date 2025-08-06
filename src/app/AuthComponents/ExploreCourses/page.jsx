@@ -16,7 +16,7 @@ export default function ExploreCoursesPage() {
        
     
 
-      <Footer/>
+   
     </div>
   );
 }
