@@ -17,7 +17,7 @@ function AskAnyDoubt() {
   };
 
   return (
-    <section className="lg:px-4 md:px-4 px-2 lg:px-6 py-4 grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6">
+    <section className=" md:px-4 px-2 lg:px-6 py-4 grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6">
       <div className="w-full lg:p-4 md:p-4 mt-4 sm:mt-8">
         <p className="text-gray-400 text-sm mb-4">MDCAT &gt; English &gt; Noun</p>
         <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-1 flex items-center gap-2 flex-wrap">
@@ -29,7 +29,7 @@ function AskAnyDoubt() {
         </p>
 
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4 sm:p-6 border border-gray-200">
-          <label className="block font-medium text-gray-700 mb-2 flex items-center gap-4 flex-wrap">
+          <label className="font-medium text-gray-700 mb-2 flex items-center gap-4 flex-wrap">
             <Image src={questions} alt="Ask" width={24} height={24} />
             Ask Your Question
           </label>
