@@ -154,7 +154,7 @@ function CourseDetail() {
                   <div
                     key={item.id || i}
                     className='flex gap-4 sm:gap-6 items-start cursor-pointer hover:bg-gray-100 p-2 rounded-md'
-                    onClick={() => handleItemClick(item)} 
+                    onClick={() => {router.push(`/AuthComponents/ExploreCourses/CourseData`)}} 
                   >
                     <Image src={item.image} alt={item.title} className='border w-[70px] h-[70px] object-contain' />
                     <div>

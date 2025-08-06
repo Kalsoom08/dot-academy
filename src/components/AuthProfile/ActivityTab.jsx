@@ -4,6 +4,8 @@ import { PiClock } from 'react-icons/pi';
 import Image from 'next/image'; 
 import Pic from '../../../public/profile/eng.png';
 import Pic2 from '../../../public/profile/eng2.png';
+import WatchedCarousel from './WatchedCarousel';
+import QuestionBoard from './QuestionBoard';
 
 const YourActivityTab = ({ setActiveTab }) => {
 
@@ -16,15 +18,7 @@ const YourActivityTab = ({ setActiveTab }) => {
       action: 'View Report',
       
     },
-    {
-      id: 2,
-      title: 'Grammar Course',
-      imageSrc: Pic,
-    
-      action: 'View Plan',
-    
-    },
- 
+
   ];
 
 
@@ -89,7 +83,9 @@ const YourActivityTab = ({ setActiveTab }) => {
         </div>
       )}
 
-
+    <div className=''>
+      <WatchedCarousel />
+    </div>
     {/* Doc */}
 
     <h2 className="text-xl font-bold text-gray-800 mt-8">Docs & Videos</h2>
@@ -129,6 +125,9 @@ const YourActivityTab = ({ setActiveTab }) => {
           </button>
         </div>
       )}
+      <div className=''>
+        <QuestionBoard />
+      </div>
     </div>
   );
 };

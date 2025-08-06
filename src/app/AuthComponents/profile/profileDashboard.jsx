@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
 import { PiClock, PiMedal, PiCheckFat } from 'react-icons/pi';
-import { FaCheckCircle } from 'react-icons/fa'; 
 import { useRouter } from 'next/navigation';
 
 
@@ -63,7 +62,7 @@ const UserProfileDashboard = () => {
           <img
             src="https://placehold.co/60x60/a78bfa/ffffff?text=HA"
             alt="User Profile"
-            className="w-16 h-16 rounded-full mr-4 shadow-md"
+            className="w-16 h-16 rounded-full mr-4"
           />
           <div>
             <h1 className="text-2xl font-bold font-dharma text-gray-800">{userData.firstName} {userData.lastName}</h1>
@@ -71,7 +70,7 @@ const UserProfileDashboard = () => {
           </div>
         </div>
         <button
-          className="px-6 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+          className="px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
           onClick={() => router.push('/AuthComponents/profile/editProfile')}
         >
           Edit Profile
@@ -99,18 +98,18 @@ const UserProfileDashboard = () => {
       </div>
 
       <div className="flex justify-center sm:justify-normal">
-  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 shadow-md w-[70%]">
-    <div className="bg-white rounded-lg py-4 px-6 flex flex-col items-center">
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 w-[70%] bg-white border border-gray-200 rounded-md">
+    <div className=" rounded-lg py-4 px-6 flex flex-col items-center">
       <PiClock size={28} className="text-purple-600 mb-2" />
       <p className="text-gray-500 text-sm">Learning minute</p>
       <span className="text-lg font-bold text-gray-800">44</span>
     </div>
-    <div className="bg-white rounded-lg py-4 px-6 flex flex-col items-center">
+    <div className="rounded-lg py-4 px-6 flex flex-col items-center">
       <PiMedal size={28} className="text-yellow-500 mb-2" />
       <p className="text-gray-500 text-sm">Learning Level</p>
       <span className="text-lg font-bold text-gray-800">5</span>
     </div>
-    <div className="bg-white rounded-lg py-4 px-6 flex flex-col items-center">
+    <div className="rounded-lg py-4 px-6 flex flex-col items-center">
       <PiCheckFat size={28} className="text-green-600 mb-2" />
       <p className="text-gray-500 text-sm">Correct Answer</p>
       <span className="text-lg font-bold text-gray-800">6</span>

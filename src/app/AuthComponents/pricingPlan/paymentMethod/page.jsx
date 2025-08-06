@@ -1,10 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { FaCheckCircle, FaExclamationCircle, FaPhone, FaEnvelope, FaComments } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaComments } from 'react-icons/fa';
 import { FaCheck } from 'react-icons/fa';
-import icon1 from '../../../../public/Payment/icon1.png';
-import icon2 from '../../../../public/Payment/icon2.png';
+import icon1 from '../../../../../public/Payment/icon1.png';
+import icon2 from '../../../../../public/Payment/icon2.png';
 
 function PaymentMethod() {
   const [selectedMethod, setSelectedMethod] = useState('payfast');

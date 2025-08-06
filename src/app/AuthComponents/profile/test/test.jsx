@@ -92,34 +92,20 @@ const UnattemptedTestStats = () => {
             alt="User Profile"
             width={64}
             height={64}
-            className="rounded-full mr-4 shadow-md"
+            className="rounded-full mr-4"
           />
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Hamza Ahmed</h1>
             <p className="text-gray-600 text-sm">Student ID: 000000</p>
           </div>
         </div>
-        <button className="px-6 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+        <button className="px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
           Edit Profile
         </button>
       </div>
 
 
-      <div className="flex border-b border-gray-200 mb-8 overflow-x-auto">
-        {['Your Analysis', 'Your Activity', 'Leaderboard'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab.toLowerCase())}
-            className={`py-3 px-4 text-sm sm:text-base whitespace-nowrap font-semibold ${
-              activeTab === tab.toLowerCase()
-                ? 'text-gray-800 border-b-2 border-gray-800'
-                : 'text-gray-500 hover:text-gray-800'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+  
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
        
@@ -129,7 +115,7 @@ const UnattemptedTestStats = () => {
             {[1, 2].map((_, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg shadow-md p-6 grid gap-5 justify-between"
+                className="bg-white rounded-lg p-6 grid gap-5 justify-between"
               >
                 <div className="flex items-center">
                   <Image
@@ -156,7 +142,7 @@ const UnattemptedTestStats = () => {
           </div>
 
       
-          <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="bg-white rounded-lg p-4">
             <h2 className="text-2xl font-bold mb-6">Test Stats</h2>
             <ul className="grid grid-cols-1 gap-6 text-sm text-gray-800">
               {testStats.map((item, index) => (
@@ -181,7 +167,7 @@ const UnattemptedTestStats = () => {
           </div>
 
 
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg p-6">
             <h2 className="text-2xl font-bold mb-6">Docs and Videos</h2>
             <ul className="grid grid-cols-1 gap-6 text-sm text-gray-800">
               {docStats.map((item, index) => (
@@ -225,7 +211,7 @@ const UnattemptedTestStats = () => {
           </div>
     </div>
 
-                      <div className="grid grid-cols-1 items-center sm:grid-cols-3 gap-4 mt-10 shadow-md w-[70%]">
+                      <div className="grid grid-cols-1 items-center sm:grid-cols-3 gap-4 mt-10 w-[70%]">
                   <div className="bg-white rounded-lg  py-4 px-6 flex flex-col items-center">
                     <PiClock size={28} className="text-purple-600 mb-2" />
                    

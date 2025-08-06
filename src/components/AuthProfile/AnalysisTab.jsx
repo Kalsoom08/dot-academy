@@ -13,24 +13,7 @@ const YourAnalysisTab = ({ router }) => {
       {/* Main content for Your Analysis Tab (will occupy 2/3) */}
       <div className="lg:col-span-2 space-y-8"> 
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-5 '>
-          <div className="bg-white rounded-lg shadow-md p-6 grid gap-5 justify-between">
-            <div className="flex items-center">
-              <img
-                src="https://placehold.co/50x50/e0e0e0/000000?text=LOGO"
-                alt="Neet Logo"
-                className="w-12 h-12 rounded-lg mr-4"
-              />
-              <span className="text-lg font-semibold text-gray-800">Neet</span>
-            </div>
-            <div className="flex space-x-3 mt-4 sm:mt-0">
-              <button className="px-4 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-                Explore
-              </button>
-              <button className="px-4 py-1 bg-black text-white rounded-lg hover:bg-purple-700 transition-colors duration-200">
-                View Plan
-              </button>
-            </div>
-          </div>
+          
 
           <div className="bg-white rounded-lg shadow-md p-6 grid gap-5 justify-between">
             <div className="flex items-center">

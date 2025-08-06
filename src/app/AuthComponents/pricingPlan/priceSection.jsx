@@ -2,6 +2,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 import { FaCheckCircle } from 'react-icons/fa'; 
 import { Anton } from 'next/font/google';
+import { useRouter } from 'next/navigation'
 
 const anton = Anton({ subsets: ['latin'], weight: '400' });
 
@@ -60,6 +61,7 @@ const PackageCard = ({
 
 
 export default function Home() {
+  const router = useRouter()
   const [selectedPackage, setSelectedPackage] = useState('6_month'); 
 
   const packages = [
@@ -125,7 +127,7 @@ export default function Home() {
         </div>
 
         <div className="mt-8">
-          <button className="w-full bg-[#7D287E] hover:bg-purple-800 text-white font-bold py-3 px-4 rounded-full text-lg transition duration-300 ease-in-out">
+          <button className="w-full bg-[#7D287E] hover:bg-purple-800 text-white font-bold py-3 px-4 rounded-full text-lg transition duration-300 ease-in-out" onClick={() => router.push('/AuthComponents/pricingPlan/paymentMethod')}>
             Buy Now
           </button>
         </div>
