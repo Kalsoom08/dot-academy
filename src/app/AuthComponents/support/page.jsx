@@ -11,7 +11,7 @@ export default function ExploreCoursesPage() {
 
   return (
       <div className="flex h-screen flex-col">
-        <h1>Page Support</h1>
+       
      
       <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
