@@ -76,8 +76,8 @@ const navItems = [
             <Link
               key={item.name}
               href={item.path}
-              className={`flex items-center gap-4 px-3 py-2 rounded-md transition font-medium
-                ${isActive ? 'text-purple-700 border-l-4 border-purple-600 bg-purple-50' : 'text-gray-800 hover:text-purple-700'}`}
+              className={`flex items-center gap-4 px-3 py-2 rounded-full transition font-medium
+                ${isActive ? 'text-[#7D287E] border border-[#7D287E] bg-gray-200' : 'text-[#282828] '}`}
             >
               {item.icon}
               {item.name}

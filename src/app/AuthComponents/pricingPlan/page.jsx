@@ -9,7 +9,7 @@ import AboutPrice from './aboutPrice';
 const page = () => {
    const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-      <div className="flex h-screen flex-col">
+      <div className="flex h-screen flex-col bg-white">
          
           <div className="flex flex-1 overflow-hidden">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
