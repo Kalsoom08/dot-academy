@@ -1,10 +1,10 @@
 'use client';
 
-import { FiChevronRight } from "react-icons/fi";
+import { useState } from 'react';
+import { FiChevronRight } from 'react-icons/fi';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { CiSearch } from "react-icons/ci";
-
+import { CiSearch } from 'react-icons/ci';
 
 import ilets from '../../../../public/exams/ilets.png';
 import giki from '../../../../public/exams/giki.png';
@@ -14,43 +14,60 @@ import net from '../../../../public/exams/net.png';
 import pms from '../../../../public/exams/pms.png';
 import icon1 from '../../../../public/Explore/1.png';
 import icon2 from '../../../../public/Explore/2.png';
-
+import ExamConfirmationModal from './examConfirmationPopup';
 
 const exams = [
-  { name: "IELTS", icon: ilets },
-  { name: "NET", icon: net },
-  { name: "MDCAT", icon: mdcat },
-  { name: "ECAT", icon: ecat },
-  { name: "GIKI", icon: giki },
-  { name: "PMS", icon: pms },
+  { name: 'IELTS', icon: ilets },
+  { name: 'NET', icon: net },
+  { name: 'MDCAT', icon: mdcat },
+  { name: 'ECAT', icon: ecat },
+  { name: 'GIKI', icon: giki },
+  { name: 'PMS', icon: pms },
 ];
 
-export default function ExamPopup() {
-  const router = useRouter();
 
-  const handleRedirectToCourses = () => {
-    router.push('/AuthComponents/ExploreCourses/Courses');
+
+const ExamPopup= ()=> {
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedExam, setSelectedExam] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const openModal = (examName) => {
+    setSelectedExam(examName);
+    setIsModalOpen(true);
   };
+
+  const handleProceed = () => {
+    const slug = selectedExam.toLowerCase().replace(/\s+/g, '-');
+    router.push(`/AuthComponents/ExploreCourses/${slug}`);
+  };
+
+  const filteredExams = exams.filter((exam) =>
+    exam.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-10">
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-center">Select Exam</h2>
-        
 
         <div className="flex flex-col gap-3">
-        <div className="relative">
-          <CiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
-          <input
-            className="border border-[#282828] rounded-full w-full p-2 pl-10"
-            type="search"
-            placeholder="Search"
-          />
-        </div>
+  
+          <div className="relative">
+            <CiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+            <input
+              className="border border-[#282828] rounded-full w-full p-2 pl-10"
+              type="search"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
           <div
-            className="bg-white rounded-xl shadow-md p-4  flex items-center justify-between cursor-pointer hover:shadow-lg transition"
-            onClick={handleRedirectToCourses}
+            className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
+            onClick={() => openModal('Class 1 to Class 12')}
           >
             <div className="flex items-center gap-4">
               <Image src={icon1} alt="Class Icon" width={30} height={30} />
@@ -58,9 +75,11 @@ export default function ExamPopup() {
             </div>
             <FiChevronRight />
           </div>
+
+
           <div
             className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
-            onClick={handleRedirectToCourses}
+            onClick={() => openModal('Entrance Exam')}
           >
             <div className="flex items-center gap-4">
               <Image src={icon2} alt="Entrance Exam" width={30} height={30} />
@@ -71,29 +90,30 @@ export default function ExamPopup() {
         </div>
       </section>
 
+   
       <section>
         <h2 className="text-lg font-bold text-center mb-4">Popular Exam</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {exams.map((exam, idx) => (
+          {filteredExams.map((exam, idx) => (
             <button
               key={idx}
               className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
-              onClick={handleRedirectToCourses}
+              onClick={() => openModal(exam.name)}
             >
               <div className="flex items-center gap-2">
                 <Image src={exam.icon} alt={exam.name} width={24} height={24} />
                 <span>{exam.name}</span>
               </div>
-             
             </button>
           ))}
         </div>
       </section>
 
+
       <section className="text-center">
         <button
           className="w-full px-6 py-3 bg-[#282828] text-white rounded-md text-sm font-bold hover:bg-gray-900 transition"
-          onClick={handleRedirectToCourses}
+          onClick={() => openModal('Others')}
         >
           Others
           <div className="text-xs font-normal mt-1 text-purple-100">
@@ -101,6 +121,17 @@ export default function ExamPopup() {
           </div>
         </button>
       </section>
+
+
+      {isModalOpen && (
+        <ExamConfirmationModal
+          examName={selectedExam}
+          onClose={() => setIsModalOpen(false)}
+          onProceed={handleProceed}
+        />
+      )}
     </div>
   );
 }
+
+export default ExamPopup
