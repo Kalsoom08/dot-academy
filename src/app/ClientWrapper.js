@@ -3,6 +3,8 @@
 import { usePathname } from 'next/navigation';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
+import { SupportModalProvider } from '../context/SupportModalContext'; 
+import SupportModal from './AuthComponents/support/supportModal';
 
 export default function ClientWrapper({ children }) {
   const pathname = usePathname();
@@ -26,7 +28,11 @@ export default function ClientWrapper({ children }) {
   return (
     <>
       {!shouldHide && <Navbar />}
-      {children}
+      <SupportModalProvider>
+         {children}
+         <SupportModal/>
+      </SupportModalProvider>
+     
       {!shouldHide && <Footer />}
     </>
   );

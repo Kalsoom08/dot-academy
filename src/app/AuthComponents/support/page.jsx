@@ -6,7 +6,7 @@ import Header from '../../../components/AuthHeader';
 import Footer from '../../../components/AuthFooter';
 import Support from './supportModal';
 
-export default function ExploreCoursesPage() {
+const supportPage = ()=> {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -29,3 +29,5 @@ export default function ExploreCoursesPage() {
     </div>
   );
 }
+
+export default supportPage
