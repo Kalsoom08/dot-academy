@@ -6,6 +6,7 @@ import Footer from '../../../components/AuthFooter';
 import PriceSection from '../pricingPlan/priceSection';
 import AboutPrice from './aboutPrice';
 
+
 const page = () => {
    const [sidebarOpen, setSidebarOpen] = useState(false);
   return (

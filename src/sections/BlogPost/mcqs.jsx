@@ -15,7 +15,7 @@ function MCQCard() {
   const options = ['A. 27', 'B. 7', 'C. 33', 'D. 35'];
 
   return (
-    <div className="bg-white rounded-xl shadow-2xl lg:w-[60%] md:w-[60%] w-[80%] text-justify  lg:ml-20 md:ml-20 ml-6 mt-8 p-4">
+    <div className="bg-white lg:w-[60%] md:w-[60%] w-[80%] text-justify  lg:ml-20 md:ml-20 ml-6 mt-8 p-4">
       <h2 className="font-semibold text-lg mb-4">Maths MCQ Class 10 with Answers</h2>
       {questions.map((q) => (
         <div key={q.id} className="mb-4">

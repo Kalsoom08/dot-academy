@@ -1,6 +1,9 @@
+import Image from 'next/image';
+import blog from '../../../public/Blogs/1.png'
 export default function ContentCards() {
   return (
-    <div className="mt-6 space-y-6 lg:w-[60%] md:w-[60%] w-[80%] text-justify lg:ml-20 md:ml-20 ml-6">
+    <div className="mt-6 text-justify">
+      <Image src={blog} className='my-6'/>
       <Card
         title="Chapter-wise Class 10 Maths MCQs with Solutions and Answer Keys"
         content={
@@ -35,7 +38,7 @@ export default function ContentCards() {
 
 function Card({ title, content }) {
   return (
-    <div className="bg-white rounded-xl p-4 shadow-2xl">
+    <div className="bg-white">
       <h2 className="font-semibold text-lg mb-2">{title}</h2>
       <div className="text-sm text-gray-700">{content}</div>
     </div>
