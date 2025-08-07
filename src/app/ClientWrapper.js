@@ -5,6 +5,8 @@ import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 import { SupportModalProvider } from '../context/SupportModalContext'; 
 import SupportModal from './AuthComponents/support/supportModal';
+import ChangeExamModal from './AuthComponents/exam/changeExam';
+import {ChangeExamModalProvider} from '../context/ChangeExamModalContext';
 
 export default function ClientWrapper({ children }) {
   const pathname = usePathname();
@@ -28,10 +30,13 @@ export default function ClientWrapper({ children }) {
   return (
     <>
       {!shouldHide && <Navbar />}
-      <SupportModalProvider>
-         {children}
-         <SupportModal/>
-      </SupportModalProvider>
+    <SupportModalProvider>
+      <ChangeExamModalProvider>
+        {children}
+        <SupportModal />
+        <ChangeExamModal />
+      </ChangeExamModalProvider>
+    </SupportModalProvider>
      
       {!shouldHide && <Footer />}
     </>

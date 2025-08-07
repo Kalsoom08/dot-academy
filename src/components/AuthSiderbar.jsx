@@ -15,27 +15,32 @@ import {
 import { FiBook } from "react-icons/fi";
 
 import { useSupportModal } from '../context/SupportModalContext'; 
+import { useChangeExamModal } from '../context/ChangeExamModalContext';
+
 
 export default function Sidebar({ isOpen = true, onClose }) {
   const router = useRouter();
   const pathname = usePathname();
 
   const { openModal } = useSupportModal(); 
+  const { openChangeExamModal } = useChangeExamModal();
+
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     router.push('/');
   };
 
-  const navItems = [
-    { name: "Home", icon: <CiHome size={20} />, path: "/AuthComponents/home" },
-    { name: "Explore Courses", icon: <FiBook size={20} />, path: "/AuthComponents/ExploreCourses" },
-    { name: "Pricing Plans", icon: <CiCreditCard1 size={20} />, path: "/AuthComponents/pricingPlan" },
-    { name: "Change Exam", icon: <CiSettings size={20} />, path: "/AuthComponents/exam" },
-    { name: "Support", icon: <CiHeadphones size={20} />, onClick: openModal },
-    { name: "Profile", icon: <CiUser size={20} />, path: "/AuthComponents/profile" },
-    { name: "Log out", icon: <CiLogout size={20} />, onClick: handleLogout }
-  ];
+const navItems = [
+  { name: "Home", icon: <CiHome size={20} />, path: "/AuthComponents/home" },
+  { name: "Explore Courses", icon: <FiBook size={20} />, path: "/AuthComponents/ExploreCourses" },
+  { name: "Pricing Plans", icon: <CiCreditCard1 size={20} />, path: "/AuthComponents/pricingPlan" },
+  { name: "Change Exam", icon: <CiSettings size={20} />, onClick: openChangeExamModal }, 
+  { name: "Support", icon: <CiHeadphones size={20} />, onClick: openModal },           
+  { name: "Profile", icon: <CiUser size={20} />, path: "/AuthComponents/profile" },       
+  { name: "Log out", icon: <CiLogout size={20} />, onClick: handleLogout }
+];
+
 
   return (
     <aside
