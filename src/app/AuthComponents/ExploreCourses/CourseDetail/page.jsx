@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FiChevronDown, FiChevronUp, FiChevronRight } from 'react-icons/fi';
@@ -14,6 +14,7 @@ import topCourse1 from '../../../../../public/Courses/3.png';
 import topCourse2 from '../../../../../public/Courses/6.png';
 
 import CourseAnalysis from '../CourseAnalysis';
+import CourseDetailsPopup from './detailPopup';
 
 const courseSections = [
   {
@@ -69,19 +70,19 @@ const courseSections = [
 ];
 
 const topCourses = [
-  { image: topCourse2, title: "Science class 10", icon: <FiChevronRight size={22}/>},
-  { image: topCourse1, title: "Social Study (SST) Class 10", icon: <FiChevronRight size={22}/>}
+  { image: topCourse2, title: "Science class 10", teacher: "Kashif", icon: <FiChevronRight size={22}/>},
+  { image: topCourse1, title: "Social Study (SST) Class 10", teacher: "Kashif", icon: <FiChevronRight size={22}/> }
 ];
 
 function CourseDetail() {
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [showAnalysisPopup, setShowAnalysisPopup] = useState(true);
   const [selectedCourseItem, setSelectedCourseItem] = useState(null); 
   const router = useRouter();
 
-
   useEffect(() => {
-
     if (showAnalysisPopup) {
       document.body.style.overflow = 'hidden'; 
     } else {
@@ -103,6 +104,11 @@ function CourseDetail() {
     setSelectedCourseItem(null);
   };
 
+  const handleClosePopup = () => {
+    setIsPopupVisible(false);
+    setSelectedCourse(null);
+  };
+
   return (
     <section className='flex flex-col'>
    
@@ -112,7 +118,6 @@ function CourseDetail() {
           <button className='bg-red-400 px-3 py-1 rounded-md text-white text-sm'>INFINITY COURSE</button>
           <h1 className='text-[22px] md:text-[30px] font-bold'>English Grammar Basic</h1>
           <p className='text-[12px] text-gray-400'>265,969 Students Learning This Week</p>
-  
           <button 
             className='mt-4 bg-blue-900 text-white px-4 py-2 rounded-md'
             onClick={() => setShowAnalysisPopup(true)} 
@@ -123,7 +128,6 @@ function CourseDetail() {
       </div>
 
       <div className='flex flex-col lg:flex-row px-4 py-10 gap-6'>
-    
         <div className='w-full lg:w-[70%] flex flex-col gap-6'>
           {courseSections.map((section, index) => (
             <div key={index} className='shadow-md shadow-gray-400 rounded-md'>
@@ -154,7 +158,7 @@ function CourseDetail() {
                   <div
                     key={item.id || i}
                     className='flex gap-4 sm:gap-6 items-start cursor-pointer hover:bg-gray-100 p-2 rounded-md'
-                    onClick={() => {router.push(`/AuthComponents/ExploreCourses/CourseData`)}} 
+                    onClick={()=> router.push('/AuthComponents/ExploreCourses/CourseData')} 
                   >
                     <Image src={item.image} alt={item.title} className='border w-[70px] h-[70px] object-contain' />
                     <div>
@@ -176,7 +180,6 @@ function CourseDetail() {
           ))}
         </div>
 
-       
         <div className='w-full lg:w-[30%] flex flex-col shadow-md shadow-white px-4 py-6 gap-4 h-fit rounded-md'>
           <h1 className='font-bold text-[20px] md:text-[25px] text-[#7c287d]'>Plan starting @ Rs. 500/month</h1>
           <button className='bg-black py-2 rounded-md w-full text-white cursor-pointer'>Buy Now</button>
@@ -190,23 +193,31 @@ function CourseDetail() {
         </div>
       </div>
 
-    
       <div className='w-full md:w-[80%] px-4 md:px-6 py-6 flex flex-col'>
         <h1 className='py-6 text-[20px] font-semibold'>Top Courses for Class 10</h1>
         <div className='flex flex-col gap-4'>
-          {
-            topCourses.map((item, index) => (
-              <div key={index} className='flex gap-4 items-center border p-2 rounded-md'>
-                <Image src={item.image} alt={item.title} className='w-[60px] h-[60px] object-cover rounded-md' />
-                <div className='flex justify-between w-full items-center'>
-                  <h1 className='text-sm sm:text-base font-medium'>{item.title}</h1>
-                  <span>{item.icon}</span>
-                </div>
+          {topCourses.map((item, index) => (
+            <div 
+              key={index} 
+              className='flex gap-4 items-center border p-2 rounded-md cursor-pointer hover:bg-gray-100'
+              onClick={() => {
+                setSelectedCourse(item);
+                setIsPopupVisible(true);
+              }}
+            >
+              <Image src={item.image} alt={item.title} className='w-[60px] h-[60px] object-cover rounded-md' />
+              <div className='flex justify-between w-full items-center'>
+                <h1 className='text-sm sm:text-base font-medium'>{item.title}</h1>
+                <span>{item.icon}</span>
               </div>
-            ))
-          }
+            </div>
+          ))}
         </div>
         <button className='lg:w-[40%] px-8 mt-6 py-2 bg-[#7c287d] text-white rounded-full self-center cursor-pointer'>View all Course</button>
+
+        {isPopupVisible && selectedCourse && (
+          <CourseDetailsPopup courseData={selectedCourse} onClose={handleClosePopup} />
+        )}
       </div>
 
       <div className='w-[90%] md:w-[90%] m-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 py-10 px-4 md:px-10 shadow-md shadow-white rounded-md my-6'>
@@ -238,18 +249,17 @@ function CourseDetail() {
         </div>
       </div>
 
-     {showAnalysisPopup && (
-  <div
-    className="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-[1px] p-4 transition-opacity duration-300 ease-in-out"
-    role="dialog"
-    aria-modal="true"
-  >
-    <CourseAnalysis itemData={selectedCourseItem} onClose={closeAnalysisPopup} />
-  </div>
-)}
-
+      {showAnalysisPopup && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-[1px] p-4 transition-opacity duration-300 ease-in-out"
+          role="dialog"
+          aria-modal="true"
+        >
+          <CourseAnalysis itemData={selectedCourseItem} onClose={closeAnalysisPopup} />
+        </div>
+      )}
     </section>
   );
 }
 
-export default CourseDetail
+export default CourseDetail;

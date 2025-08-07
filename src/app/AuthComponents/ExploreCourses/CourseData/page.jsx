@@ -7,6 +7,7 @@ import noun from '../../../../../public/Courses/noun.png';
 import CommonProper from '../../../../../public/Courses/CommonProper.png';
 import UpNext from '../UpNext';
 import SideShow from '../SideShow';
+import {useRouter} from 'next/navigation';
 
 const courseContents = [
   {
@@ -102,6 +103,7 @@ const courseContents = [
 ];
 
 const CourseData = () => {
+  const router = useRouter()
   const [activeIndex, setActiveIndex] = useState(null);
 
   const displayedContent =

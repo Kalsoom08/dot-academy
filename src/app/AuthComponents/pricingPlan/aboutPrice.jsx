@@ -10,7 +10,7 @@ const anton = Anton({ subsets: ['latin'], weight: '400' });
 
 const AccordionItem = ({ title, icon, children, isOpen, toggleAccordion }) => {
   return (
-    <div className="border-2 border-gray-200 rounded-lg overflow-hidden mb-4">
+    <div className="border-2 border-gray-200 bg-white rounded-lg overflow-hidden mb-4">
       <button
         className="w-full p-4 bg-white flex items-center justify-between text-gray-800 font-semibold cursor-pointer"
         onClick={toggleAccordion}
@@ -43,33 +43,33 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-start p-4 md:p-8">
+    <div className="min-h-screen  flex flex-col items-center justify-start p-4 md:p-8 ">
       <Head>
         <title>About Ecademy Infinity</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg">
+      <main className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg ">
         <h2 className={`${anton.className} text-center text-2xl md:text-3xl  mb-8`}>
-          About <span className="font-extrabold text-purple-800">Ecademy </span>Infinity for IELTS
+          About <span className="font-extrabold text-[#7D287E]">Ecademy </span>Infinity for IELTS
         </h2>
 
         <AccordionItem
           title="Include 20+ courses for IELTS"
-          icon={<FaBook className="text-purple-600 text-xl" />}
+          icon={<FaBook className="text-[#7D287E] text-xl" />}
           isOpen={openAccordion === 'courses'}
           toggleAccordion={() => toggleAccordion('courses')}
         >
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 ">
             {pmsImages.map((src, index) => (
-              <div key={index} className="flex flex-col items-center text-center">
+              <div key={index} className="flex flex-col items-center text-center ">
                 <Image src={src} alt="PMS test practice guide" className="w-24 h-auto object-contain mb-2" />
-                <p className="text-sm text-gray-600">PMS test practice</p>
+                <p className="text-sm text-[#282828]">PMS test practice</p>
               </div>
             ))}
           </div>
           <div className="mt-6 flex justify-center">
-            <button className="flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition duration-300 ease-in-out">
+            <button className="flex items-center  hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-full text-sm transition duration-300 ease-in-out">
               View More Courses
               <FaChevronDown className="ml-2 text-xs" />
             </button>
@@ -78,7 +78,7 @@ export default function AboutPage() {
 
         <AccordionItem
           title="Our Number speak for themselves"
-          icon={<FaChartBar className="text-purple-600 text-xl" />}
+          icon={<FaChartBar className="text-[#7D287E] text-xl" />}
           isOpen={openAccordion === 'stats1'}
           toggleAccordion={() => toggleAccordion('stats1')}
         >
@@ -104,7 +104,7 @@ export default function AboutPage() {
 
         <AccordionItem
           title="Our Number speak for themselves"
-          icon={<FaChartBar className="text-purple-600 text-xl" />}
+          icon={<FaChartBar className="text-[#7D287E] text-xl" />}
           isOpen={openAccordion === 'stats2'}
           toggleAccordion={() => toggleAccordion('stats2')}
         >
