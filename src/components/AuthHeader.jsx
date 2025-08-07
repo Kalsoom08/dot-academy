@@ -4,8 +4,10 @@ import { FaBell } from "react-icons/fa6";
 import { CiSearch } from "react-icons/ci";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 export default function Header({ onMenuClick }) {
+  const router = useRouter()
   return (
     <div className="flex flex-col w-full">
       
@@ -43,7 +45,7 @@ export default function Header({ onMenuClick }) {
               <FaBell className="w-4 h-4 text-gray-600" />
             </div>
             <div className="border border-gray-300 p-2 rounded-full hover:bg-gray-100 cursor-pointer">
-              <CiSearch className="w-4 h-4 text-gray-600" />
+              <CiSearch className="w-4 h-4 text-gray-600" onClick={()=> router.push('/AuthComponents/ExploreCourses/SearchCourses')}/>
             </div>
           </div>
         </div>

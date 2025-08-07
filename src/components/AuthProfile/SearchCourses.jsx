@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 import { CiSearch } from "react-icons/ci";
 import { FiChevronRight } from "react-icons/fi";
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-
 import course1 from '../../../../../public/Courses/1.png';
 import course2 from '../../../../../public/Courses/2.png';
 
@@ -42,9 +40,8 @@ const courseData = [
   }
 ];
 
-const Courses = () => {
+const SearchCourses = () => {
   const [filter, setFilter] = useState('courses');
-  const router = useRouter();
 
   const filteredCourses =
     filter === 'courses'
@@ -110,4 +107,4 @@ const Courses = () => {
   );
 };
 
-export default Courses;
+export default SearchCourses;

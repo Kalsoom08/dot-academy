@@ -19,7 +19,7 @@ export default function ExploreCoursesPage() {
   const router = useRouter();
 
   const handleRedirectToCourses = () => {
-    router.push('/AuthComponents/ExploreCourses/Courses');
+    router.push('/AuthComponents/ExploreCourses/CourseDetail');
   };
 
   return (
