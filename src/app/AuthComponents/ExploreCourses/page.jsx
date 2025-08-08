@@ -2,8 +2,7 @@
 'use client';
 import Footer from '../../../components/AuthFooter';
 import Explore from '../ExploreCourses/explore';
-import QuizQuestionCard from './QuizQuestionCard';
-
+import ScoreCard from './ScoreCard';
 export default function ExploreCoursesPage() {
   
 
@@ -11,7 +10,7 @@ export default function ExploreCoursesPage() {
       <div className="flex h-screen flex-col">
      
           <main className="flex-1">
-         <QuizQuestionCard />
+          <ScoreCard />
 
           </main>
        

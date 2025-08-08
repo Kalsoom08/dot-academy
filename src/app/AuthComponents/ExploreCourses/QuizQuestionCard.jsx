@@ -234,3 +234,4 @@ export default function QuizQuestionCard() {
       </div>
     </div>
   );
+}
