@@ -2,7 +2,7 @@
 'use client';
 import Footer from '../../../components/AuthFooter';
 import Explore from '../ExploreCourses/explore';
-// import QuizQuestionCard from '../../../components/Quiz/QuizQuestionCard';
+import QuizQuestionCard from '../../../components/Quiz/QuizQuestionCard';
 
 export default function ExploreCoursesPage() {
   
