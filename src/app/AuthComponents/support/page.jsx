@@ -6,12 +6,12 @@ import Header from '../../../components/AuthHeader';
 import Footer from '../../../components/AuthFooter';
 import Support from './supportModal';
 
-export default function ExploreCoursesPage() {
+const supportPage = ()=> {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
       <div className="flex h-screen flex-col">
-        <h1>Page Support</h1>
+       
      
       <div className="flex flex-1 overflow-hidden">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -29,3 +29,5 @@ export default function ExploreCoursesPage() {
     </div>
   );
 }
+
+export default supportPage

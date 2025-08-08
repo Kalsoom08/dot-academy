@@ -3,6 +3,7 @@ import Image from 'next/image'
 import course5 from '../../../../public/Courses/5.png'
 import course from '../../../../public/Courses/4.png'
 import { FiChevronRight } from 'react-icons/fi'
+import {useRouter} from 'next/navigation';
 
 const upNext = [
         { image: course, title: "Noun & its Classifications (Part-2) - English Grammar", weight: 'Docs | 5 Pages' },
@@ -10,6 +11,7 @@ const upNext = [
 ]
 
 function SideShow() {
+  const router = useRouter()
      return (
          <div className="flex flex-col gap-6 p-6 lg:block hidden">
             <div className="flex flex-col gap-3">
