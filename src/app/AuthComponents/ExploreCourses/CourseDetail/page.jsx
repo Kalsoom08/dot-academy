@@ -16,6 +16,8 @@ import cour2 from '../../../../../public/Courses/cour2.png';
 import cour3 from '../../../../../public/Courses/cour3.png';
 
 import CourseAnalysis from '../CourseAnalysis';
+import TestPopup from './testPopup';
+import ConfirmTestPopup from './confirmTestPopup';
 
 const courseSections = [
   {
@@ -79,6 +81,11 @@ const topCourses = [
 function CourseDetail() {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showTestPopup, setShowTestPopup] = useState(false);
+const [selectedTestItem, setSelectedTestItem] = useState(null);
+
+const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [showAnalysisPopup, setShowAnalysisPopup] = useState(true);
   const [selectedCourseItem, setSelectedCourseItem] = useState(null); 
@@ -98,12 +105,22 @@ function CourseDetail() {
   }, [showAnalysisPopup]);
 
   const handleItemClick = (item) => {
-    if (item.type === 'video') {
-      router.push(`/AuthComponents/ExploreCourses/CourseVideo`); 
-    } else {
-      router.push('/AuthComponents/ExploreCourses/CourseData')
-    }
+  if (item.type === 'test') {
+    setSelectedTestItem(item);
+    setShowConfirmTestPopup(true);
+  } else if (item.type === 'video') {
+    router.push(`/AuthComponents/ExploreCourses/CourseVideo`);
+  } else {
+    router.push('/AuthComponents/ExploreCourses/CourseData');
+  }
   };
+
+  const handleCloseConfirmPopup = () => {
+  setShowConfirmTestPopup(false);
+  setSelectedTestItem(null);
+};
+
+  
 
   const closeAnalysisPopup = () => {
     setShowAnalysisPopup(false);
@@ -164,7 +181,8 @@ function CourseDetail() {
                   <div
                     key={item.id || i}
                     className='flex gap-4 sm:gap-6 items-start cursor-pointer hover:bg-gray-100 p-2 rounded-md'
-                    onClick={() => {router.push(`/AuthComponents/ExploreCourses/CourseData`)}} 
+                    onClick={() => handleItemClick(item)}
+
                   >
                     <Image src={item.image} alt={item.title} className='border w-[70px] h-[70px] object-contain' />
                     <div>
@@ -248,6 +266,32 @@ function CourseDetail() {
           <CourseAnalysis itemData={selectedCourseItem} onClose={closeAnalysisPopup} />
         </div>
       )}
+      
+<ConfirmTestPopup
+  isVisible={showConfirmTestPopup}
+  onConfirm={() => {
+    setShowConfirmTestPopup(false);
+
+    setShowTestPopup(true);
+  }}
+  onCancel={handleCloseConfirmPopup}
+  onClose={handleCloseConfirmPopup}
+/>
+
+{showTestPopup && (
+  <TestPopup 
+    isVisible={showTestPopup}
+    selectedTest={selectedTestItem}
+    onClose={() => setShowTestPopup(false)}
+    onStart={() => {
+      router.push(`/AuthComponents/ExploreCourses/CourseDetail/testPopup/${selectedTestItem.id}`);
+      setShowTestPopup(false);
+    }}
+  />
+)}
+
+
+
     </section>
   );
 }
