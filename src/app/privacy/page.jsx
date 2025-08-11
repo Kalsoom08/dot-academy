@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
       <Head>
         <title>Privacy Policy - Ecademy Dot</title>
       </Head>
-      <main className="max-w-3xl mx-auto px-4 py-10 text-gray-800 font-sans">
+      <main className="max-w-6xl mx-auto px-4 py-10 text-gray-800 font-sans">
 
 
         <section>

@@ -6,7 +6,7 @@ export default function StepEmailForm({ formData, setFormData, onSubmit }) {
         <input
           type="email"
           placeholder="yourname@gmail.com"
-          className="w-full border p-2 rounded-full text-center"
+          className="w-full border-b p-2  text-center"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
