@@ -143,12 +143,12 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
           <h1 className='text-[22px] md:text-[30px] font-bold'>English Grammar Basic</h1>
           <p className='text-[12px] text-gray-400'>265,969 Students Learning This Week</p>
   
-          <button 
+          {/* <button 
             className='mt-4 bg-blue-900 text-white px-4 py-2 rounded-md'
             onClick={() => setShowAnalysisPopup(true)} 
           >
             Open Course Analysis
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -257,7 +257,7 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
       </div>
       {selectedVideoItem && <CourseVideo />}
 
-      {showAnalysisPopup && (
+      {/* {showAnalysisPopup && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-[1px] p-4 transition-opacity duration-300 ease-in-out"
           role="dialog"
@@ -265,7 +265,7 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
         >
           <CourseAnalysis itemData={selectedCourseItem} onClose={closeAnalysisPopup} />
         </div>
-      )}
+      )} */}
       
 <ConfirmTestPopup
   isVisible={showConfirmTestPopup}

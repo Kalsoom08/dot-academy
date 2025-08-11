@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
-import { MessageCircle } from "lucide-react";
+
 import { CiTimer } from "react-icons/ci";
+import { FiMessageCircle } from "react-icons/fi";
+
 
 export default function QuestionBoard() {
   const [input, setInput] = useState("");
@@ -10,7 +12,7 @@ export default function QuestionBoard() {
     <div className="max-w-3xl p-6 space-y-8 font-sans">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <MessageCircle size={20} className="text-purple-600" />
+          <FiMessageCircle size={20} className="text-purple-600" />
           <div>
             <h2 className="text-xl font-semibold">Your Asked Question</h2>
             <p className="text-sm text-gray-500">All of your asked Question goes here</p>

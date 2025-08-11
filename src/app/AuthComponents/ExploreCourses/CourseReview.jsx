@@ -5,7 +5,7 @@ import { IoStar } from "react-icons/io5";
 const CourseReview = () => {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
-  const [isVisible, setIsVisible] = useState(true);  // New state to control visibility
+  const [isVisible, setIsVisible] = useState(true);  
 
   const ratingLabels = ["Very Bad", "Bad", "Average", "Good", "Excellent"];
 
@@ -18,7 +18,7 @@ const CourseReview = () => {
   };
 
   const handleClose = () => {
-    setIsVisible(false);  // Hide the component when the close button is clicked
+    setIsVisible(false);  
   };
 
   const handleSendReview = () => {

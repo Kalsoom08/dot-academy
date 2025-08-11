@@ -71,17 +71,27 @@ export default function SignupPage({ redirectTo }) {
 
     return (
         <div className="min-h-screen flex items-center justify-center py-10 px-4">
-            <div className="rounded-2xl shadow-xl w-[90%] max-w-md p-6 relative">
-                <div className="flex flex-col items-center gap-2 mb-8 mt-6">
-                    <Image src={Logo} alt="Logo" className="w-24 h-auto" />
-                    <h2 className="text-xl font-extrabold text-gray-900 text-center">
-                        {step === 'start'
-                            ? 'Create your Account'
-                            : step === 'otp'
-                            ? 'Please Check your Number'
-                            : 'OTP Verification'}
-                    </h2>
-                </div>
+            <div className="rounded-2xl shadow-xl  sm:w-[50%] lg:w-[30%] p-6 relative">
+<div className="flex flex-col items-center gap-3 mb-8 mt-6">
+  {step === 'start' && (
+    <Image 
+      src={Logo} 
+      alt="Logo" 
+      width={96} 
+      height={96} 
+      className="mx-auto"
+      priority
+    />
+  )}
+  <h2 className="text-2xl anton text-gray-900 text-center ">
+    {step === 'start'
+      ? 'Create your Account'
+      : step === 'otp'
+      ? 'Please Check your Number'
+      : 'OTP Verification'}
+  </h2>
+</div>
+
 
                 {step === 'start' && (
                     <StepStart
@@ -115,15 +125,7 @@ export default function SignupPage({ redirectTo }) {
                     />
                 )}
 
-                <p className="text-center text-sm text-gray-700 mt-6">
-                    Already have an account?{' '}
-                    <button
-                        onClick={handleSwitchToLogin}
-                        className="text-purple-700 font-medium hover:underline"
-                    >
-                        Login
-                    </button>
-                </p>
+      
             </div>
         </div>
     );

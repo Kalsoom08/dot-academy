@@ -5,8 +5,8 @@ export default function StepPhoneNumber({ formData, setFormData, onSubmit }) {
       <form onSubmit={onSubmit} className="space-y-4">
 <input
           type="tel" 
-          placeholder="Phone Number (e.g., +923xxxxxxxxx)"
-          className="w-full border p-2 rounded-full"
+          placeholder="Number"
+          className="w-full border-b p-2 "
           value={formData.phone}
           onChange={(e) => { const value = e.target.value;
             if (/^\d*$/.test(value) && value.length <= 13) {

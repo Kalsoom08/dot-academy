@@ -1,6 +1,8 @@
 "use client";
 import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+
+import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
+
 
 const thumbnails = [
   {
@@ -81,14 +83,14 @@ export default function WatchedCarousel() {
         onClick={scrollLeft}
         className="absolute left-0 top-[50%] -translate-y-1/2 z-10 bg-white p-2 shadow rounded-full"
       >
-        <ChevronLeft />
+        <FaAngleLeft />
       </button>
 
       <button
         onClick={scrollRight}
         className="absolute right-0 top-[50%] -translate-y-1/2 z-10 bg-white p-2 shadow rounded-full"
       >
-        <ChevronRight />
+        <FaAngleRight />
       </button>
 
       {/* Scrollable container */}
