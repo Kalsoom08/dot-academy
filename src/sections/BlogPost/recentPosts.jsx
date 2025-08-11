@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Pic from '../../../public/Posts/post.png';
-import PostCard from './PostCard';
+import PostCard from '../../sections/BlogPost/PostCard';
+import { useRouter } from 'next/router';
 
 function App() {
   const posts = Array.from({ length: 12 }).map((_, index) => ({
@@ -45,7 +46,7 @@ function App() {
     
       <section className="mt-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         <h2 className="text-2xl text-[#282828] anton mb-6">Recent posts</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" >
           {posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}

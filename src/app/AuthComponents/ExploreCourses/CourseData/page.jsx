@@ -7,7 +7,7 @@ import noun from '../../../../../public/Courses/noun.png';
 import CommonProper from '../../../../../public/Courses/CommonProper.png';
 import UpNext from '../UpNext';
 import SideShow from '../SideShow';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const courseContents = [
   {
@@ -103,29 +103,30 @@ const courseContents = [
 ];
 
 const CourseData = () => {
-  const router = useRouter()
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(null);
 
   const displayedContent =
     activeIndex === null
       ? [courseContents[0], courseContents[1]]
       : [courseContents[activeIndex]];
-      const [selectedOption, setSelectedOption] = useState(null)
-      const [showSolution, setShowSolution] = useState(false)
+
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showSolution, setShowSolution] = useState(false);
 
   const question = {
-    text: 'Which of the following Example is Sigular and Common?',
+    text: 'Which of the following Example is Singular and Common?',
     options: [
       { label: 'A', text: 'Girl', isCorrect: true },
       { label: 'B', text: 'Water', isCorrect: false },
       { label: 'C', text: 'Fire', isCorrect: false },
-      { label: 'D', text: 'Colors', isCorrect: false }
-    ]
-  }
+      { label: 'D', text: 'Colors', isCorrect: false },
+    ],
+  };
 
   const handleOptionClick = (index) => {
-    setSelectedOption(index)
-  }
+    setSelectedOption(index);
+  };
 
   return (
     <section className='lg:px-6 py-4 grid lg:grid-cols-[70%_30%]'>
@@ -193,54 +194,58 @@ const CourseData = () => {
           ))}
         </div>
         <div className="flex flex-col min-h-screen px-4">
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-        <p className="mb-4 font-semibold">
-          Try Yourself:
-          <span className="font-normal ml-2">{question.text}</span>
-        </p>
+          <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+            <p className="mb-4 font-semibold">
+              Try Yourself:
+              <span className="font-normal ml-2">{question.text}</span>
+            </p>
 
-        <div className="flex flex-col gap-3">
-          {question.options.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => handleOptionClick(index)}
-              className={`flex items-center gap-2 px-4 py-2 border rounded-md text-left text-sm
-                ${selectedOption === index ? 'bg-black text-white' : 'bg-white text-black border-gray-300'}
-              `}
-            >
-              <span className="font-bold">{option.label}.</span> {option.text}
-            </button>
-          ))}
-        </div>
+            <div className="flex flex-col gap-3">
+             {question.options.map((option, index) => (
+              <div key={index} className="flex flex-col gap-2">
+                <button
+                onClick={() => handleOptionClick(index)}
+                className={`flex items-center gap-2 px-4 py-2 border rounded-md text-left text-sm
+                ${selectedOption === index ? 'bg-gray-200' : 'bg-white text-black border-gray-300'}
+                ${showSolution && option.isCorrect ? 'border-green-600 bg-green-100' : ''} 
+                ${showSolution && selectedOption === index && !option.isCorrect ? 'bg-red-100 border-red-600' : ''}
+                `}
+                >
+                  <span className="font-bold">{option.label}.</span> {option.text}
+                </button>
 
-        <button
-          onClick={() => setShowSolution(true)}
-          className="mt-6 w-full bg-[#222] text-white py-2 rounded-md hover:bg-[#111] transition duration-200"
-        >
-          View Solution
-        </button>
-
-        {showSolution && selectedOption !== null && (
-          <div className="mt-4 text-sm">
-            {question.options[selectedOption].isCorrect ? (
-              <p className="text-green-600">Correct! {question.options[selectedOption].text} is the right answer.</p>
-            ) : (
-              <p className="text-red-600">Incorrect. The correct answer is <strong>Girl</strong>.</p>
+                {showSolution && option.isCorrect && (
+                  <div className='bg-[#D4EDDA] border border-green-600 px-2 py-2 rounded-md'>
+                  <h1 className='text-green-600 text-[14px] font-semibold'>Explaination</h1>
+                  <p className="text-green-600 text-xs mt-2">
+                   A common noun refers to a general name of a person, place, or thing, not specific. "Girl" is a singular noun because it refers to one p border border-green-600 px-2 py-2erson and is a common noun because it's not the name of a specific individual.
+                  </p>
+                  <p className='text-green-600 text-xs mt-2 font-semibold'>Correct answer</p>
+                </div>
+      
             )}
           </div>
-        )}
-      </div>
+        ))}
+            </div>
 
-      <div className="mt-10 text-center text-sm italic text-gray-600 max-w-sm">
-        Are you planning to get high score in your exam<br />
-        <span className="not-italic font-medium text-black">Ecademy</span> will help you to get high score in your exam
-      </div>
+            <button
+              onClick={() => setShowSolution(true)}
+              className="mt-6 w-full bg-[#222] text-white py-2 rounded-md hover:bg-[#111] transition duration-200"
+            >
+              View Solution
+            </button>
+          </div>
 
-      <button className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-[#111] transition duration-200 w-[40%] mx-6">
-        View plan
-      </button>
-    </div>
-      <UpNext />
+          <div className="mt-10 text-center text-sm italic text-gray-600 max-w-sm">
+            Are you planning to get high score in your exam<br />
+            <span className="not-italic font-medium text-black">Ecademy</span> will help you to get high score in your exam
+          </div>
+
+          <button className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-[#111] transition duration-200 w-[40%] mx-6">
+            View plan
+          </button>
+        </div>
+        <UpNext />
       </div>
       <SideShow />
     </section>

@@ -27,13 +27,10 @@ const courseSections = [
       { id: 'noun-part-1', image: course, title: "Noun & its Classifications (Part-1) - English Grammar", weight: 'Docs | 5 Pages', type: 'doc' },
       { id: 'noun-part-1-video', image: course, title: "Noun & its Classifications (Part-1) - English Grammar - video", weight: 'Docs | 5 Pages', type: 'video' },
       { id: 'noun-part-2', image: course, title: "Noun & its Classifications (Part-2) - English Grammar", weight: 'Docs | 3 Pages', type: 'doc' },
-      { id: 'noun-worksheet', image: cour1, title: "Worksheet: Noun & its classifications", weight: 'Docs | 2 Pages', type: 'doc' },
-      { id: 'noun-worksheet-solution', image: cour2, title: "Worksheets solution: Noun & its classifications", weight: 'Docs | 5 Pages', type: 'doc' },
-      { id: 'noun-flashcards', image: course, title: "Flashcards: Type of Noun", weight: 'Flashcards | 16 Cards', icon: <CiLock size={20} />, unlock: "Unlock", type: 'flashcard' },
-      { id: 'noun-ppt', image: course, title: "PPT: Noun", weight: 'Docs | 16 Pages', type: 'doc' },
-      { id: 'noun-learning-poster', image: course, title: "Learning Poster: Type of Noun", weight: 'Docs | 1 Page', type: 'doc' },
+      { id: 'noun-worksheet', image: cour1, title: "Worksheet: Noun & its classifications", weight: 'Docs | 2 Pages', type: 'workSheet' },
+      { id: 'noun-worksheet-solution', image: cour2, title: "Worksheets solution: Noun & its classifications", weight: 'Docs | 5 Pages', type: 'workSheet' },
       { id: 'noun-test', image: course, title: "Test: Noun", weight: 'Test | 10 ques | 15 min', icon: <CiLock size={20} />, unlock: "Unlock", type: 'test' },
-      { id: 'noun-all-about-video', image: cour3, title: "All About Noun", weight: 'Video | 16:21 min', type: 'video' },
+      { id: 'noun-all-about-video', image: cour3, title: "About this Course", weight: 'Video | 16:21 min', type: 'video' },
     ]
   },
   {
@@ -110,6 +107,9 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
     setShowConfirmTestPopup(true);
   } else if (item.type === 'video') {
     router.push(`/AuthComponents/ExploreCourses/CourseVideo`);
+  }
+  else if (item.type === 'workSheet') {
+    router.push(`/AuthComponents/ExploreCourses/WorkSheetData`)
   } else {
     router.push('/AuthComponents/ExploreCourses/CourseData');
   }
