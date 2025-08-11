@@ -1,19 +1,25 @@
-'use client'
+'use client';
 import React from 'react';
 import { RxCross2 } from 'react-icons/rx';
 import { HiOutlineUser, HiOutlineUsers } from 'react-icons/hi';
 import { AiFillStar } from 'react-icons/ai';
 import { RiShareForwardLine } from 'react-icons/ri';
 import { BsClipboard2Data } from "react-icons/bs";
+import { motion } from 'framer-motion'; // Import Framer Motion
 
 import Image from 'next/image';
 import Pic from '../../../../../public/Courses/detail.png';
 
 const DetailPopup = ({ courseData, onClose }) => {
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-[1px] p-4'>
+    <motion.div
+      className='fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-[1px] p-4'
+      initial={{ opacity: 0, scale: 0.95 }} // Initial state (hidden and small)
+      animate={{ opacity: 1, scale: 1 }} // Final state (fully visible and normal size)
+      exit={{ opacity: 0, scale: 0.95 }} // When exiting
+      transition={{ duration: 0.5 }} // Transition duration
+    >
       <div className="bg-white rounded-lg border border-[#f8f4f4] w-full max-w-sm mx-auto p-6 relative">
-      
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl"
@@ -21,28 +27,24 @@ const DetailPopup = ({ courseData, onClose }) => {
           <RxCross2 />
         </button>
 
-     
         <div className="space-y-6 ">
           <Image src={Pic} alt="Course Detail" width={50} height={50} />
           <h1 className='font-bold text-2xl'>About This Course</h1>
           <div className="flex items-center">
             <BsClipboard2Data className="w-6 h-6 mr-3"/>
-            <span >365 Docs, 136 Test and 129 videos included</span>
+            <span>365 Docs, 136 Test and 129 videos included</span>
           </div>
 
-       
           <div className="flex items-center">
             <HiOutlineUser className="w-6 h-6 mr-3" />
             <span>{courseData.teacher}</span>
           </div>
 
-  
           <div className="flex items-center">
             <HiOutlineUsers className="w-6 h-6 mr-3" />
             <span>2,10,974 Student learning this week </span>
           </div>
 
-          
           <div className="flex items-center">
             <AiFillStar className="w-6 h-6  mr-3" />
             <span> 4.8/5 rating (10136 student)</span>
@@ -56,7 +58,7 @@ const DetailPopup = ({ courseData, onClose }) => {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

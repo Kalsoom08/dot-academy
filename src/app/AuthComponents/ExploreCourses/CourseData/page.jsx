@@ -206,7 +206,7 @@ const CourseData = () => {
                 <button
                 onClick={() => handleOptionClick(index)}
                 className={`flex items-center gap-2 px-4 py-2 border rounded-md text-left text-sm
-                ${selectedOption === index ? 'bg-gray-200' : 'bg-white text-black border-gray-300'}
+                ${selectedOption === index ? 'bg-gray-200 text-white' : 'bg-white text-black border-gray-300'}
                 ${showSolution && option.isCorrect ? 'border-green-600 bg-green-100' : ''} 
                 ${showSolution && selectedOption === index && !option.isCorrect ? 'bg-red-100 border-red-600' : ''}
                 `}
