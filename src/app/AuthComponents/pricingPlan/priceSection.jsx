@@ -1,8 +1,11 @@
+'use client';
+
 import Head from 'next/head';
 import { useState } from 'react';
-import { FaCheckCircle } from 'react-icons/fa'; 
+import { FaCheckCircle } from 'react-icons/fa';
 import { Anton } from 'next/font/google';
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const anton = Anton({ subsets: ['latin'], weight: '400' });
 
@@ -15,23 +18,34 @@ const PackageCard = ({
   bestValue,
   isSelected,
   onSelect,
+  index
 }) => {
   return (
-    <div
+    <motion.div
       className={`relative p-1 rounded-xl border-2 cursor-pointer transition duration-200 ease-in-out
         ${isSelected ? 'border-[#7D287E] bg-purple-50' : 'border-[#a558a671] hover:border-gray-300'}
       `}
       onClick={onSelect}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 15 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.97 }}
     >
       {bestValue && (
-        <div className="absolute -top-3 left-4 bg-yellow-400 text-[#7D287E] text-xs font-semibold px-3 py-1 rounded-full uppercase shadow">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: 'spring', stiffness: 300 }}
+          className="absolute -top-3 left-4 bg-yellow-400 text-[#7D287E] text-xs font-semibold px-3 py-1 rounded-full uppercase shadow"
+        >
           Best Value
-        </div>
+        </motion.div>
       )}
 
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-        
           <div
             className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4
               ${isSelected ? 'bg-[#7D287E] border-[#7D287E]' : 'bg-white border-[#7D287E]'}
@@ -55,14 +69,13 @@ const PackageCard = ({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-
 export default function Home() {
-  const router = useRouter()
-  const [selectedPackage, setSelectedPackage] = useState('6_month'); 
+  const router = useRouter();
+  const [selectedPackage, setSelectedPackage] = useState('6_month');
 
   const packages = [
     {
@@ -91,8 +104,8 @@ export default function Home() {
       bestValue: true,
     },
     {
-      id: '1_year', 
-      duration: '1 Year', 
+      id: '1_year',
+      duration: '1 Year',
       validity: 'January 10, 2025',
       originalPrice: 3407,
       currentPrice: 1135,
@@ -101,37 +114,72 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen  flex items-center justify-center p-4">
+    <motion.div
+      className="min-h-screen flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
       <Head>
         <title>Ecademy Infinity Package</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg">
-        <h1 className={`${anton.className} text-center text-2xl md:text-3xl font-bold text-[#7D287E] mb-2`}>
+      <motion.main
+        className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 120, damping: 12 }}
+      >
+        <motion.h1
+          className={`${anton.className} text-center text-2xl md:text-3xl font-bold text-[#7D287E] mb-2`}
+          initial={{ y: -15, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
           Ecademy Infinity Package for IELTS
-        </h1>
-        <p className="text-center text-gray-600 mb-8">
+        </motion.h1>
+        <motion.p
+          className="text-center text-gray-600 mb-8"
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
           Including 20+ courses
-        </p>
+        </motion.p>
 
         <div className="space-y-4">
-          {packages.map((pkg) => (
-            <PackageCard
-              key={pkg.id}
-              {...pkg}
-              isSelected={selectedPackage === pkg.id}
-              onSelect={() => setSelectedPackage(pkg.id)}
-            />
-          ))}
+          <AnimatePresence>
+            {packages.map((pkg, index) => (
+              <PackageCard
+                key={pkg.id}
+                {...pkg}
+                index={index}
+                isSelected={selectedPackage === pkg.id}
+                onSelect={() => setSelectedPackage(pkg.id)}
+              />
+            ))}
+          </AnimatePresence>
         </div>
 
-        <div className="mt-8">
-          <button className="w-full bg-[#7D287E] hover:bg-purple-800 text-white font-bold py-3 px-4 rounded-full text-lg transition duration-300 ease-in-out" onClick={() => router.push('/AuthComponents/pricingPlan/paymentMethod')}>
+        <motion.div
+          className="mt-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full bg-[#7D287E] hover:bg-purple-800 text-white font-bold py-3 px-4 rounded-full text-lg transition duration-300 ease-in-out"
+            onClick={() =>
+              router.push('/AuthComponents/pricingPlan/paymentMethod')
+            }
+          >
             Buy Now
-          </button>
-        </div>
-      </main>
-    </div>
+          </motion.button>
+        </motion.div>
+      </motion.main>
+    </motion.div>
   );
 }

@@ -58,7 +58,7 @@ export default function SetupProfile() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-white">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 ">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center gap-1 mb-8">
           <Image src={Logo} alt="Logo" className="w-24 h-auto" />

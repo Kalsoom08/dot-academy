@@ -5,6 +5,7 @@ import { FiChevronRight } from 'react-icons/fi';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { CiSearch } from 'react-icons/ci';
+import { motion } from 'framer-motion';
 
 import ilets from '../../../../public/exams/ilets.png';
 import giki from '../../../../public/exams/giki.png';
@@ -17,110 +18,123 @@ import icon2 from '../../../../public/Explore/2.png';
 import ExamConfirmationModal from './examConfirmationPopup';
 
 const exams = [
- { name: 'IELTS', icon: ilets },
- { name: 'NET', icon: net },
- { name: 'MDCAT', icon: mdcat },
- { name: 'ECAT', icon: ecat },
- { name: 'GIKI', icon: giki },
- { name: 'PMS', icon: pms },
+  { name: 'IELTS', icon: ilets },
+  { name: 'NET', icon: net },
+  { name: 'MDCAT', icon: mdcat },
+  { name: 'ECAT', icon: ecat },
+  { name: 'GIKI', icon: giki },
+  { name: 'PMS', icon: pms },
 ];
 
 const ExamPopup = () => {
- const router = useRouter();
- const [isModalOpen, setIsModalOpen] = useState(false);
- const [selectedExam, setSelectedExam] = useState('');
- const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedExam, setSelectedExam] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
- const openModal = (examName) => {
-  setSelectedExam(examName);
-  setIsModalOpen(true);
- };
+  const openModal = (examName) => {
+    setSelectedExam(examName);
+    setIsModalOpen(true);
+  };
 
- const handleProceed = () => {
-  const slug = selectedExam.toLowerCase().replace(/\s+/g, '-');
-  router.push(`/AuthComponents/ExploreCourses/${slug}`);
- };
+  const handleProceed = () => {
+    const slug = selectedExam.toLowerCase().replace(/\s+/g, '-');
+    router.push(`/AuthComponents/ExploreCourses/${slug}`);
+  };
 
- const filteredExams = exams.filter((exam) =>
-  exam.name.toLowerCase().includes(searchTerm.toLowerCase())
- );
-
- if (isModalOpen) {
-  return (
- <ExamConfirmationModal
- examName={selectedExam}
- onClose={() => setIsModalOpen(false)}
- onProceed={handleProceed}
- />
+  const filteredExams = exams.filter((exam) =>
+    exam.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
- }
 
- return (
-  <div className="space-y-10">
- <section className="space-y-4">
- <h2 className="text-xl font-bold text-center">Select Exam</h2>
- <div className="flex flex-col gap-3">
-<div className="relative">
- <CiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
- <input
-className="border border-[#282828] rounded-full w-full p-2 pl-10"
-type="search"
-placeholder="Search"
-value={searchTerm}
-onChange={(e) => setSearchTerm(e.target.value)}
- />
-</div>
-<div
- className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
- onClick={() => openModal('Class 1 to Class 12')}>
- <div className="flex items-center gap-4">
-<Image src={icon1} alt="Class Icon" width={30} height={30} />
-<span>Class 1 to Class 12</span>
- </div>
- <FiChevronRight />
-</div>
-<div
- className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
- onClick={() => openModal('Entrance Exam')}
->
- <div className="flex items-center gap-4">
-<Image src={icon2} alt="Entrance Exam" width={30} height={30} />
-<span>Entrance Exam</span>
- </div>
- <FiChevronRight />
-</div>
- </div>
- </section>
- <section>
- <h2 className="text-lg font-bold text-center mb-4">Popular Exam</h2>
- <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-{filteredExams.map((exam, idx) => (
- <button
-key={idx}
-className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
-onClick={() => openModal(exam.name)}
- >
-<div className="flex items-center gap-2">
- <Image src={exam.icon} alt={exam.name} width={24} height={24} />
- <span>{exam.name}</span>
- </div>
- </button>
-))}
- </div>
- </section>
- <section className="text-center">
- <button
-className="w-full px-6 py-3 bg-[#282828] text-white rounded-md text-sm font-bold hover:bg-gray-900 transition"
-onClick={() => openModal('Others')}
- >
-Others
-<div className="text-xs font-normal mt-1 text-purple-100">
- Graduation, Coding, Language, Startup etc.
-</div>
- </button>
- </section>
-  </div>
- );
+  if (isModalOpen) {
+    return (
+      <ExamConfirmationModal
+        examName={selectedExam}
+        onClose={() => setIsModalOpen(false)}
+        onProceed={handleProceed}
+      />
+    );
+  }
+
+  return (
+    <motion.div
+      className="space-y-10"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
+      {/* Select Exam Section */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-bold text-center">Select Exam</h2>
+        <div className="flex flex-col gap-3">
+          <div className="relative">
+            <CiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+            <input
+              className="border border-[#282828] rounded-full w-full p-2 pl-10"
+              type="search"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div
+            className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
+            onClick={() => openModal('Class 1 to Class 12')}
+          >
+            <div className="flex items-center gap-4">
+              <Image src={icon1} alt="Class Icon" width={30} height={30} />
+              <span>Class 1 to Class 12</span>
+            </div>
+            <FiChevronRight />
+          </div>
+
+          <div
+            className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
+            onClick={() => openModal('Entrance Exam')}
+          >
+            <div className="flex items-center gap-4">
+              <Image src={icon2} alt="Entrance Exam" width={30} height={30} />
+              <span>Entrance Exam</span>
+            </div>
+            <FiChevronRight />
+          </div>
+        </div>
+      </section>
+
+      {/* Popular Exam Section */}
+      <section>
+        <h2 className="text-lg font-bold text-center mb-4">Popular Exam</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {filteredExams.map((exam, idx) => (
+            <button
+              key={idx}
+              className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
+              onClick={() => openModal(exam.name)}
+            >
+              <div className="flex items-center gap-2">
+                <Image src={exam.icon} alt={exam.name} width={24} height={24} />
+                <span>{exam.name}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Others Section */}
+      <section className="text-center">
+        <button
+          className="w-full px-6 py-3 bg-[#282828] text-white rounded-md text-sm font-bold hover:bg-gray-900 transition"
+          onClick={() => openModal('Others')}
+        >
+          Others
+          <div className="text-xs font-normal mt-1 text-purple-100">
+            Graduation, Coding, Language, Startup etc.
+          </div>
+        </button>
+      </section>
+    </motion.div>
+  );
 };
 
 export default ExamPopup;

@@ -1,8 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { FaPhone, FaEnvelope, FaComments } from 'react-icons/fa';
-import { FaCheck } from 'react-icons/fa';
+import { FaPhone, FaEnvelope, FaComments, FaCheck } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 import icon1 from '../../../../../public/Payment/icon1.png';
 import icon2 from '../../../../../public/Payment/icon2.png';
 
@@ -11,14 +11,36 @@ function PaymentMethod() {
 
   const isSelected = (method) => selectedMethod === method;
 
-  return (
-    <section className="min-h-screen flex flex-col items-center bg-white py-10 px-4">
-      <h1 className="text-xl sm:text-2xl md:text-3xl mb-10 anton text-center">
-        Choose a payment method
-      </h1>
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
 
-      <div className="bg-white shadow-md rounded-xl p-4 sm:p-6 w-full max-w-md">
-        <div
+  return (
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-screen flex flex-col items-center bg-white py-10 px-4"
+    >
+      <motion.h1
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        className="text-xl sm:text-2xl md:text-3xl mb-10 anton text-center"
+      >
+        Choose a payment method
+      </motion.h1>
+
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        className="bg-white shadow-md rounded-xl p-4 sm:p-6 w-full max-w-md"
+      >
+        {/** 1Link Option */}
+        <motion.div
+          whileHover={{ scale: 1.02, boxShadow: '0px 4px 15px rgba(0,0,0,0.1)' }}
           className={`flex flex-col sm:flex-row sm:items-center justify-between border rounded-lg px-4 py-3 mb-4 ${
             isSelected('1link') ? 'border-[#7c287d] bg-[#fdf8fd]' : 'border-gray-300'
           } cursor-pointer`}
@@ -38,9 +60,11 @@ function PaymentMethod() {
             </div>
           </div>
           <Image src={icon1} alt="1Link Icon" className="w-8 h-8 object-contain self-end sm:self-auto" />
-        </div>
+        </motion.div>
 
-        <div
+        {/** Payfast Option */}
+        <motion.div
+          whileHover={{ scale: 1.02, boxShadow: '0px 4px 15px rgba(0,0,0,0.1)' }}
           className={`flex flex-col sm:flex-row sm:items-center justify-between border rounded-lg px-4 py-3 mb-4 ${
             isSelected('payfast') ? 'border-[#7c287d] bg-[#fdf8fd]' : 'border-gray-300'
           } cursor-pointer`}
@@ -60,7 +84,7 @@ function PaymentMethod() {
             </div>
           </div>
           <Image src={icon2} alt="Payfast Icon" className="w-8 h-8 object-contain self-end sm:self-auto" />
-        </div>
+        </motion.div>
 
         <div className="text-sm text-gray-700 py-6">
           <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-center mb-2">
@@ -77,12 +101,23 @@ function PaymentMethod() {
           </div>
         </div>
 
-        <button className="mt-6 w-full bg-[#7c287d] text-white py-2 rounded-full font-semibold">
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="mt-6 w-full bg-[#7c287d] text-white py-2 rounded-full font-semibold"
+        >
           Next
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
-      <div className="py-10 w-full lg:w-[80%] px-2 sm:px-6">
+      {/** Info Section */}
+      <motion.div
+        variants={fadeInUp}
+        initial="hidden"
+        animate="visible"
+        transition={{ delay: 0.3 }}
+        className="py-10 w-full lg:w-[80%] px-2 sm:px-6"
+      >
         <h1 className="text-[#7c287d] anton text-xl sm:text-2xl md:text-3xl py-4">Learn About Payfast payment</h1>
         <p className="text-sm py-2">
           Ab apna pasandida course ghar baithay asani se khareedain! PayFast ke zariye online payment karke aap hamaray aEcademy ka koi bhi course foran access kar saktay hain. Safe, secure aur tez tareen tareeqa sirf kuch clicks main taaleem ka safar shuru karein!
@@ -103,13 +138,10 @@ function PaymentMethod() {
         <p className="text-gray-600 text-xs py-6">Secure, Reliable aur Fast PayFast ke zariye!</p>
 
         <h2 className="text-xl sm:text-2xl md:text-3xl text-[#7d287e] anton mb-4">Coming Soon 1Link 1Bill</h2>
-
         <p className="mb-4 text-sm">
           Hamari website par 1LINK / 1BILL payment option bohat jald available hone wala hai jiske zariye aap directly apni bank app, JazzCash, ya EasyPaisa se aasani se payment kar saktay honge.
         </p>
-
         <p className="mb-4 text-sm">🔜 Kuch hi dinon mein yeh feature live ho jayega.</p>
-
         <p className="mb-4 text-sm">🕐 Tab tak aap PayFast, JazzCash, EasyPaisa ya Manual Payment options ka use kar ke apna course khareed saktay hain.</p>
 
         <ol className="list-decimal pl-6 mb-6 space-y-2 text-sm">
@@ -123,7 +155,6 @@ function PaymentMethod() {
         </ol>
 
         <h3 className="text-lg font-semibold mb-2">Note:</h3>
-
         <ul className="space-y-2 mb-4 text-sm">
           <li className="flex items-start gap-2">
             <span>✅ Yeh tareeqa safe, fast aur Pakistan ke taqreeban har bank app ya wallet mein available hai.</span>
@@ -147,8 +178,8 @@ function PaymentMethod() {
             <span>Live Chat Support bhi available hai!</span>
           </li>
         </ul>
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   );
 }
 

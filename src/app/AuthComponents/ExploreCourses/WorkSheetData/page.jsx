@@ -1,5 +1,6 @@
 'use client'
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import UpNext from '../UpNext';
 import SideShow from '../SideShow';
 
@@ -104,6 +105,7 @@ const worksheetData = [
     correctAnswer: 'Novelty',
   },
 ];
+
 const WorkSheetData = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
 
@@ -113,14 +115,29 @@ const WorkSheetData = () => {
    
   const [openIndex, setOpenIndex] = useState(null)
 
-
   return (
-    <section className="lg:px-6 py-4 grid lg:grid-cols-[70%_30%]">
-      <div className="lg:px-6 px-2">
+    <motion.section 
+      className="lg:px-6 py-4 grid lg:grid-cols-[70%_30%]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div 
+        className="lg:px-6 px-2"
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
         <h1 className="font-bold text-[22px] mb-4">Worksheet: Noun & it's classification</h1>
         <div className="flex flex-col gap-6 py-10">
-          {worksheetData.map((item) => (
-            <div key={item.id} className="flex flex-col gap-8">
+          {worksheetData.map((item, index) => (
+            <motion.div 
+              key={item.id} 
+              className="flex flex-col gap-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.4 }}
+            >
               <h2 className="font-semibold">Q{item.id}: {item.question}</h2>
 
               {item.options && (
@@ -130,10 +147,12 @@ const WorkSheetData = () => {
                     const isCorrect = option === item.correctAnswer;
 
                     return (
-                      <div
+                      <motion.div
                         key={idx}
                         onClick={() => handleSelect(item.id, option)}
                         className="flex items-center gap-3 cursor-pointer"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
                         <div
                           className="w-5 h-5 border border-gray-400 rounded-sm flex items-center justify-center text-white text-[12px]"
@@ -156,7 +175,7 @@ const WorkSheetData = () => {
                         >
                           {option}
                         </p>
-                      </div>
+                      </motion.div>
                     );
                   })}
                   {item.information && (
@@ -176,7 +195,13 @@ const WorkSheetData = () => {
                   {item.problem.map((subItem, idx) => {
                     const key = `q${item.id}_${idx}`;
                     return (
-                      <div key={idx} className="flex flex-col gap-2">
+                      <motion.div 
+                        key={idx} 
+                        className="flex flex-col gap-2"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: idx * 0.05 }}
+                      >
                         <p className="font-medium">{idx + 1}. {subItem.statment}</p>
                         <div className="flex flex-col gap-4 flex-wrap">
                           {subItem.answers.map((answer, aIdx) => {
@@ -184,10 +209,12 @@ const WorkSheetData = () => {
                             const isCorrect = answer === subItem.correctAnswer;
 
                             return (
-                              <div
+                              <motion.div
                                 key={aIdx}
                                 onClick={() => handleSelect(key, answer)}
                                 className="flex items-center gap-2 cursor-pointer"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                               >
                                 <div
                                   className="w-4 h-4 rounded-full border border-gray-400"
@@ -211,7 +238,7 @@ const WorkSheetData = () => {
                                 >
                                   {answer}
                                 </p>
-                              </div>
+                              </motion.div>
                             );
                           })}
                         </div>
@@ -224,26 +251,42 @@ const WorkSheetData = () => {
                             means your answer is incorrect
                           </p>
                         )}
-                      </div>
+                      </motion.div>
                     );
                   })}
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
-        <div className='flex flex-col'>
+        <motion.div 
+          className='flex flex-col'
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
             <p className='italic text-gray-600'>ECADEMY DOT is your go-to online learning platform designed to help you learn something valuable every day. Whether you're a student, a professional, or just curious.</p>
             <p className='italic text-gray-600'> With flexible and affordable subscription plans, you get unlimited access to all learning materials anytime, anywhere. Start learning with ECADEMY DOT and turn your goals into achievements!</p>
-            <button className='bg-[#282828] shadow-md px-6 py-2 text-white rounded-md my-4 m-auto cursor-pointer'>View Plan</button>
-        </div>
+            <motion.button 
+              className='bg-[#282828] shadow-md px-6 py-2 text-white rounded-md my-4 m-auto cursor-pointer'
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              View Plan
+            </motion.button>
+        </motion.div>
         
         <UpNext />
-      </div>
-      <SideShow />
-    </section>
+      </motion.div>
+      <motion.div 
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <SideShow />
+      </motion.div>
+    </motion.section>
   );
 };
 
 export default WorkSheetData;
-

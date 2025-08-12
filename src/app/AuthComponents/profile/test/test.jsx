@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 import Img1 from '../../../../../public/profile/1.png';
 import Img2 from '../../../../../public/profile/2.png';
@@ -14,6 +15,27 @@ import Img9 from '../../../../../public/profile/9.png';
 import Img10 from '../../../../../public/profile/10.png';
 import SVG from '../../../../../public/profile/ffffff.svg';
 import { PiCheckFat, PiClock, PiMedal } from 'react-icons/pi';
+
+// Parent container animation
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+// Each card/item animation
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 80, damping: 15 },
+  },
+};
 
 const UnattemptedTestStats = () => {
   const [activeTab, setActiveTab] = useState('your analysis');
@@ -83,9 +105,17 @@ const UnattemptedTestStats = () => {
   ];
 
   return (
-    <div className="px-4 py-8 font-inter max-w-7xl mx-auto">
-   
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+    <motion.div
+      className="px-4 py-8 font-inter max-w-7xl mx-auto"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      {/* Profile Header */}
+      <motion.div
+        className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
+        variants={itemVariants}
+      >
         <div className="flex items-center mb-4 sm:mb-0">
           <Image
             src={SVG}
@@ -102,20 +132,20 @@ const UnattemptedTestStats = () => {
         <button className="px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
           Edit Profile
         </button>
-      </div>
-
-
-  
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-       
         <div className="lg:col-span-2 space-y-8">
-        
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Two NEET Cards */}
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 gap-5"
+            variants={containerVariants}
+          >
             {[1, 2].map((_, index) => (
-              <div
+              <motion.div
                 key={index}
                 className="bg-white rounded-lg p-6 grid gap-5 justify-between"
+                variants={itemVariants}
               >
                 <div className="flex items-center">
                   <Image
@@ -137,16 +167,23 @@ const UnattemptedTestStats = () => {
                     View Plan
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-      
-          <div className="bg-white rounded-lg p-4">
+          {/* Test Stats */}
+          <motion.div className="bg-white rounded-lg p-4" variants={itemVariants}>
             <h2 className="text-2xl font-bold mb-6">Test Stats</h2>
-            <ul className="grid grid-cols-1 gap-6 text-sm text-gray-800">
+            <motion.ul
+              className="grid grid-cols-1 gap-6 text-sm text-gray-800"
+              variants={containerVariants}
+            >
               {testStats.map((item, index) => (
-                <li key={index} className="flex items-start gap-4">
+                <motion.li
+                  key={index}
+                  className="flex items-start gap-4"
+                  variants={itemVariants}
+                >
                   <Image
                     src={item.icon}
                     alt={item.title}
@@ -161,17 +198,24 @@ const UnattemptedTestStats = () => {
                     </div>
                     <p className="text-gray-500">{item.description}</p>
                   </div>
-                </li>
+                </motion.li>
               ))}
-            </ul>
-          </div>
+            </motion.ul>
+          </motion.div>
 
-
-          <div className="bg-white rounded-lg p-6">
+          {/* Docs and Videos */}
+          <motion.div className="bg-white rounded-lg p-6" variants={itemVariants}>
             <h2 className="text-2xl font-bold mb-6">Docs and Videos</h2>
-            <ul className="grid grid-cols-1 gap-6 text-sm text-gray-800">
+            <motion.ul
+              className="grid grid-cols-1 gap-6 text-sm text-gray-800"
+              variants={containerVariants}
+            >
               {docStats.map((item, index) => (
-                <li key={index} className="flex items-start gap-4">
+                <motion.li
+                  key={index}
+                  className="flex items-start gap-4"
+                  variants={itemVariants}
+                >
                   <Image
                     src={item.icon}
                     alt={item.title}
@@ -185,53 +229,71 @@ const UnattemptedTestStats = () => {
                       <p className="text-md">{item.value}</p>
                     </div>
                   </div>
-                </li>
+                </motion.li>
               ))}
-            </ul>
-          </div>
+            </motion.ul>
+          </motion.div>
 
- 
-          <div className="space-y-4">
-            <div className="bg-blue-100 border-l-4 border-blue-500 p-4 rounded-lg">
+          {/* Good & Improve Sections */}
+          <motion.div className="space-y-4" variants={containerVariants}>
+            <motion.div
+              className="bg-blue-100 border-l-4 border-blue-500 p-4 rounded-lg"
+              variants={itemVariants}
+            >
               <h3 className="text-blue-800 font-semibold mb-1">The Good</h3>
               <ul className="text-blue-700 text-sm list-disc list-inside">
                 <li>You’re a quicker thinker and you’re only taking 2s per question</li>
               </ul>
-            </div>
+            </motion.div>
 
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-lg">
+            <motion.div
+              className="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-lg"
+              variants={itemVariants}
+            >
               <h3 className="text-yellow-800 font-semibold mb-1">To Improve</h3>
               <ul className="text-yellow-700 text-sm list-disc list-inside space-y-1">
                 <li>You need to attempt 10 tests to help us understand you better</li>
                 <li>You scored only 40% which is 58.3% less than the average</li>
                 <li>You have attempted only 33% questions which is 36.33% less than the average</li>
               </ul>
-            </div>
-          </div>
-          </div>
-    </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
 
-                      <div className="grid grid-cols-1 items-center sm:grid-cols-3 gap-4 mt-10 w-[70%]">
-                  <div className="bg-white rounded-lg  py-4 px-6 flex flex-col items-center">
-                    <PiClock size={28} className="text-purple-600 mb-2" />
-                   
-                    <p className="text-gray-500 text-sm">Learning minute</p>
-                     <span className="text-lg font-bold text-gray-800">44</span>
-                  </div>
-                  <div className="bg-white rounded-lg  py-4 px-6 flex flex-col items-center">
-                    <PiMedal size={28} className="text-yellow-500 mb-2" />
-                   
-                    <p className="text-gray-500 text-sm">Learning Level</p>
-                     <span className="text-lg font-bold text-gray-800">5</span>
-                  </div>
-                  <div className="bg-white rounded-lg  py-4 px-6 flex flex-col items-center">
-                    <PiCheckFat size={28} className="text-green-600 mb-2" />
-                    
-                    <p className="text-gray-500 text-sm">Correct Answer</p>
-                    <span className="text-lg font-bold text-gray-800">6</span>
-                  </div>
-                </div>
-    </div>
+      {/* Bottom Stats */}
+      <motion.div
+        className="grid grid-cols-1 items-center sm:grid-cols-3 gap-4 mt-10 w-[70%]"
+        variants={containerVariants}
+      >
+        <motion.div
+          className="bg-white rounded-lg py-4 px-6 flex flex-col items-center"
+          variants={itemVariants}
+        >
+          <PiClock size={28} className="text-purple-600 mb-2" />
+          <p className="text-gray-500 text-sm">Learning minute</p>
+          <span className="text-lg font-bold text-gray-800">44</span>
+        </motion.div>
+
+        <motion.div
+          className="bg-white rounded-lg py-4 px-6 flex flex-col items-center"
+          variants={itemVariants}
+        >
+          <PiMedal size={28} className="text-yellow-500 mb-2" />
+          <p className="text-gray-500 text-sm">Learning Level</p>
+          <span className="text-lg font-bold text-gray-800">5</span>
+        </motion.div>
+
+        <motion.div
+          className="bg-white rounded-lg py-4 px-6 flex flex-col items-center"
+          variants={itemVariants}
+        >
+          <PiCheckFat size={28} className="text-green-600 mb-2" />
+          <p className="text-gray-500 text-sm">Correct Answer</p>
+          <span className="text-lg font-bold text-gray-800">6</span>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

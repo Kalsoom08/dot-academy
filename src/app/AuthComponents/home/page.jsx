@@ -15,6 +15,7 @@ import DashboardFooter from '../../AuthComponents/home/footer';
 
 import Modal from './modal';
 import ExamPopup from './examPopup';
+import { motion } from 'framer-motion';
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,15 +40,62 @@ export default function Home() {
         <div className="flex-1 flex flex-col overflow-y-auto">
           <Header onMenuClick={() => setSidebarOpen(true)} />
           <main className="flex-1">
-            <div className="flex justify-center py-12 px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center py-12 px-6"
+            >
               <Image src={Banner} alt="banner" />
-            </div>
-            <CourseCard />
-            <TopContent />
-            <StudyPkg />
-            <DoubtsCard />
-            <Options />
-            <DashboardFooter />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <CourseCard />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <TopContent />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <StudyPkg />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <DoubtsCard />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <Options />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <DashboardFooter />
+            </motion.div>
           </main>
         </div>
       </div>

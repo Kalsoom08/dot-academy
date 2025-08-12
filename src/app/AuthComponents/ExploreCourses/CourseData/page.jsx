@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import noun from '../../../../../public/Courses/noun.png';
 import CommonProper from '../../../../../public/Courses/CommonProper.png';
@@ -129,8 +130,18 @@ const CourseData = () => {
   };
 
   return (
-    <section className='lg:px-6 py-4 grid lg:grid-cols-[70%_30%]'>
-      <div className="mx-auto px-6 py-8">
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className='lg:px-6 py-4 grid lg:grid-cols-[70%_30%]'
+    >
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="mx-auto px-6 py-8"
+      >
         <h1 className="text-2xl font-bold mb-2">
           Noun & its classifications (part-1) - English Grammar
         </h1>
@@ -149,29 +160,48 @@ const CourseData = () => {
                   <FiChevronDown className="text-xl text-gray-500" />
                 )}
               </div>
-              {activeIndex === index && (
-                <div className="px-4 pb-4 text-sm text-gray-600">
-                  {item.description}
-                </div>
-              )}
+              <AnimatePresence>
+                {activeIndex === index && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="px-4 pb-4 text-sm text-gray-600"
+                  >
+                    {item.description}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ))}
         </div>
         <div className="px-6 py-10 space-y-10">
           {displayedContent.map((section, index) => (
-            <div key={index}>
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.2 }}
+            >
               <h1 className="text-[30px] font-bold py-4">
                 {section.content.heading}
               </h1>
               <p className="text-[17px] mb-6">{section.content.body}</p>
               {section.content.image && (
-                <Image
-                  src={section.content.image}
-                  alt={section.title}
-                  width={600}
-                  height={400}
-                  className="py-8"
-                />
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <Image
+                    src={section.content.image}
+                    alt={section.title}
+                    width={600}
+                    height={400}
+                    className="py-8"
+                  />
+                </motion.div>
               )}
               {section.content.examples && (
                 <>
@@ -190,10 +220,15 @@ const CourseData = () => {
                   </ul>
                 </>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
-        <div className="flex flex-col min-h-screen px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col min-h-screen px-4"
+        >
           <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
             <p className="mb-4 font-semibold">
               Try Yourself:
@@ -203,37 +238,46 @@ const CourseData = () => {
             <div className="flex flex-col gap-3">
              {question.options.map((option, index) => (
               <div key={index} className="flex flex-col gap-2">
-                <button
-                onClick={() => handleOptionClick(index)}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-md text-left text-sm
-                ${selectedOption === index ? 'bg-gray-200 text-white' : 'bg-white text-black border-gray-300'}
-                ${showSolution && option.isCorrect ? 'border-green-600 bg-green-100' : ''} 
-                ${showSolution && selectedOption === index && !option.isCorrect ? 'bg-red-100 border-red-600' : ''}
-                `}
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleOptionClick(index)}
+                  className={`flex items-center gap-2 px-4 py-2 border rounded-md text-left text-sm
+                  ${selectedOption === index ? 'bg-gray-200 text-white' : 'bg-white text-black border-gray-300'}
+                  ${showSolution && option.isCorrect ? 'border-green-600 bg-green-100' : ''} 
+                  ${showSolution && selectedOption === index && !option.isCorrect ? 'bg-red-100 border-red-600' : ''}`}
                 >
                   <span className="font-bold">{option.label}.</span> {option.text}
-                </button>
+                </motion.button>
 
-                {showSolution && option.isCorrect && (
-                  <div className='bg-[#D4EDDA] border border-green-600 px-2 py-2 rounded-md'>
-                  <h1 className='text-green-600 text-[14px] font-semibold'>Explaination</h1>
-                  <p className="text-green-600 text-xs mt-2">
-                   A common noun refers to a general name of a person, place, or thing, not specific. "Girl" is a singular noun because it refers to one p border border-green-600 px-2 py-2erson and is a common noun because it's not the name of a specific individual.
-                  </p>
-                  <p className='text-green-600 text-xs mt-2 font-semibold'>Correct answer</p>
-                </div>
-      
-            )}
-          </div>
-        ))}
+                <AnimatePresence>
+                  {showSolution && option.isCorrect && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.3 }}
+                      className='bg-[#D4EDDA] border border-green-600 px-2 py-2 rounded-md'
+                    >
+                      <h1 className='text-green-600 text-[14px] font-semibold'>Explaination</h1>
+                      <p className="text-green-600 text-xs mt-2">
+                        A common noun refers to a general name of a person, place, or thing, not specific. "Girl" is a singular noun because it refers to one person and is a common noun because it's not the name of a specific individual.
+                      </p>
+                      <p className='text-green-600 text-xs mt-2 font-semibold'>Correct answer</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => setShowSolution(true)}
               className="mt-6 w-full bg-[#222] text-white py-2 rounded-md hover:bg-[#111] transition duration-200"
             >
               View Solution
-            </button>
+            </motion.button>
           </div>
 
           <div className="mt-10 text-center text-sm italic text-gray-600 max-w-sm">
@@ -241,14 +285,18 @@ const CourseData = () => {
             <span className="not-italic font-medium text-black">Ecademy</span> will help you to get high score in your exam
           </div>
 
-          <button className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-[#111] transition duration-200 w-[40%] mx-6">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.96 }}
+            className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-[#111] transition duration-200 w-[40%] mx-6"
+          >
             View plan
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
         <UpNext />
-      </div>
+      </motion.div>
       <SideShow />
-    </section>
+    </motion.section>
   );
 };
 

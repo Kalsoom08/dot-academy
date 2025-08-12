@@ -1,6 +1,26 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 100, damping: 15 },
+  },
+};
 
 const EditProfilePage = () => {
   const router = useRouter();
@@ -33,7 +53,6 @@ const EditProfilePage = () => {
       number,
     };
 
-  
     localStorage.setItem('userProfile', JSON.stringify(updatedProfileData));
 
     alert('Profile updated successfully!');
@@ -41,20 +60,36 @@ const EditProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8 font-inter">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Edit your profile</h1>
+    <motion.div
+      className="min-h-screen p-4 sm:p-6 lg:p-8 font-inter"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.h1
+        className="text-3xl font-bold text-gray-800 mb-8"
+        variants={itemVariants}
+      >
+        Edit your profile
+      </motion.h1>
 
-      <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-        <div className="flex items-center mb-8">
+      <motion.div
+        className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto"
+        variants={containerVariants}
+      >
+        <motion.div className="flex items-center mb-8" variants={itemVariants}>
           <img
             src="https://placehold.co/100x100/a78bfa/ffffff?text=HA"
             alt="User Profile"
             className="w-24 h-24 rounded-full mr-6 shadow-md"
           />
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
+          variants={containerVariants}
+        >
+          <motion.div variants={itemVariants}>
             <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">Name</label>
             <input
               type="text"
@@ -63,8 +98,9 @@ const EditProfilePage = () => {
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
-          </div>
-          <div>
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
             <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">&nbsp;</label>
             <input
               type="text"
@@ -73,17 +109,17 @@ const EditProfilePage = () => {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div variants={itemVariants}>
             <label htmlFor="accountType" className="block text-sm font-medium text-gray-700">Account Type</label>
             <div className="mt-1 flex items-center justify-between border-b border-gray-300 pb-2">
               <span className="text-gray-800">{accountType}</span>
               <button className="text-purple-600 text-sm font-medium">Upgrade</button>
             </div>
-          </div>
+          </motion.div>
 
-          <div>
+          <motion.div variants={itemVariants}>
             <label htmlFor="designation" className="block text-sm font-medium text-gray-700">Designation</label>
             <input
               type="text"
@@ -92,11 +128,10 @@ const EditProfilePage = () => {
               value={designation}
               onChange={(e) => setDesignation(e.target.value)}
             />
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-      
-        <div className="mb-6 relative">
+        <motion.div className="mb-6 relative" variants={itemVariants}>
           <label htmlFor="province" className="block text-sm font-medium text-gray-700 mb-1">Province</label>
           <div onClick={() => setShowProvinceDropdown(!showProvinceDropdown)} className="cursor-pointer">
             <div className="w-full px-3 py-2 border rounded-md shadow-sm flex justify-between items-center">
@@ -116,10 +151,9 @@ const EditProfilePage = () => {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
 
-   
-        <div className="mb-6 relative">
+        <motion.div className="mb-6 relative" variants={itemVariants}>
           <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
           <div onClick={() => setShowGenderDropdown(!showGenderDropdown)} className="cursor-pointer">
             <div className="w-full px-3 py-2 border rounded-md shadow-sm flex justify-between items-center">
@@ -139,10 +173,9 @@ const EditProfilePage = () => {
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
 
- 
-        <div className="mb-6">
+        <motion.div className="mb-6" variants={itemVariants}>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
           <input
             type="email"
@@ -151,10 +184,9 @@ const EditProfilePage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-        </div>
+        </motion.div>
 
-        {/* Number */}
-        <div className="mb-6">
+        <motion.div className="mb-6" variants={itemVariants}>
           <label htmlFor="number" className="block text-sm font-medium text-gray-700">Number</label>
           <input
             type="tel"
@@ -163,28 +195,26 @@ const EditProfilePage = () => {
             value={number}
             onChange={(e) => setNumber(e.target.value)}
           />
-        </div>
+        </motion.div>
 
-  
-        <div className="mb-8">
+        <motion.div className="mb-8" variants={itemVariants}>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
           <div className="mt-1 flex items-center justify-between border-b border-gray-300 pb-2">
             <span className="text-gray-800">{password}</span>
             <button className="text-purple-600 text-sm font-medium">Change password</button>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Save Button */}
-        <div className="flex justify-center">
+        <motion.div className="flex justify-center" variants={itemVariants}>
           <button
             onClick={handleSaveChanges}
             className="px-8 py-3 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition-colors"
           >
             Save Changes
           </button>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

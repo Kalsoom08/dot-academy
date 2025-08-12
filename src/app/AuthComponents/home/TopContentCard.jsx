@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Pic from '../../../../public/dashboard/write.png';
+import { motion } from 'framer-motion';
 
 const TopContentCard = () => {
   const cardData = [
@@ -28,12 +29,24 @@ const TopContentCard = () => {
   ];
 
   return (
-    <div className="bg-white rounded-xl  shadow-sm p-6">
+    <motion.div
+      className="bg-white rounded-xl shadow-sm p-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       <h1 className="text-lg font-semibold mb-4">Top Content This Week</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {cardData.map((card, index) => (
-          <div key={index} className="flex gap-4 border rounded-lg p-3 hover:shadow-md transition border-gray-300">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+            whileHover={{ scale: 1.03 }}
+            className="flex gap-4 border rounded-lg p-3 hover:shadow-md transition border-gray-300"
+          >
             <Image
               src={card.image}
               alt={card.title}
@@ -43,10 +56,10 @@ const TopContentCard = () => {
               <p className="text-sm font-medium">{card.title}</p>
               <p className="text-xs text-gray-500">{card.views}</p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
