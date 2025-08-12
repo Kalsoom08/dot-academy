@@ -4,8 +4,10 @@ import React from 'react';
 import Pic from '../../../public/Posts/post.png';
 import PostCard from './PostCard';
 import { motion } from 'framer-motion';
+import {useRouter} from 'next/navigation'
 
 function App() {
+  const router = useRouter();
   const posts = Array.from({ length: 12 }).map((_, index) => ({
     id: index,
     date: '21 Jun 2025',
@@ -66,6 +68,7 @@ function App() {
         <h2 className="text-2xl text-[#282828] anton mb-6">Recent posts</h2>
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          onClick={() => router.push('/blog/BlogDetail')}
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
