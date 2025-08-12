@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -7,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 export default function BlogPage() {
   const router = useRouter();
+
 
   const posts = Array.from({ length: 12 }).map((_, index) => ({
     id: index + 1,
@@ -48,7 +50,7 @@ export default function BlogPage() {
 
       <section className="mt-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         <h2 className="text-2xl text-[#282828] anton mb-6">Recent posts</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" >
           {posts.map((post) => (
             <PostCard
               key={post.id}
@@ -62,3 +64,6 @@ export default function BlogPage() {
     </div>
   );
 }
+
+export default App;
+
