@@ -6,6 +6,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import { FaCheckCircle } from "react-icons/fa";
 import { CiLock } from 'react-icons/ci';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion'; // Import Framer Motion
 
 import course from '../../../../../public/Courses/4.png';
 import course2 from '../../../../../public/Courses/5.png';
@@ -27,13 +28,10 @@ const courseSections = [
       { id: 'noun-part-1', image: course, title: "Noun & its Classifications (Part-1) - English Grammar", weight: 'Docs | 5 Pages', type: 'doc' },
       { id: 'noun-part-1-video', image: course, title: "Noun & its Classifications (Part-1) - English Grammar - video", weight: 'Docs | 5 Pages', type: 'video' },
       { id: 'noun-part-2', image: course, title: "Noun & its Classifications (Part-2) - English Grammar", weight: 'Docs | 3 Pages', type: 'doc' },
-      { id: 'noun-worksheet', image: cour1, title: "Worksheet: Noun & its classifications", weight: 'Docs | 2 Pages', type: 'doc' },
-      { id: 'noun-worksheet-solution', image: cour2, title: "Worksheets solution: Noun & its classifications", weight: 'Docs | 5 Pages', type: 'doc' },
-      { id: 'noun-flashcards', image: course, title: "Flashcards: Type of Noun", weight: 'Flashcards | 16 Cards', icon: <CiLock size={20} />, unlock: "Unlock", type: 'flashcard' },
-      { id: 'noun-ppt', image: course, title: "PPT: Noun", weight: 'Docs | 16 Pages', type: 'doc' },
-      { id: 'noun-learning-poster', image: course, title: "Learning Poster: Type of Noun", weight: 'Docs | 1 Page', type: 'doc' },
+      { id: 'noun-worksheet', image: cour1, title: "Worksheet: Noun & its classifications", weight: 'Docs | 2 Pages', type: 'workSheet' },
+      { id: 'noun-worksheet-solution', image: cour2, title: "Worksheets solution: Noun & its classifications", weight: 'Docs | 5 Pages', type: 'workSheet' },
       { id: 'noun-test', image: course, title: "Test: Noun", weight: 'Test | 10 ques | 15 min', icon: <CiLock size={20} />, unlock: "Unlock", type: 'test' },
-      { id: 'noun-all-about-video', image: cour3, title: "All About Noun", weight: 'Video | 16:21 min', type: 'video' },
+      { id: 'noun-all-about-video', image: cour3, title: "About this Course", weight: 'Video | 16:21 min', type: 'video' },
     ]
   },
   {
@@ -75,16 +73,16 @@ const courseSections = [
 
 const topCourses = [
   { image: topCourse2, title: "Science class 10", icon: <FiChevronRight size={22}/>},
-  { image: topCourse1, title: "Social Study (SST) Class 10", icon: <FiChevronRight size={22}/>}
+  { image: topCourse1, title: "Social Study (SST) Class 10", icon: <FiChevronRight size={22}/> }
 ];
 
 function CourseDetail() {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showTestPopup, setShowTestPopup] = useState(false);
-const [selectedTestItem, setSelectedTestItem] = useState(null);
+  const [selectedTestItem, setSelectedTestItem] = useState(null);
 
-const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
+  const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [showAnalysisPopup, setShowAnalysisPopup] = useState(true);
@@ -105,22 +103,23 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
   }, [showAnalysisPopup]);
 
   const handleItemClick = (item) => {
-  if (item.type === 'test') {
-    setSelectedTestItem(item);
-    setShowConfirmTestPopup(true);
-  } else if (item.type === 'video') {
-    router.push(`/AuthComponents/ExploreCourses/CourseVideo`);
-  } else {
-    router.push('/AuthComponents/ExploreCourses/CourseData');
-  }
+    if (item.type === 'test') {
+      setSelectedTestItem(item);
+      setShowConfirmTestPopup(true);
+    } else if (item.type === 'video') {
+      router.push(`/AuthComponents/ExploreCourses/CourseVideo`);
+    }
+    else if (item.type === 'workSheet') {
+      router.push(`/AuthComponents/ExploreCourses/WorkSheetData`)
+    } else {
+      router.push('/AuthComponents/ExploreCourses/CourseData');
+    }
   };
 
   const handleCloseConfirmPopup = () => {
-  setShowConfirmTestPopup(false);
-  setSelectedTestItem(null);
-};
-
-  
+    setShowConfirmTestPopup(false);
+    setSelectedTestItem(null);
+  };
 
   const closeAnalysisPopup = () => {
     setShowAnalysisPopup(false);
@@ -134,25 +133,28 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
   };
 
   return (
-    <section className='flex flex-col'>
-   
+    <motion.section
+      className='flex flex-col'
+      initial={{ opacity: 0 }} // Start with 0 opacity
+      animate={{ opacity: 1 }} // Fade to full opacity
+      exit={{ opacity: 0 }} // Fade out when leaving
+      transition={{ duration: 0.5 }} // Duration of the animation
+    >
       <div className='flex flex-col md:flex-row justify-start items-center md:px-6 px-2 md:gap-6 gap-4 border-b pb-8'>
         <Image src={course2} alt='Course' className='w-full max-w-[200px] h-auto' />
         <div className='text-center md:text-left'>
           <button className='bg-red-400 px-3 py-1 rounded-md text-white text-sm'>INFINITY COURSE</button>
           <h1 className='text-[22px] md:text-[30px] font-bold'>English Grammar Basic</h1>
           <p className='text-[12px] text-gray-400'>265,969 Students Learning This Week</p>
-  
-          {/* <button 
-            className='mt-4 bg-blue-900 text-white px-4 py-2 rounded-md'
-            onClick={() => setShowAnalysisPopup(true)} 
-          >
-            Open Course Analysis
-          </button> */}
         </div>
       </div>
 
-      <div className='flex flex-col lg:flex-row px-4 py-10 gap-6'>
+      <motion.div
+        className='flex flex-col lg:flex-row px-4 py-10 gap-6'
+        initial={{ opacity: 0 }} // Start with 0 opacity
+        animate={{ opacity: 1 }} // Fade in to full opacity
+        transition={{ duration: 0.5, delay: 0.3 }} // Add delay for smooth transition
+      >
         <div className='w-full lg:w-[70%] flex flex-col gap-6'>
           {courseSections.map((section, index) => (
             <div key={index} className='shadow-md shadow-gray-400 rounded-md'>
@@ -182,7 +184,6 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
                     key={item.id || i}
                     className='flex gap-4 sm:gap-6 items-start cursor-pointer hover:bg-gray-100 p-2 rounded-md'
                     onClick={() => handleItemClick(item)}
-
                   >
                     <Image src={item.image} alt={item.title} className='border w-[70px] h-[70px] object-contain' />
                     <div>
@@ -203,31 +204,38 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
             </div>
           ))}
         </div>
+      </motion.div>
 
-        <div className='w-full lg:w-[30%] flex flex-col shadow-md shadow-white px-4 py-6 gap-4 h-fit rounded-md'>
-        </div>
-      </div>
-
-    
       <div className='w-full md:w-[80%] px-4 md:px-6 py-6 flex flex-col'>
         <h1 className='py-6 text-[20px] font-semibold'>Top Courses for Class 10</h1>
         <div className='flex flex-col gap-4'>
           {
             topCourses.map((item, index) => (
-              <div key={index} className='flex gap-4 items-center border p-2 rounded-md'>
+              <motion.div
+                key={index}
+                className='flex gap-4 items-center border p-2 rounded-md'
+                initial={{ opacity: 0 }} // Start with 0 opacity
+                animate={{ opacity: 1 }} // Fade to full opacity
+                transition={{ duration: 0.3, delay: index * 0.1 }} // Add staggered delay
+              >
                 <Image src={item.image} alt={item.title} className='w-[60px] h-[60px] object-cover rounded-md' />
                 <div className='flex justify-between w-full items-center'>
                   <h1 className='text-sm sm:text-base font-medium'>{item.title}</h1>
                   <span>{item.icon}</span>
                 </div>
-              </div>
+              </motion.div>
             ))
           }
         </div>
         <button className='lg:w-[40%] px-8 mt-6 py-2 bg-[#7c287d] text-white rounded-full self-center cursor-pointer'>View all Course</button>
       </div>
 
-      <div className='w-[90%] md:w-[90%] m-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 py-10 px-4 md:px-10 shadow-md shadow-white rounded-md my-6'>
+      <motion.div
+        className='w-[90%] md:w-[90%] m-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 py-10 px-4 md:px-10 shadow-md shadow-white rounded-md my-6'
+        initial={{ opacity: 0 }} // Start with 0 opacity
+        animate={{ opacity: 1 }} // Fade to full opacity
+        transition={{ duration: 0.5, delay: 0.3 }} // Add delay for smooth transition
+      >
         <div className='flex flex-col justify-center'>
           <h1 className='text-[#7c287d] text-[24px] font-bold mb-6'>
             Unlock all course in Rs. 500/month
@@ -254,45 +262,31 @@ const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
             </p>
           </div>
         </div>
-      </div>
-      {selectedVideoItem && <CourseVideo />}
+      </motion.div>
 
-      {/* {showAnalysisPopup && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-[1px] p-4 transition-opacity duration-300 ease-in-out"
-          role="dialog"
-          aria-modal="true"
-        >
-          <CourseAnalysis itemData={selectedCourseItem} onClose={closeAnalysisPopup} />
-        </div>
-      )} */}
-      
-<ConfirmTestPopup
-  isVisible={showConfirmTestPopup}
-  onConfirm={() => {
-    setShowConfirmTestPopup(false);
+      <ConfirmTestPopup
+        isVisible={showConfirmTestPopup}
+        onConfirm={() => {
+          setShowConfirmTestPopup(false);
 
-    setShowTestPopup(true);
-  }}
-  onCancel={handleCloseConfirmPopup}
-  onClose={handleCloseConfirmPopup}
-/>
+          setShowTestPopup(true);
+        }}
+        onCancel={handleCloseConfirmPopup}
+        onClose={handleCloseConfirmPopup}
+      />
 
-{showTestPopup && (
-  <TestPopup 
-    isVisible={showTestPopup}
-    selectedTest={selectedTestItem}
-    onClose={() => setShowTestPopup(false)}
-    onStart={() => {
-      router.push(`/AuthComponents/ExploreCourses/CourseDetail/testPopup/${selectedTestItem.id}`);
-      setShowTestPopup(false);
-    }}
-  />
-)}
-
-
-
-    </section>
+      {showTestPopup && (
+        <TestPopup 
+          isVisible={showTestPopup}
+          selectedTest={selectedTestItem}
+          onClose={() => setShowTestPopup(false)}
+          onStart={() => {
+            router.push(`/AuthComponents/ExploreCourses/CourseDetail/testPopup/${selectedTestItem.id}`);
+            setShowTestPopup(false);
+          }}
+        />
+      )}
+    </motion.section>
   );
 }
 

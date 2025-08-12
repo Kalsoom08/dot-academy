@@ -1,16 +1,24 @@
 'use client';
 import React, { useState } from 'react';
 import { FaLock } from "react-icons/fa";
+import QuizCard from '@/components/Quiz/QuizQuestionCard';
 
 function TestPopup({ isVisible, onClose, onStart, selectedTest }) {
   const [selectedMode, setSelectedMode] = useState('option1'); 
+  const [showQuiz, setShowQuiz] = useState(false);
 
   if (!isVisible) return null;
 
   const handleStart = () => {
-    onStart(selectedMode);
+    setShowQuiz(true)
+   
   };
 
+
+  const handleQuizClose = () => {
+    setShowQuiz(false);
+    onClose(); 
+  };
   const options = [
     {
       id: 'option1',
@@ -102,8 +110,22 @@ function TestPopup({ isVisible, onClose, onStart, selectedTest }) {
             Start Test
           </button>
         </div>
+
       </div>
+            {showQuiz && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <QuizCard />
+          {/* <button 
+            onClick={handleQuizClose}
+            className="fixed top-4 right-4 bg-white rounded-full p-2 shadow-lg z-50"
+          >
+           Close
+          </button> */}
+        </div>
+      )}
     </div>
+
+    
   );
 }
 

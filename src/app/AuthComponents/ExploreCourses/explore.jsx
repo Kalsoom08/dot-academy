@@ -4,6 +4,7 @@ import { FiChevronRight } from "react-icons/fi";
 import { BsFillPersonFill } from "react-icons/bs";
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion'; // Import Framer Motion
 
 import ilets from '../../../../public/Explore/1.png';
 
@@ -23,8 +24,13 @@ export default function ExploreCoursesPage() {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto space-y-10">
-
+    <motion.div
+      className="p-4 max-w-4xl mx-auto space-y-10"
+      initial={{ opacity: 0 }} // Starts with 0 opacity
+      animate={{ opacity: 1 }} // Animates to full opacity
+      exit={{ opacity: 0 }} // Animates out to 0 opacity when leaving
+      transition={{ duration: 0.5 }} // Controls the speed of the fade-in and fade-out
+    >
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-center">Explore</h2>
 
@@ -69,17 +75,20 @@ export default function ExploreCoursesPage() {
         <h2 className="text-lg font-bold text-center mb-4">Popular Exam</h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
           {exams.map((exam, idx) => (
-            <button
+            <motion.button
               key={idx}
               className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
               onClick={handleRedirectToCourses}
+              initial={{ opacity: 0 }} // Starts with 0 opacity for each exam
+              animate={{ opacity: 1 }} // Fades in to full opacity
+              transition={{ duration: 0.3, delay: idx * 0.1 }} // Staggered animation for each exam
             >
               <div className="flex items-center gap-2">
                 <Image src={exam.icon} alt={exam.name} width={24} height={24} />
                 <span>{exam.name}</span>
               </div>
               <FiChevronRight />
-            </button>
+            </motion.button>
           ))}
         </div>
       </section>
@@ -88,32 +97,38 @@ export default function ExploreCoursesPage() {
         <h2 className="text-lg font-bold text-center mb-4">Trending Exam (Global)</h2>
         <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
           {exams.map((exam, idx) => (
-            <button
+            <motion.button
               key={`trend-${idx}`}
               className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
               onClick={handleRedirectToCourses}
+              initial={{ opacity: 0 }} // Starts with 0 opacity for each exam
+              animate={{ opacity: 1 }} // Fades in to full opacity
+              transition={{ duration: 0.3, delay: idx * 0.1 }} // Staggered animation for each exam
             >
               <div className="flex items-center gap-2">
                 <Image src={exam.icon} alt={exam.name} width={24} height={24} />
                 <span>{exam.name}</span>
               </div>
               <FiChevronRight />
-            </button>
+            </motion.button>
           ))}
         </div>
       </section>
 
       <section className="text-center">
-        <button
+        <motion.button
           className="w-full sm:w-full px-6 py-3 bg-[#7D287E] text-white rounded-md text-sm font-bold hover:bg-purple-800 transition"
           onClick={handleRedirectToCourses}
+          initial={{ opacity: 0 }} // Initially hidden
+          animate={{ opacity: 1 }} // Fade in
+          transition={{ duration: 0.5, delay: 0.5 }} // Delay for smooth transition
         >
           Others
           <div className="text-xs font-normal mt-1 text-purple-100">
             Graduation, Coding, Language, Startup etc.
           </div>
-        </button>
+        </motion.button>
       </section>
-    </div>
+    </motion.div>
   );
 }

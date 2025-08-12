@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'; 
 import { MdCancel } from "react-icons/md"; 
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 import icon1 from '../../../../public/Courses/icon1.png';
 import icon2 from '../../../../public/Courses/icon2.png';
@@ -42,7 +43,13 @@ function CourseAnalysis({ onClose, itemData }) {
   }, []);
 
   return (
-    <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-fadeIn">
+    <motion.div 
+      className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-fadeIn"
+      initial={{ opacity: 0, scale: 0.95 }} 
+      animate={{ opacity: 1, scale: 1 }} 
+      exit={{ opacity: 0, scale: 0.95 }} 
+      transition={{ duration: 0.5 }}
+    >
       <div className='flex justify-between items-center border-b p-4'>
         <h1 className='text-2xl font-bold'>Course Analysis</h1>
         <MdCancel
@@ -96,17 +103,24 @@ function CourseAnalysis({ onClose, itemData }) {
         <h2 className='text-lg font-semibold mb-4'>Tests and Contents Analysis</h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
           {testAndContents.map((item, index) => (
-            <div key={index} className='flex items-center gap-4'>
+            <motion.div 
+              key={index} 
+              className='flex items-center gap-4' 
+              initial={{ opacity: 0, y: 10 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              exit={{ opacity: 0, y: -10 }} 
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+            >
               <Image src={item.image} alt={item.title} className='w-10 h-10' />
               <div>
                 <p className='text-sm'>{item.title}</p>
                 <p className='font-bold text-sm'>{item.outOf}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
