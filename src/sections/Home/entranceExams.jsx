@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 const allExams = [
@@ -54,58 +54,79 @@ export default function EntranceExams() {
   };
 
   return (
-    <section className="bg-white rounded-2xl shadow-2xl py-10 px-4 sm:px-10 max-w-5xl mx-auto text-center transition-all duration-300">
+    <motion.section
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+     className="bg-white rounded-2xl shadow-2xl py-10 px-4 sm:px-10 max-w-5xl mx-auto text-center transition-all duration-300"
+
+     >
       <h2 className='anton text-2xl sm:text-3xl font-black mb-8'>
         50+ Entrance Exams
       </h2>
 
       <div className="relative flex justify-center items-center">
       
-        <button
+        <motion.button
+         whileTap={{ scale: 0.95 }}
           onClick={handlePrev}
           className="absolute left-0 sm:-left-6 p-3 bg-black hover:bg-gray-800 rounded-full"
           disabled={currentPage === 0}
         >
           <FaArrowLeft size={12} className="text-white" />
-        </button>
+        </motion.button>
 
-        <div className="w-full flex flex-col items-center gap-4 transition-all duration-300">
+          <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPage}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="w-full flex flex-col items-center gap-4"
+          >
        
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-center">
             {visibleExams.slice(0, 4).map((exam, index) => (
-              <div
+              <motion.div
                 key={index}
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
                 className="w-[120px] sm:w-[140px] border rounded-lg py-3 px-2 flex justify-center items-center gap-2 hover:shadow-sm transition"
               >
                 <Image src={exam.icon} alt={exam.name} width={32} height={32} />
                 <span className="text-sm font-medium">{exam.name}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
 
           {visibleExams.length > 4 && (
             <div className="flex justify-center gap-4">
               {visibleExams.slice(4).map((exam, index) => (
-                <div
+                <motion.div
                   key={index}
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2 }}
                   className="w-[120px] sm:w-[140px] border rounded-lg py-3 px-2 flex justify-center items-center gap-2 hover:shadow-sm transition"
                 >
                   <Image src={exam.icon} alt={exam.name} width={32} height={32} />
                   <span className="text-sm font-medium">{exam.name}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
+        </AnimatePresence>
 
 
-        <button
+        <motion.button
           onClick={handleNext}
+           whileTap={{ scale: 0.95 }}
           className="absolute right-0 sm:-right-6 p-3 bg-black hover:bg-gray-800 rounded-full"
           disabled={currentPage === pageCount - 1}
         >
           <FaArrowRight size={12} className="text-white" />
-        </button>
+        </motion.button>
       </div>
 
 
@@ -121,12 +142,14 @@ export default function EntranceExams() {
       </div>
 
 
-      <button
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.97 }}
         onClick={handleExploreAll}
         className="mt-8 px-24 py-3 bg-[#7D287E] text-white font-semibold rounded-full hover:opacity-90 transition"
       >
         Explore All Exams
-      </button>
-    </section>
+      </motion.button>
+    </motion.section>
   );
 }

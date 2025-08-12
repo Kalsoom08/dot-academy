@@ -8,9 +8,7 @@ import Icon2 from '../../public/examFeatures/2.png';
 import Icon3 from '../../public/examFeatures/3.png';
 import Icon4 from '../../public/examFeatures/4.png';
 import SVG from '../../public/examFeatures/vector.svg';
-import { Anton } from 'next/font/google';
-
-const anton = Anton({ subsets: ['latin'], weight: '400' });
+import {motion} from 'framer-motion';
 
 const features = [
   { title: 'Smart Notes', description: 'With relevant content to help you prepare for exams in the best way.', icon: Icon1 },
@@ -60,7 +58,7 @@ export default function ExamIntro() {
   return (
     <section className="py-16 px-4 text-center max-w-5xl mx-auto relative overflow-hidden">
 
-      <h1 className={`${anton.className} mb-5 text-xl sm:text-2xl md:text-4xl font-extrabold text-gray-900`}>
+      <h1 className='anton mb-5 text-xl sm:text-2xl md:text-4xl font-bold text-gray-900'>
         <span className="relative inline-block">
           <span className="relative z-10">Everything you need</span>
 
@@ -96,9 +94,10 @@ export default function ExamIntro() {
 
 
         <div className="overflow-hidden ">
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(${translateX})` }}
+          <motion.div
+          className='flex'
+            animate={{ x: `-${currentPage * 100}%` }}
+            transition={{ duration: 0.45, ease: 'easeInOut' }}
           >
             {Array.from({ length: pageCount }).map((_, pageIndex) => (
               <div
@@ -108,9 +107,12 @@ export default function ExamIntro() {
                 {features
                   .slice(pageIndex * itemsPerPage, (pageIndex + 1) * itemsPerPage)
                   .map((feature, idx) => (
-                    <div
+                    <motion.div
                       key={idx}
-                    
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: idx * 0.05 }}
+                      whileHover={{ scale: 1.03 }}
                       className="rounded-xl shadow-lg p-4 w-[85%] sm:w-[48%] lg:w-[18%] flex flex-col m-3 mt-14"
                     >
                       <div className="h-[80px] flex items-center justify-center mb-4">
@@ -124,18 +126,18 @@ export default function ExamIntro() {
                       </div>
 
                       <div className="w-full text-left">
-                        <h2 className={`${anton.className} font-semibold text-lg mb-2`}>
+                        <h2 className='anton  text-lg mb-2'>
                           {feature.title}
                         </h2>
                         <p className="text-sm text-gray-600 leading-relaxed">
                           {feature.description}
                         </p>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         <button

@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { FaPlus, FaMinus } from "react-icons/fa6";
-import { Anton } from 'next/font/google';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const anton = Anton({ subsets: ['latin'], weight: '400' });
 
 export default function FAQ() {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -35,30 +34,47 @@ export default function FAQ() {
   return (
     <div className="flex flex-col items-center px-4 sm:px-6 md:px-10 lg:px-20 py-12 w-full">
       <div className="w-full max-w-2xl">
-        <h1 className={`${anton.className} text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-800 mb-10`}>
+        <h1 className='anton text-2xl sm:text-3xl md:text-4xl  text-center text-gray-800 mb-10'>
           FAQ's
         </h1>
         <div className="space-y-4">
           {faqItems.map((item, index) => (
-            <div key={index} className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            <div key={index} className="rounded-xl overflow-hidden ">
               <button
-                className={`w-full px-4 sm:px-6 py-4 text-left flex justify-between items-center transition-colors duration-200 ${
-                  activeIndex === index ? 'bg-gray-100' : 'bg-gray-50 hover:bg-gray-100'
-                }`}
+                className={`w-full px-4 sm:px-6 py-4 text-left flex justify-between items-center transition-colors duration-200 `}
                 onClick={() => toggleFAQ(index)}
               >
                 <span className="text-base sm:text-lg font-semibold text-gray-800">{item.question}</span>
+                <motion.div
+                  key={activeIndex === index ? 'minus' : 'plus'}
+                  initial={{ rotate: 0, opacity: 0 }}
+                  animate={{ rotate: 180, opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
                 {activeIndex === index ? (
                   <FaMinus className="text-gray-500 w-5 h-5" />
                 ) : (
                   <FaPlus className="text-gray-500 w-5 h-5" />
                 )}
+                </motion.div>
               </button>
+
+              <AnimatePresence initial={false}>
               {activeIndex === index && (
-                <div className="px-4 sm:px-6 py-4 bg-white border-t border-gray-200">
+                    <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                <div className="px-4 sm:px-6 py-4 bg-white ">
                   <p className="text-sm sm:text-base text-gray-600">{item.answer}</p>
                 </div>
+                </motion.div>
               )}
+              </AnimatePresence>
             </div>
           ))}
         </div>
