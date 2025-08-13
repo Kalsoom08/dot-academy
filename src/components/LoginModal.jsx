@@ -18,9 +18,14 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
     const [phone, setPhone] = useState('');
     const [phonePassword, setPhonePassword] = useState('');
 
-    useEffect(() => {
-        setActiveModal(defaultTab || null);
-    }, [defaultTab, isOpen]);
+useEffect(() => {
+  setActiveModal(defaultTab || null);
+  setEmail('');
+  setEmailPassword('');
+  setPhone('');
+  setPhonePassword('');
+}, [defaultTab, isOpen]);
+
 
     if (!isOpen) return null;
 

@@ -11,7 +11,7 @@ import StepOtp from '../sections/SignUp/StepOtp';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function SignupModal({ isOpen, onClose, defaultTab = null }) {
+export default function SignupModal({ isOpen, onClose, defaultTab = null, onSwitchToLogin }) {
    const router = useRouter();
    const [step, setStep] = useState('start');
    const [formData, setFormData] = useState({ email: '', password: '', phone: '', otp: '' });
@@ -104,6 +104,7 @@ export default function SignupModal({ isOpen, onClose, defaultTab = null }) {
                  onGoogle={handleGoogleSignup}
                  onEmail={() => setStep('email')}
                  onPhone={() => setStep('phone')}
+                  onSwitchToLogin={onSwitchToLogin}
                />
              </motion.div>
            )}

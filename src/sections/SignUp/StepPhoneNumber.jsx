@@ -10,7 +10,8 @@ export default function StepPhoneNumber({ formData, setFormData, onSubmit }) {
           value={formData.phone}
           onChange={(e) => { const value = e.target.value;
             if (/^\d*$/.test(value) && value.length <= 13) {
-              setFormData(value);
+              setFormData({ ...formData, phone: value });
+
         }
       }}
       maxLength={13} 
