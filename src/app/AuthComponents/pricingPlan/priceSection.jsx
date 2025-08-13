@@ -26,18 +26,18 @@ const PackageCard = ({
         ${isSelected ? 'border-[#7D287E] bg-purple-50' : 'border-[#a558a671] hover:border-gray-300'}
       `}
       onClick={onSelect}
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 15 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.97 }}
     >
       {bestValue && (
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
           className="absolute -top-3 left-4 bg-yellow-400 text-[#7D287E] text-xs font-semibold px-3 py-1 rounded-full uppercase shadow"
         >
           Best Value
@@ -118,7 +118,7 @@ export default function Home() {
       className="min-h-screen flex items-center justify-center p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.6 }}
     >
       <Head>
         <title>Ecademy Infinity Package</title>
@@ -127,23 +127,23 @@ export default function Home() {
 
       <motion.main
         className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg"
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 120, damping: 12 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
       >
         <motion.h1
           className={`${anton.className} text-center text-2xl md:text-3xl font-bold text-[#7D287E] mb-2`}
-          initial={{ y: -15, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
           Ecademy Infinity Package for IELTS
         </motion.h1>
         <motion.p
           className="text-center text-gray-600 mb-8"
-          initial={{ y: -10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
           Including 20+ courses
         </motion.p>
@@ -164,9 +164,9 @@ export default function Home() {
 
         <motion.div
           className="mt-8"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
         >
           <motion.button
             whileHover={{ scale: 1.05 }}

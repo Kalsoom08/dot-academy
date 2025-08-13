@@ -42,11 +42,13 @@ const Navbar = () => {
           <Link href="/blog" className="text-gray-700 hover:text-[#7D287E] transition">Blog Post</Link>
           <Link href="/about" className="text-gray-700 hover:text-[#7D287E] transition">About Us</Link>
           <button
-            onClick={openLoginModal}
-            className="text-gray-700 border border-[#7D287E] px-4 py-2 rounded-md text-[#7D287E] hover:bg-[#7D287E] hover:text-white cursor-pointer font-medium transition"
-          >
+          onClick={openLoginModal}
+          className="text-[#7D287E] border border-[#7D287E] px-4 py-2 rounded-md font-medium 
+             hover:bg-[#7D287E] hover:text-white transform hover:scale-105 
+             transition-all duration-300 ease-in-out cursor-pointer"
+            >
             Login
-          </button>
+            </button>
           <button
             onClick={openSignupModal}
             className="bg-[#7D287E] text-white px-4 py-2 rounded-md hover:opacity-90 transition cursor-pointer"

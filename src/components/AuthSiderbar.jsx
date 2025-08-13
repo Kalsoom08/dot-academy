@@ -113,7 +113,7 @@ export default function Sidebar({ isOpen = true, onClose }) {
                     <button
                       key={item.name}
                       onClick={item.onClick}
-                      className="flex items-center gap-4 px-3 py-4 rounded-md text-gray-800 hover:text-purple-900 transition font-medium"
+                      className="flex items-center text-[14px] gap-4 px-3 py-4 rounded-md text-gray-800 hover:text-purple-900 transition font-medium"
                     >
                       {item.icon}
                       {item.name}
