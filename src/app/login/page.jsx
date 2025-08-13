@@ -1,6 +1,6 @@
-import LoginPage from './LoginPage';
+import LoginPage from "./LoginPage";
 
 export default function Page({ searchParams }) {
-  const redirectTo = searchParams?.redirect || '/';
+  const redirectTo = searchParams?.next || searchParams?.redirect || "/";
   return <LoginPage redirectTo={redirectTo} />;
 }
