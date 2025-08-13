@@ -43,13 +43,13 @@ const Navbar = () => {
           <Link href="/about" className="text-gray-700 hover:text-[#7D287E] transition">About Us</Link>
           <button
             onClick={openLoginModal}
-            className="text-gray-700 border border-[#7D287E] px-4 py-2 rounded-md hover:text-[#7D287E] font-medium transition"
+            className="text-gray-700 border border-[#7D287E] px-4 py-2 rounded-md text-[#7D287E] hover:bg-[#7D287E] hover:text-white cursor-pointer font-medium transition"
           >
             Login
           </button>
           <button
             onClick={openSignupModal}
-            className="bg-[#7D287E] text-white px-4 py-2 rounded-md hover:opacity-90 transition"
+            className="bg-[#7D287E] text-white px-4 py-2 rounded-md hover:opacity-90 transition cursor-pointer"
           >
             Sign Up
           </button>
@@ -72,8 +72,8 @@ const Navbar = () => {
           <div className="flex flex-col space-y-3">
             <Link href="/blog" className="text-gray-700 hover:text-[#7D287E] transition">Blog Post</Link>
             <Link href="/about" className="text-gray-700 hover:text-[#7D287E] transition">About Us</Link>
-            <button onClick={() => { setMobileMenuOpen(false); openLoginModal(); }} className="text-gray-700 hover:text-[#7D287E] font-medium text-left transition">Login</button>
-            <button onClick={() => { setMobileMenuOpen(false); openSignupModal(); }} className="bg-[#7D287E] text-white px-4 py-2 rounded-md hover:opacity-90 transition text-left">Sign Up</button>
+            <button onClick={() => { setMobileMenuOpen(false); openLoginModal(); }} className="text-gray-700 hover:text-white hover:bg-[#7D287E] cursor-pointer font-medium text-left transition">Login</button>
+            <button onClick={() => { setMobileMenuOpen(false); openSignupModal(); }} className="bg-[#7D287E] text-white px-4 py-2 rounded-md hover:opacity-90 transition text-left cursor-pointer">Sign Up</button>
           </div>
         </motion.div>
       )}

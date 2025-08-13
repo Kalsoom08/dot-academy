@@ -7,6 +7,7 @@ import { SupportModalProvider } from '../context/SupportModalContext';
 import SupportModal from './AuthComponents/support/supportModal';
 import ChangeExamModal from './AuthComponents/exam/changeExam';
 import {ChangeExamModalProvider} from '../context/ChangeExamModalContext';
+import AuthEntranceFooter from '@/components/AuthProfile/AuthEntranceFooter';
 
 export default function ClientWrapper({ children }) {
   const pathname = usePathname();
@@ -37,7 +38,6 @@ export default function ClientWrapper({ children }) {
         <ChangeExamModal />
       </ChangeExamModalProvider>
     </SupportModalProvider>
-     
       {!shouldHide && <Footer />}
     </>
   );
