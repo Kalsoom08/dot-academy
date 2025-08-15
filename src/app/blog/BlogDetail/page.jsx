@@ -8,14 +8,6 @@ import MCQs from "@/sections/BlogPost/mcqs";
 const page = () => {
   return (
     <div>
-
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <DropDown />
-      </motion.div>
       <motion.div
         className="grid grid-cols-[75%_25%] px-8 gap-6 justify-between"
         initial={{ opacity: 0, y: 30 }}

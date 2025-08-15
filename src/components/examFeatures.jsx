@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import Icon1 from '../../public/examFeatures/1.png';
@@ -8,7 +8,7 @@ import Icon2 from '../../public/examFeatures/2.png';
 import Icon3 from '../../public/examFeatures/3.png';
 import Icon4 from '../../public/examFeatures/4.png';
 import SVG from '../../public/examFeatures/vector.svg';
-import {motion} from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const features = [
   { title: 'Smart Notes', description: 'With relevant content to help you prepare for exams in the best way.', icon: Icon1 },
@@ -25,6 +25,9 @@ export default function ExamIntro() {
   const [itemsPerPage, setItemsPerPage] = useState(1); 
   const [currentPage, setCurrentPage] = useState(0);
 
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) { 
@@ -35,7 +38,6 @@ export default function ExamIntro() {
         setItemsPerPage(1);
       }
     };
-
 
     handleResize();
 
@@ -53,15 +55,33 @@ export default function ExamIntro() {
     if (currentPage < pageCount - 1) setCurrentPage((prev) => prev + 1);
   };
 
-  const translateX = `-${currentPage * 100}%`;
+  const onTouchStart = (e) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchMove = (e) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+
+    if (distance > 50) {
+      handleNext(); // swipe left → next
+    } else if (distance < -50) {
+      handlePrev(); // swipe right → previous
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   return (
     <section className="py-16 px-4 text-center max-w-5xl mx-auto relative overflow-hidden">
-
       <h1 className='anton mb-5 text-xl sm:text-2xl md:text-4xl font-bold text-gray-900'>
         <span className="relative inline-block">
           <span className="relative z-10">Everything you need</span>
-
           <span className="absolute top-5 md:top-10 left-0 w-full h-[0.6em] z-0">
             <Image
               src={SVG}
@@ -75,13 +95,16 @@ export default function ExamIntro() {
         for your Exam at one place
       </h1>
 
-
       <p className="mt-4 text-gray-600 max-w-xl mx-auto text-sm sm:text-base">
         Study from content highly focused on the syllabus to be 100% exam ready
       </p>
 
-      <div className="relative mt-10">
-
+      <div
+        className="relative mt-10"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         <button
           onClick={handlePrev}
           className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-black rounded-full hover:bg-gray-800 transition ${
@@ -92,10 +115,9 @@ export default function ExamIntro() {
           <FaArrowLeft className="text-white" />
         </button>
 
-
-        <div className="overflow-hidden ">
+        <div className="overflow-hidden">
           <motion.div
-          className='flex'
+            className='flex'
             animate={{ x: `-${currentPage * 100}%` }}
             transition={{ duration: 0.45, ease: 'easeInOut' }}
           >
@@ -151,7 +173,6 @@ export default function ExamIntro() {
         </button>
       </div>
 
-
       <div className="flex justify-center mt-6 gap-2">
         {Array.from({ length: pageCount }).map((_, index) => (
           <span
@@ -162,7 +183,6 @@ export default function ExamIntro() {
           />
         ))}
       </div>
-
 
       <div className="mt-10">
         <button className="bg-black text-white px-6 py-3 sm:px-8 sm:py-3 rounded-full font-semibold hover:bg-gray-800 transition">
