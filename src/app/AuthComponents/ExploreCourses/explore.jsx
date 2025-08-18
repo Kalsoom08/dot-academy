@@ -18,8 +18,22 @@ const exams = [
 export default function ExploreCoursesPage() {
   const router = useRouter();
 
+  // ✅ navigate to Courses page
   const handleRedirectToCourses = () => {
-    router.push('/AuthComponents/ExploreCourses/CourseDetail');
+    router.push('/AuthComponents/ExploreCourses/Courses');
+  };
+  const handleRedirectToClassPage = () => {
+    router.push('/AuthComponents/ExploreCourses/Select');
+  };
+
+  const handleRedirectToEntrancePage = () => {
+    router.push('/AuthComponents/ExploreCourses/Entrance');
+  };
+  const handleRedirectToExam = (examName) => {
+    router.push(`/AuthComponents/ExploreCourses/Courses`);
+  };
+  const handleRedirectToOthers = () => {
+    router.push('/AuthComponents/ExploreCourses/Others');
   };
 
   const containerVariants = {
@@ -56,7 +70,7 @@ export default function ExploreCoursesPage() {
 
         <motion.div
           className="bg-white rounded-xl shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
-          onClick={handleRedirectToCourses}
+          onClick={() => handleRedirectToExam("IELTS")}
           variants={fadeVariants}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
@@ -76,22 +90,33 @@ export default function ExploreCoursesPage() {
         </motion.div>
 
         <motion.div className="flex flex-col gap-3" variants={containerVariants}>
-          {["Class 1 to Class 12", "Entrance Exam"].map((label, idx) => (
-            <motion.div
-              key={idx}
-              className="bg-white rounded-xl shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
-              onClick={handleRedirectToCourses}
-              variants={fadeVariants}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              <div className="flex items-center gap-4">
-                <Image src={ilets} alt={label} width={30} height={30} />
-                <span>{label}</span>
-              </div>
-              <FiChevronRight />
-            </motion.div>
-          ))}
+          <motion.div
+            className="bg-white rounded-xl shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
+            onClick={handleRedirectToClassPage}
+            variants={fadeVariants}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <div className="flex items-center gap-4">
+              <Image src={ilets} alt="Class" width={30} height={30} />
+              <span>Class 1 to Class 12</span>
+            </div>
+            <FiChevronRight />
+          </motion.div>
+
+          <motion.div
+            className="bg-white rounded-xl shadow p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
+            onClick={handleRedirectToEntrancePage}
+            variants={fadeVariants}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <div className="flex items-center gap-4">
+              <Image src={ilets} alt="Entrance Exam" width={30} height={30} />
+              <span>Entrance Exam</span>
+            </div>
+            <FiChevronRight />
+          </motion.div>
         </motion.div>
       </motion.section>
 
@@ -108,7 +133,7 @@ export default function ExploreCoursesPage() {
             <motion.button
               key={idx}
               className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
-              onClick={handleRedirectToCourses}
+              onClick={() => handleRedirectToExam(exam.name)}
               variants={fadeVariants}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -136,7 +161,7 @@ export default function ExploreCoursesPage() {
             <motion.button
               key={`trend-${idx}`}
               className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
-              onClick={handleRedirectToCourses}
+              onClick={() => handleRedirectToExam(exam.name)}
               variants={fadeVariants}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -155,7 +180,7 @@ export default function ExploreCoursesPage() {
       <motion.section className="text-center" variants={containerVariants}>
         <motion.button
           className="w-full sm:w-full px-6 py-3 bg-[#7D287E] text-white rounded-md text-sm font-bold hover:bg-purple-800 transition"
-          onClick={handleRedirectToCourses}
+          onClick={handleRedirectToOthers}
           variants={fadeVariants}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}

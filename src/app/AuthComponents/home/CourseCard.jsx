@@ -71,6 +71,32 @@ export default function CoursesSection() {
     ? filteredCourses
     : filteredCourses.slice(currentSlide * coursesPerPage, (currentSlide + 1) * coursesPerPage);
 
+  // Touch handling for tab swipe
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
+
+  const onTouchStart = (e) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchMove = (e) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+
+    if (distance > 30) {
+      tabScrollRef.current?.scrollBy({ left: 100, behavior: 'smooth' }); // swipe left
+    } else if (distance < -30) {
+      tabScrollRef.current?.scrollBy({ left: -100, behavior: 'smooth' }); // swipe right
+    }
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
   return (
     <motion.div
       id="courses-section"
@@ -83,7 +109,7 @@ export default function CoursesSection() {
         <h2 className="text-2xl font-bold">Your Courses</h2>
       </div>
 
-      {/* Tab menu with smooth scroll */}
+      {/* Tab menu with smooth scroll and swipe */}
       <div className="relative mb-6">
         <button
           onClick={() => tabScrollRef.current?.scrollBy({ left: -150, behavior: 'smooth' })}
@@ -104,16 +130,19 @@ export default function CoursesSection() {
           className="flex items-center overflow-x-auto px-10 space-x-2 custom-scroll"
           style={{
             scrollBehavior: 'smooth',
-            scrollbarWidth: 'none', // Firefox
-            msOverflowStyle: 'none' // IE/Edge
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none'
           }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
           <style jsx>{`
             .custom-scroll::-webkit-scrollbar {
-              display: none; /* Chrome, Safari, Opera */
+              display: none;
             }
           `}</style>
 

@@ -30,17 +30,12 @@ export default function ExamIntro() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) { 
-        setItemsPerPage(4);
-      } else if (window.innerWidth >= 640) { 
-        setItemsPerPage(2);
-      } else {
-        setItemsPerPage(1);
-      }
+      if (window.innerWidth >= 1024) setItemsPerPage(4);
+      else if (window.innerWidth >= 640) setItemsPerPage(2);
+      else setItemsPerPage(1);
     };
 
     handleResize();
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []); 
@@ -55,23 +50,15 @@ export default function ExamIntro() {
     if (currentPage < pageCount - 1) setCurrentPage((prev) => prev + 1);
   };
 
-  const onTouchStart = (e) => {
-    touchStartX.current = e.targetTouches[0].clientX;
-  };
-
-  const onTouchMove = (e) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
+  const onTouchStart = (e) => (touchStartX.current = e.targetTouches[0].clientX);
+  const onTouchMove = (e) => (touchEndX.current = e.targetTouches[0].clientX);
 
   const onTouchEnd = () => {
     if (!touchStartX.current || !touchEndX.current) return;
     const distance = touchStartX.current - touchEndX.current;
 
-    if (distance > 50) {
-      handleNext(); // swipe left → next
-    } else if (distance < -50) {
-      handlePrev(); // swipe right → previous
-    }
+    if (distance > 50) handleNext();
+    else if (distance < -50) handlePrev();
 
     touchStartX.current = null;
     touchEndX.current = null;
@@ -83,13 +70,7 @@ export default function ExamIntro() {
         <span className="relative inline-block">
           <span className="relative z-10">Everything you need</span>
           <span className="absolute top-5 md:top-10 left-0 w-full h-[0.6em] z-0">
-            <Image
-              src={SVG}
-              alt="underline"
-              fill
-              className="object-contain pointer-events-none"
-              sizes="100vw"
-            />
+            <Image src={SVG} alt="underline" fill className="object-contain pointer-events-none" sizes="100vw" />
           </span>
         </span>{' '}
         for your Exam at one place
@@ -105,9 +86,10 @@ export default function ExamIntro() {
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
+        {/* Left button hidden on sm/md */}
         <button
           onClick={handlePrev}
-          className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-black rounded-full hover:bg-gray-800 transition ${
+          className={`hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-black rounded-full hover:bg-gray-800 transition ${
             currentPage === 0 ? 'opacity-30 cursor-not-allowed' : ''
           }`}
           disabled={currentPage === 0}
@@ -131,9 +113,6 @@ export default function ExamIntro() {
                   .map((feature, idx) => (
                     <motion.div
                       key={idx}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: idx * 0.05 }}
                       whileHover={{ scale: 1.03 }}
                       className="rounded-xl shadow-lg p-4 w-[85%] sm:w-[48%] lg:w-[18%] flex flex-col m-3 mt-14"
                     >
@@ -148,9 +127,7 @@ export default function ExamIntro() {
                       </div>
 
                       <div className="w-full text-left">
-                        <h2 className='anton  text-lg mb-2'>
-                          {feature.title}
-                        </h2>
+                        <h2 className='anton text-lg mb-2'>{feature.title}</h2>
                         <p className="text-sm text-gray-600 leading-relaxed">
                           {feature.description}
                         </p>
@@ -162,9 +139,10 @@ export default function ExamIntro() {
           </motion.div>
         </div>
 
+        {/* Right button hidden on sm/md */}
         <button
           onClick={handleNext}
-          className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-black rounded-full hover:bg-gray-800 transition ${
+          className={`hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-black rounded-full hover:bg-gray-800 transition ${
             currentPage === pageCount - 1 ? 'opacity-30 cursor-not-allowed' : ''
           }`}
           disabled={currentPage === pageCount - 1}
