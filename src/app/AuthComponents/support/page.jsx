@@ -5,6 +5,8 @@ import Sidebar from '../../../components/AuthSiderbar';
 import Header from '../../../components/AuthHeader';
 import Footer from '../../../components/AuthFooter';
 import Support from './supportModal';
+import Protected from '@/components/ProtectedRoute';
+
 
 const supportPage = ()=> {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,4 +32,4 @@ const supportPage = ()=> {
   );
 }
 
-export default supportPage
+export default Protected(supportPage)

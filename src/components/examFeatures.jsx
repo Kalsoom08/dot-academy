@@ -9,6 +9,7 @@ import Icon3 from '../../public/examFeatures/3.png';
 import Icon4 from '../../public/examFeatures/4.png';
 import SVG from '../../public/examFeatures/vector.svg';
 import { motion } from 'framer-motion';
+import {useRouter} from 'next/navigation';
 
 const features = [
   { title: 'Smart Notes', description: 'With relevant content to help you prepare for exams in the best way.', icon: Icon1 },
@@ -22,6 +23,20 @@ const features = [
 ];
 
 export default function ExamIntro() {
+   const [isClient, setIsClient] = useState(false);
+      useEffect(() => {
+        setIsClient(true);
+      }, []);
+      const router = useRouter();
+  
+     const handleButton = () => {
+      if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
+        router.push('/AuthComponents/ExploreCourses');
+      } else {
+        router.push('/login?redirect=/AuthComponents/ExploreCourses');
+      }
+    };
+  
   const [itemsPerPage, setItemsPerPage] = useState(1); 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -163,7 +178,7 @@ export default function ExamIntro() {
       </div>
 
       <div className="mt-10">
-        <button className="bg-black text-white px-6 py-3 sm:px-8 sm:py-3 rounded-full font-semibold hover:bg-gray-800 transition">
+        <button onClick={handleButton} className="bg-black text-white px-6 py-3 sm:px-8 sm:py-3 rounded-full font-semibold hover:bg-gray-800 transition">
           Start Learning for Free
         </button>
       </div>

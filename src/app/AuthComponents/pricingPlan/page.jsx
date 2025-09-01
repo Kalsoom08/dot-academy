@@ -5,6 +5,8 @@ import Header from '../../../components/AuthHeader';
 import Footer from '../../../components/AuthFooter';
 import PriceSection from '../pricingPlan/priceSection';
 import AboutPrice from './aboutPrice';
+import Protected from '@/components/ProtectedRoute';
+
 
 
 const page = () => {
@@ -30,4 +32,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Protected(page)

@@ -5,6 +5,8 @@ import Sidebar from '../../../components/AuthSiderbar';
 import Header from '../../../components/AuthHeader';
 import Footer from '../../../components/AuthFooter';
 import ChangeExamModal from './changeExam'; 
+import Protected from '@/components/ProtectedRoute';
+
 
 const ChangeExamPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -33,4 +35,4 @@ const ChangeExamPage = () => {
   );
 };
 
-export default ChangeExamPage;
+export default Protected(ChangeExamPage);

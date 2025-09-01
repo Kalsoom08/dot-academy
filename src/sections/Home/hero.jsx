@@ -6,10 +6,25 @@ import icon from '../../../public/Hero/icon.jpg';
 import { IoLogoGooglePlaystore } from "react-icons/io5";
 import { FaApple } from "react-icons/fa";
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 
 
 const Hero = () => {
+    const [isClient, setIsClient] = useState(false);
+    useEffect(() => {
+      setIsClient(true);
+    }, []);
+    const router = useRouter();
+
+   const handleButton = () => {
+    if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
+      router.push('/AuthComponents/ExploreCourses');
+    } else {
+      router.push('/login?redirect=/AuthComponents/ExploreCourses');
+    }
+  };
   return (
     <section className=" py-18 px-6 md:px-10 lg:px-20">
       <div className="max-w-5xl mx-auto flex flex-col-reverse md:flex-row items-center gap-10 ">
@@ -37,6 +52,7 @@ const Hero = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="mt-6 bg-black text-white px-6 py-3 rounded-md text-base font-medium hover:opacity-90 transition"
+            onClick={handleButton}
           >
             Start Learning for Free
           </motion.button>

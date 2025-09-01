@@ -16,10 +16,13 @@ import DashboardFooter from '../../AuthComponents/home/footer';
 import Modal from './modal';
 import ExamPopup from './examPopup';
 import { motion } from 'framer-motion';
+import Protected from '@/components/ProtectedRoute';
 
-export default function Home() {
+
+function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showExploreModal, setShowExploreModal] = useState(true); 
+
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -104,3 +107,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Protected(Home)
