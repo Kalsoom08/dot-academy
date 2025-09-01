@@ -76,28 +76,27 @@ const Footer = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-10 text-sm">
             <div>
-              <h3 className="text-white text-lg mb-3 anton">Company</h3>
+              <h3 className="text-white text-lg mb-3 anton">Quick Links</h3>
               <ul className="space-y-2 text-gray-300">
-                <li>Home</li>
-                <li>View All Courses</li>
-                <li onClick={() => router.push('/privacy')}>Privacy</li>
-                <li>Pricing</li>
-                <li>Ecademy blog</li>
-                <li>Contact us</li>
-                <li>Career</li>
+                <li className='hover:cursor-pointer' onClick={() => router.push('/')}>Home</li>
+                <li className='hover:cursor-pointer' onClick={() => router.push('/privacy')}>Privacy Policy</li>
+                <li className='hover:cursor-pointer' onClick={() => router.push('/refund')}>Refund Policy</li>
+                <li className='hover:cursor-pointer' onClick={() => router.push('/service')}>Service Policy</li>
+                <li className='hover:cursor-pointer' onClick={() => router.push('/termsAndCondition')}>Terms & Conditions</li>
+               
               </ul>
             </div>
 
             <div>
-              <h3 className="anton text-white text-lg mb-3">Quick Links</h3>
+              <h3 className="anton text-white text-lg mb-3">Company</h3>
               <ul className="space-y-2 text-gray-300">
-                <li>Home</li>
-                <li>View All Courses</li>
-                <li>FAQ’s</li>
-                <li>Pricing</li>
-                <li>Ecademy blog</li>
-                <li>Contact us</li>
-                <li>Career</li>
+                <li className='hover:cursor-pointer' onClick={() => router.push('/')}>Home</li>
+                <li className='hover:cursor-pointer'>View All Courses</li>
+                <li className='hover:cursor-pointer'>FAQ’s</li>
+                <li className='hover:cursor-pointer'>Pricing</li>
+                <li className='hover:cursor-pointer'>Ecademy blog</li>
+                <li className='hover:cursor-pointer'>Contact us</li>
+                <li className='hover:cursor-pointer'>Career</li>
               </ul>
             </div>
           </div>

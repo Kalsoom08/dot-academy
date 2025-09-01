@@ -1,102 +1,126 @@
-import Head from 'next/head';
-import { Anton } from 'next/font/google';
+"use client";
 
-const anton = Anton({ subsets: ['latin'], weight: '400' });
+import Head from "next/head";
+import { motion } from "framer-motion";
+import { MdLocationPin, MdEmail } from "react-icons/md";
+import { FaPhoneAlt } from "react-icons/fa";
 
 export default function PrivacyPolicy() {
   return (
     <>
       <Head>
         <title>Privacy Policy - Ecademy Dot</title>
+        <meta
+          name="description"
+          content="Read Ecademy Dot's Privacy Policy to understand how we collect, use, and protect your personal information while using our digital learning services."
+        />
       </Head>
+
       <main className="max-w-6xl mx-auto px-4 py-10 text-gray-800 font-sans">
-
-
-        <section>
-          <h1 className={`${anton.className} text-2xl font-bold text-[#7D287E] mb-2`}>
+        <motion.section
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.8, 0.25, 1] }}
+        >
+          <motion.h1
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="anton text-2xl md:text-3xl text-[#7D287E] mb-4"
+          >
             Privacy Policy <span>🔒</span>
-          </h1>
-          <p className="">
-            At Ecademy Dot, your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information.
-          </p>
-          <p >1. Information We Collect</p>
-          <ul className="list-disc ml-5 mb-4">
-            <li>Your name, email address, and contact details</li>
-            <li>Usage data (which pages you visit, what you click, etc.)</li>
-            <li>Device information (browser type, IP address)</li>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mb-4 text-sm md:text-base leading-relaxed"
+          >
+            At Ecademy Dot, your privacy is our top priority. This Privacy Policy explains what
+            information we collect, how we use it, and how your data is kept safe.
+          </motion.p>
+
+          <h2 className="anton text-xl md:text-2xl text-[#7D287E] mt-4">Information We Collect</h2>
+          <p className="text-sm md:text-base">When you register or purchase a course, we may collect the following details:</p>
+          <ul className="list-disc ml-5 mb-4 font-semibold text-sm md:text-base space-y-1">
+            <li>Name</li>
+            <li>Email Address</li>
+            <li>Phone Number</li>
           </ul>
 
-          <h2 className={`${anton.className} text-2xl font-bold text-[#7D287E] mb-2`}>How We Use Your Information</h2>
-          <ul className="list-disc ml-5 mb-4">
-            <li>Provide our exam preparation services</li>
-            <li>Improve the user experience</li>
-            <li>Send updates or important announcements</li>
-            <li>Respond to your queries or support requests</li>
+          <div>
+            <h3 className="text-lg md:text-xl font-semibold mb-2">
+              For payments, we use the <b>PayFast Payment Gateway</b>. When you make a transaction:
+            </h3>
+            <ul className="list-disc ml-5 mb-4 text-sm md:text-base space-y-1">
+              <li>
+                Your <b>payment details (credit/debit card or bank information)</b> are securely
+                processed <b>directly by PayFast</b>.
+              </li>
+              <li>
+                <b>Ecademy Dot does not store or save your financial information</b> on our servers.
+              </li>
+            </ul>
+          </div>
+
+          <h2 className="anton text-xl md:text-2xl text-[#7D287E] mb-2">How We Use Your Information</h2>
+          <p className="text-sm md:text-base">We use your personal data to:</p>
+          <ul className="list-disc ml-5 mb-4 text-sm md:text-base space-y-1">
+            <li>Create and manage your account.</li>
+            <li>Provide you access to our online courses, quizzes, and study material.</li>
+            <li>Communicate important updates, offers, and support services.</li>
+            <li>Improve our platform and learning experience.</li>
           </ul>
 
-          <h2 className={`${anton.className} text-2xl font-bold text-[#7D287E] mb-2`}>Cookies</h2>
-          <p className="mb-4">We may use cookies to improve site functionality and analyze site traffic. You can disable cookies in your browser settings.</p>
-
-          <h2 className={`${anton.className} text-2xl font-bold text-[#7D287E] mb-2`}>Third-Party Services</h2>
-          <p className="mb-4">We do not sell or share your personal data with third parties. However, we may use third-party services (like analytics tools) that collect anonymous usage data.</p>
-
-          <h2 className={`${anton.className} text-2xl font-bold text-[#7D287E] mb-2`}>Data Security</h2>
-          <p className="mb-4">We take steps to protect your information using secure technology. However, no method of transmission over the internet is 100% secure.</p>
-
-          <h2 className={`${anton.className} text-2xl font-bold text-[#7D287E] mb-2`}>Your Rights</h2>
-          <p className="mb-4">
-            You may request access to, correction of, or deletion of your data by contacting us at{' '}
-            <a href="mailto:ecademydot@mail.com" className="text-purple-600 underline">ecademydot@mail.com</a>.
-          </p>
-        </section>
-
-      
-        <section>
-          <h2 className={`${anton.className} text-2xl font-bold text-[#7D287E] mb-2`}>Disclaimer ⚠️</h2>
-          <p className="mb-2">
-            Ecademy Dot is an educational platform created to help students and job-seekers prepare for One Paper MCQs Tests and other exams in the future.
-          </p>
-          <ul className="list-disc ml-5 mb-4">
-            <li>We are not affiliated with any government body or testing agency.</li>
-            <li>Our content is based on past paper trends, public resources, and expert inputs.</li>
-            <li>We do not guarantee selection or success in any exam.</li>
-            <li>The information provided is for general guidance only. Always verify with official sources.</li>
+          <h2 className="anton text-xl md:text-2xl text-[#7D287E] mb-2">Data Protection</h2>
+          <ul className="list-disc ml-5 mb-4 text-sm md:text-base space-y-1">
+            <li>
+              Payment security is ensured by <b>PayFast</b>, which uses industry-standard encryption
+              and fraud prevention tools.
+            </li>
+            <li>
+              Ecademy Dot only stores your <b>Name, Email, and Phone Number</b> for account and
+              communication purposes.
+            </li>
+            <li>
+              We do not sell, rent, or share your information with third parties without your
+              consent.
+            </li>
           </ul>
-          <p>
-            By using our platform, you agree that Ecademy Dot is not responsible for any loss or consequence that may result from using the material.
-          </p>
-        </section>
+        </motion.section>
 
-       
-        <section>
-          <h2 className={`${anton.className} text-2xl font-bold text-[#7D287E] mb-2`}>Terms and Conditions 🧾</h2>
-          <p className="mb-2">Effective Date: 10-August-2025</p>
-          <p className="mb-2">
-            Welcome to Ecademy Dot. These Terms and Conditions govern your use of our website and services. By accessing our site, you agree to the following:
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          className="mt-8"
+        >
+          <h2 className="anton text-xl md:text-2xl text-[#7D287E] mb-4">Contact Us</h2>
+          <p className="text-gray-700 mb-4 text-sm md:text-base">
+            If you have any questions about this Privacy Policy, feel free to reach us at:
           </p>
-          <ol className="list-decimal ml-5 mb-4 space-y-2">
-            <li>
-              <strong>User Conduct:</strong>
-              <ul className="list-disc ml-5 mt-1">
-                <li>You must be at least 13 years old to use our services.</li>
-                <li>You agree to use our content only for personal, non-commercial learning purposes.</li>
-                <li>Do not misuse the platform (e.g., hacking, copying content, or spreading misinformation).</li>
-              </ul>
-            </li>
-            <li>
-              <strong>Intellectual Property:</strong> All content on Ecademy Dot, including text, quizzes, and designs, is our intellectual property. You may not reproduce or distribute it without our written consent.
-            </li>
-            <li>
-              <strong>Account Responsibility:</strong> You’re responsible for keeping your login information safe and for all activity under your account.
-            </li>
-            <li>
-              <strong>Modifications:</strong> We may update our content, features, or policies without prior notice. Please review these terms regularly.
-            </li>
-            <li>
-              <strong>Limitation of Liability:</strong> We do our best to provide accurate and helpful content. However, we are not liable for any errors, omissions, or exam outcomes related to your use of our platform.
-            </li>
-          </ol>
-        </section>
+
+          <div className="space-y-2">
+            <p className="flex items-center gap-4">
+              <MdLocationPin className="text-[#7D287E] text-xl" />
+              Banglow no: A-06 Professors Cooperative Housing Society Shikarpur Road Sukkur
+            </p>
+
+            <p className="flex items-center gap-4">
+              <FaPhoneAlt className="text-[#7D287E] text-xl" />
+              +92 0300 7140064
+            </p>
+
+            <a
+              href="mailto:Ecademydot@gmail.com"
+              className="flex items-center gap-4 text-[#7D287E] hover:text-purple-700 font-medium transition-colors"
+            >
+              <MdEmail className="text-xl" />
+              Ecademydot@gmail.com
+            </a>
+          </div>
+        </motion.section>
       </main>
     </>
   );
