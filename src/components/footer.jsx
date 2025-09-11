@@ -96,7 +96,7 @@ const Footer = () => {
                 <li className='hover:cursor-pointer'>Pricing</li>
                 <li className='hover:cursor-pointer'>Ecademy blog</li>
                 <li className='hover:cursor-pointer'>Contact us</li>
-                <li className='hover:cursor-pointer'>Career</li>
+                <li className='hover:cursor-pointer' >Career</li>
               </ul>
             </div>
           </div>
