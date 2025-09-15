@@ -1,11 +1,11 @@
 import userApi from "./api";
 
 export const getAllPublishedBlogs = async () => {
-  const res = await userApi.get("/user/api/blogs");
+  const res = await api.get("/admin/api/blogs/published");
   return res.data;
 };
 
-export const getPublishedBlogBySlug = async (slug) => {
-  const res = await userApi.get(`/user/api/blogs/${slug}`);
+export const getBlogBySlug = async (slug) => {
+  const res = await api.get(`/admin/api/blogs/${slug}`);
   return res.data;
 };
