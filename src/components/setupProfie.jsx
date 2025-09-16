@@ -2,15 +2,12 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Logo from '../../public/NavBar/logo.png';
+import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Anton } from 'next/font/google';
-import { useRouter } from 'next/navigation';
+import Logo from '../../public/NavBar/logo.png'; // Adjust path if needed
 
-const anton = Anton({
-  subsets: ['latin'],
-  weight: '400',
-});
+const anton = Anton({ subsets: ['latin'], weight: '400' });
 
 export default function SetupProfile() {
   const router = useRouter();
@@ -29,90 +26,95 @@ export default function SetupProfile() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleChange = (field) => (e) => {
-    const value = field === 'agreed' ? e.target.checked : e.target.value;
-    setFormData({ ...formData, [field]: value });
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.agreed) {
-      alert('Please accept terms and conditions.');
-      return;
-    }
+    if (!formData.agreed) return alert('Please accept terms and conditions.');
+    if (formData.password !== formData.confirmPassword)
+      return alert('Passwords do not match');
 
-    if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-
-    // ✅ Save data (excluding password) to localStorage
     const { password, confirmPassword, agreed, ...userProfile } = formData;
     localStorage.setItem('userProfile', JSON.stringify(userProfile));
 
     alert('Account created successfully!');
-
-    // Redirect to profile/dashboard
-    router.push('/AuthComponents/profile'); // or '/dashboard' if needed
+    router.push('/AuthComponents/home'); // Redirect to profile page
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 ">
+    <div className="min-h-screen flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center gap-1 mb-8">
           <Image src={Logo} alt="Logo" className="w-24 h-auto" />
-          <h2 className={`${anton.className} text-3xl font-black text-gray-900 mt-2`}>Let’s get Started</h2>
+          <h2 className={`${anton.className} text-3xl font-black text-gray-900 mt-2`}>
+            Let’s get Started
+          </h2>
           <p className="text-sm text-gray-600 mt-1">
             Just a few details to complete your profile and get started
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name */}
           <div className="flex flex-col sm:flex-row gap-4">
             <input
               type="text"
+              name="firstName"
               placeholder="First Name"
               className="flex-1 border border-gray-300 p-2 rounded-full"
               value={formData.firstName}
-              onChange={handleChange('firstName')}
+              onChange={handleChange}
               required
             />
             <input
               type="text"
+              name="lastName"
               placeholder="Last Name"
               className="flex-1 border border-gray-300 p-2 rounded-full"
               value={formData.lastName}
-              onChange={handleChange('lastName')}
+              onChange={handleChange}
             />
           </div>
           <p className="text-right text-[#959191]">(optional)</p>
 
+          {/* Email */}
           <input
             type="email"
+            name="email"
             placeholder="Email"
             className="w-full border border-gray-300 p-2 rounded-full"
             value={formData.email}
-            onChange={handleChange('email')}
+            onChange={handleChange}
           />
-
           <p className="text-right text-[#959191]">(optional)</p>
+
+          {/* Gender */}
           <select
+            name="gender"
             className="w-full border border-gray-300 p-2 rounded-full text-gray-500"
             value={formData.gender}
-            onChange={handleChange('gender')}
+            onChange={handleChange}
           >
             <option value="">Gender</option>
             <option value="Girl">Girl</option>
             <option value="Boy">Boy</option>
             <option value="Prefer Not to say">Prefer Not to say</option>
           </select>
-
           <p className="text-right text-[#959191]">(optional)</p>
+
+          {/* Province */}
           <select
+            name="province"
             className="w-full border border-gray-300 p-2 rounded-full text-gray-500"
             value={formData.province}
-            onChange={handleChange('province')}
+            onChange={handleChange}
           >
             <option value="">Province</option>
             <option value="Punjab">Punjab</option>
@@ -121,14 +123,16 @@ export default function SetupProfile() {
             <option value="Balochistan">Balochistan</option>
           </select>
 
+          {/* Passwords */}
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="relative flex-1 w-full">
               <input
                 type={showPassword ? 'text' : 'password'}
+                name="password"
                 placeholder="Password"
                 className="w-full border border-gray-300 p-2 rounded-full pr-10"
                 value={formData.password}
-                onChange={handleChange('password')}
+                onChange={handleChange}
               />
               <span
                 className="absolute top-2.5 right-4 text-gray-500 cursor-pointer"
@@ -141,10 +145,11 @@ export default function SetupProfile() {
             <div className="relative flex-1 w-full">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
+                name="confirmPassword"
                 placeholder="Confirm Password"
                 className="w-full border border-gray-300 p-2 rounded-full pr-10"
                 value={formData.confirmPassword}
-                onChange={handleChange('confirmPassword')}
+                onChange={handleChange}
               />
               <span
                 className="absolute top-2.5 right-4 text-gray-500 cursor-pointer"
@@ -155,19 +160,22 @@ export default function SetupProfile() {
             </div>
           </div>
 
+          {/* Terms */}
           <div className="flex items-start gap-2 text-sm text-gray-600">
             <input
               type="checkbox"
-              className="mt-1 p-2"
+              name="agreed"
               checked={formData.agreed}
-              onChange={handleChange('agreed')}
+              onChange={handleChange}
+              className="mt-1 p-2"
             />
             <p>
-              By clicking this icon you will be agree with our{' '}
-              <span className="text-purple-700 underline cursor-pointer">terms and condition</span>
+              By clicking this icon you agree to our{' '}
+              <span className="text-purple-700 underline cursor-pointer">terms and conditions</span>
             </p>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             className="bg-[#7D287E] w-full text-white py-2 rounded-full font-medium mt-2"

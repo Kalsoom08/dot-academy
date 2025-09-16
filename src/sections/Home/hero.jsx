@@ -19,11 +19,11 @@ const Hero = () => {
     const router = useRouter();
 
    const handleButton = () => {
-    if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
-      router.push('/AuthComponents/ExploreCourses');
-    } else {
-      router.push('/login?redirect=/AuthComponents/ExploreCourses');
-    }
+    // if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
+    //   router.push('/AuthComponents/ExploreCourses');
+    // } else {
+    //   router.push('/login?redirect=/AuthComponents/ExploreCourses');
+    // }
   };
   return (
     <section className=" py-18 px-6 md:px-10 lg:px-20">

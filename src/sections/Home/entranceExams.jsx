@@ -50,11 +50,11 @@ export default function EntranceExams() {
     setCurrentPage((prev) => Math.min(prev + 1, pageCount - 1));
 
   const handleExploreAll = () => {
-    if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
-      router.push('/AuthComponents/ExploreCourses');
-    } else {
-      router.push('/login?redirect=/AuthComponents/ExploreCourses');
-    }
+    // if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
+    //   router.push('/AuthComponents/ExploreCourses');
+    // } else {
+    //   router.push('/login?redirect=/AuthComponents/ExploreCourses');
+    // }
   };
 
   // Touch event handlers for swipe
