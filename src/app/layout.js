@@ -33,10 +33,12 @@ export default function RootLayout({ children }) {
     <html lang="en">
      
       <body className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} ${anton.variable} antialiased`}>
-
         <ClientWrapper>
+          
           {children}
+
         </ClientWrapper>
+\
       </body>
     </html>
   );
