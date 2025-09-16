@@ -30,11 +30,11 @@ export default function ExamIntro() {
       const router = useRouter();
   
      const handleButton = () => {
-      if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
-        router.push('/AuthComponents/ExploreCourses');
-      } else {
-        router.push('/login?redirect=/AuthComponents/ExploreCourses');
-      }
+      // if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
+      //   router.push('/AuthComponents/ExploreCourses');
+      // } else {
+      //   router.push('/login?redirect=/AuthComponents/ExploreCourses');
+      // }
     };
   
   const [itemsPerPage, setItemsPerPage] = useState(1); 
