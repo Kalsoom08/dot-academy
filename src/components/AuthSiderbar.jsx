@@ -4,6 +4,7 @@ import Logo from '../../public/NavBar/logo.png';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { logout } from "../../slices/authSlice"; 
 
 import {
   CiHome,
@@ -24,8 +25,12 @@ import { useChangeExamModal } from '../context/ChangeExamModalContext';
 
 import DetailPopup from '@/app/AuthComponents/ExploreCourses/CourseDetail/detailPopup';
 import CourseAnalysis from '@/app/AuthComponents/ExploreCourses/CourseAnalysis';
+import { useDispatch } from 'react-redux';
 
 export default function Sidebar({ isOpen = true, onClose }) {
+  const dispatch = useDispatch();
+
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -35,14 +40,32 @@ export default function Sidebar({ isOpen = true, onClose }) {
   const [showDetailPopup, setShowDetailPopup] = useState(false);
   const [showAnalysisPopup, setShowAnalysisPopup] = useState(false);
 
+  
+
   const handleLeaveCourse = () => {
   router.push('/AuthComponents/home'); 
 };
 
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    router.push('/');
-  };
+const handleLogout = async () => {
+  try {
+    dispatch(logout());
+    await fetch("/api/auth/logout", { method: "POST" });
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("token");
+
+    const provider = localStorage.getItem("authProvider"); 
+    if (provider === "google") {
+      window.location.href = "https://accounts.google.com/Logout";
+    } else {
+      router.push("/"); 
+    }
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
+
+
+
 
   const navItems = [
     { name: "Home", icon: <CiHome size={20} />, path: "/AuthComponents/home" },

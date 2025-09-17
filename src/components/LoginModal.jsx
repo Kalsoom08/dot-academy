@@ -50,9 +50,10 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
     alert(`Phone login with ${phone} & ${password}`);
   };
 
-  const handleGoogleLogin = () => {
-    alert('Google login not implemented yet');
-  };
+const handleGoogleLogin = () => {
+  window.location.href = `http://localhost:7000/api/auth/google`;
+};
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-[1px] bg-black/30">
