@@ -15,7 +15,7 @@ export default function ClientWrapper({ children }) {
     '/AuthComponents/pricingPlan', '/AuthComponents/exam',
     '/AuthComponents/support', '/AuthComponents/profile',
     '/AuthComponents/profile/unattemptedTest',
-    '/profile/setupProfile', '/admin', '/login', '/signup'
+    '/profile/setupProfile', '/admin'
   ];
 
   const shouldHide = hideNavAndFooter.some(path => pathname.startsWith(path));

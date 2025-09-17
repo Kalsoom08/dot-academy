@@ -9,7 +9,7 @@ import Icon3 from '../../public/examFeatures/3.png';
 import Icon4 from '../../public/examFeatures/4.png';
 import SVG from '../../public/examFeatures/vector.svg';
 import { motion } from 'framer-motion';
-import {useRouter} from 'next/navigation';
+import LoginModal from '@/components/LoginModal'; 
 
 const features = [
   { title: 'Smart Notes', description: 'With relevant content to help you prepare for exams in the best way.', icon: Icon1 },
@@ -23,20 +23,13 @@ const features = [
 ];
 
 export default function ExamIntro() {
-   const [isClient, setIsClient] = useState(false);
-      useEffect(() => {
-        setIsClient(true);
-      }, []);
-      const router = useRouter();
-  
-     const handleButton = () => {
-      // if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
-      //   router.push('/AuthComponents/ExploreCourses');
-      // } else {
-      //   router.push('/login?redirect=/AuthComponents/ExploreCourses');
-      // }
-    };
-  
+  const [isClient, setIsClient] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false); 
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const [itemsPerPage, setItemsPerPage] = useState(1); 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -101,7 +94,6 @@ export default function ExamIntro() {
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {/* Left button hidden on sm/md */}
         <button
           onClick={handlePrev}
           className={`hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-black rounded-full hover:bg-gray-800 transition ${
@@ -154,7 +146,6 @@ export default function ExamIntro() {
           </motion.div>
         </div>
 
-        {/* Right button hidden on sm/md */}
         <button
           onClick={handleNext}
           className={`hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 p-3 bg-black rounded-full hover:bg-gray-800 transition ${
@@ -178,10 +169,18 @@ export default function ExamIntro() {
       </div>
 
       <div className="mt-10">
-        <button onClick={handleButton} className="bg-black text-white px-6 py-3 sm:px-8 sm:py-3 rounded-full font-semibold hover:bg-gray-800 transition">
+        <button 
+          onClick={() => setIsLoginOpen(true)} 
+          className="bg-black text-white px-6 py-3 sm:px-8 sm:py-3 rounded-full font-semibold hover:bg-gray-800 transition"
+        >
           Start Learning for Free
         </button>
       </div>
+
+      <LoginModal 
+        isOpen={isLoginOpen} 
+        onClose={() => setIsLoginOpen(false)} 
+      />
     </section>
   );
 }

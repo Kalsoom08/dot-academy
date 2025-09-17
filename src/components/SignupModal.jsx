@@ -49,7 +49,7 @@ export default function SignupModal({ isOpen, onClose, defaultTab = null, onSwit
 
     try {
       await dispatch(verifyEmailOtp({ email: formData.email, code: formData.otp })).unwrap();
-      await dispatch(fetchCurrentUser()).unwrap(); // fetch user data
+      await dispatch(fetchCurrentUser()).unwrap(); 
       alert('Signup successful!');
       router.push('/profile/setupProfile'); 
       onClose();

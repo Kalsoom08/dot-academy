@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import LoginModal from '@/components/LoginModal'; 
 
 const allExams = [
   { name: 'IELTS', icon: '/exams/ilets.png' },
@@ -30,6 +31,7 @@ const itemsPerPage = 6;
 
 export default function EntranceExams() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const touchStartX = useRef(null);
@@ -49,15 +51,6 @@ export default function EntranceExams() {
   const handleNext = () =>
     setCurrentPage((prev) => Math.min(prev + 1, pageCount - 1));
 
-  const handleExploreAll = () => {
-    // if (isClient && localStorage.getItem('isLoggedIn') === 'true') {
-    //   router.push('/AuthComponents/ExploreCourses');
-    // } else {
-    //   router.push('/login?redirect=/AuthComponents/ExploreCourses');
-    // }
-  };
-
-  // Touch event handlers for swipe
   const onTouchStart = (e) => {
     touchStartX.current = e.targetTouches[0].clientX;
   };
@@ -70,8 +63,8 @@ export default function EntranceExams() {
     if (!touchStartX.current || !touchEndX.current) return;
     const distance = touchStartX.current - touchEndX.current;
 
-    if (distance > 50) handleNext(); // swipe left → next
-    else if (distance < -50) handlePrev(); // swipe right → prev
+    if (distance > 50) handleNext(); 
+    else if (distance < -50) handlePrev(); 
 
     touchStartX.current = null;
     touchEndX.current = null;
@@ -89,10 +82,9 @@ export default function EntranceExams() {
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        {/* Left button hidden on sm/md */}
         <button
           onClick={handlePrev}
-          className="hidden lg:flex absolute left-0 -left-6 p-3 bg-black hover:bg-gray-800 rounded-full"
+          className="hidden lg:flex absolute  left-6 p-3 bg-black hover:bg-gray-800 rounded-full"
           disabled={currentPage === 0}
         >
           <FaArrowLeft size={12} className="text-white" />
@@ -126,10 +118,9 @@ export default function EntranceExams() {
           )}
         </div>
 
-        {/* Right button hidden on sm/md */}
         <button
           onClick={handleNext}
-          className="hidden lg:flex absolute right-0 -right-6 p-3 bg-black hover:bg-gray-800 rounded-full"
+          className="hidden lg:flex absolute -right-6 p-3 bg-black hover:bg-gray-800 rounded-full"
           disabled={currentPage === pageCount - 1}
         >
           <FaArrowRight size={12} className="text-white" />
@@ -148,11 +139,16 @@ export default function EntranceExams() {
       </div>
 
       <button
-        onClick={handleExploreAll}
+        onClick={() => setIsLoginOpen(true)} 
         className="mt-8 px-24 py-3 bg-[#7D287E] text-white font-semibold rounded-full hover:opacity-90 transition"
       >
         Explore All Exams
       </button>
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+      />
     </section>
   );
 }
