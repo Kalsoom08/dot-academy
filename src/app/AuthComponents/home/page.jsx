@@ -16,7 +16,7 @@ import DashboardFooter from '../../AuthComponents/home/footer';
 import Modal from './modal';
 import ExamPopup from './examPopup';
 import { motion } from 'framer-motion';
-import Protected from '@/components/ProtectedRoute';
+// import Protected from '@/components/ProtectedRoute';
 
 
 function Home() {
@@ -108,4 +108,4 @@ function Home() {
   );
 }
 
-export default Protected(Home)
+export default Home

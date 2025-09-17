@@ -18,7 +18,6 @@ const exams = [
 export default function ExploreCoursesPage() {
   const router = useRouter();
 
-  // ✅ navigate to Courses page
   const handleRedirectToCourses = () => {
     router.push('/AuthComponents/ExploreCourses/Courses');
   };

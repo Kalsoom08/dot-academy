@@ -1,32 +1,38 @@
-'use client';
+// 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+// import { useEffect } from 'react';
+// import { useSelector, useDispatch } from 'react-redux';
+// import { openLoginModal } from '../../slices/uiSlice';
+// import { fetchCurrentUser } from '../../slices/authSlice';
 
-const  Protected = (WrappedComponent)=> {
-  return function ProtectedComponent(props) {
-    const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
+// const Protected = (WrappedComponent) => {
+//   return function ProtectedComponent(props) {
+//     const dispatch = useDispatch();
 
-    useEffect(() => {
-      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-      setIsAuthenticated(isLoggedIn);
+//     const { isLoggedIn, loading } = useSelector((state) => state.auth);
 
-      if (!isLoggedIn) {
-        router.push(`/login?redirect=${window.location.pathname}`);
-      }
-    }, []);
+//     useEffect(() => {
+//       if (!isLoggedIn && !loading) {
+//         // try fetching current user from API or token
+//         dispatch(fetchCurrentUser())
+//           .unwrap()
+//           .catch(() => {
+//             // open login modal if not logged in
+//             dispatch(openLoginModal(window.location.pathname));
+//           });
+//       }
+//     }, [isLoggedIn, loading, dispatch]);
 
-    if (isAuthenticated === null) {
-      return null; 
-    }
+//     if (loading) {
+//       return <div>Loading...</div>; // optional loader
+//     }
 
-    if (!isAuthenticated) {
-      return null;
-    }
+//     if (!isLoggedIn) {
+//       return null; // block protected content until login
+//     }
 
-    return <WrappedComponent {...props} />;
-  };
-}
+//     return <WrappedComponent {...props} />;
+//   };
+// };
 
-export default Protected
+// export default Protected;

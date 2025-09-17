@@ -1,19 +1,30 @@
 'use client';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MdOutlineSupportAgent } from 'react-icons/md';
 import { RxCross2 } from 'react-icons/rx';
 import { useSupportModal } from '../../../context/SupportModalContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createSupportMessage } from '../../../../APIs/SupportAPI'; 
 
 const SupportModal = () => {
   const { isModalOpen, closeModal } = useSupportModal();
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Message submitted! We will get back to you soon.');
-    setMessage('');
-    closeModal();
+    try {
+      setLoading(true);
+      await createSupportMessage(message);   // ✅ use API function
+      alert('Message submitted! We will get back to you soon.');
+      setMessage('');
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.error || 'Failed to submit message');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,12 +43,14 @@ const SupportModal = () => {
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
+            {/* Support icon */}
             <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-4 shadow-md">
               <div className="bg-white rounded-full w-16 h-16 flex items-center justify-center shadow-xl">
                 <MdOutlineSupportAgent size={40} className="text-[#8a40af]" />
               </div>
             </div>
 
+            {/* Close button */}
             <button
               onClick={closeModal}
               className="absolute top-3 right-3 text-white bg-black hover:bg-gray-800 rounded-full w-6 h-6 flex items-center justify-center shadow-sm transition"
@@ -46,11 +59,12 @@ const SupportModal = () => {
               <RxCross2 size={16} />
             </button>
 
+            {/* Modal content */}
             <h2 className="text-center text-2xl font-bold mt-10 mb-2 text-gray-800">
               Contact Support
             </h2>
             <p className="text-center text-gray-500 mb-6 text-sm">
-              Our Team is online on Mon to Fri from 9:00 PM to 5:00 PM
+              Our Team is online on Mon to Fri from 9:00 AM to 5:00 PM
             </p>
 
             <form onSubmit={handleSubmit}>
@@ -75,9 +89,10 @@ const SupportModal = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 px-4 rounded-xl text-white bg-[#8a40af] hover:bg-purple-700 transition"
+                  disabled={loading}
+                  className="flex-1 py-3 px-4 rounded-xl text-white bg-[#8a40af] hover:bg-purple-700 transition disabled:opacity-60"
                 >
-                  Submit
+                  {loading ? "Submitting..." : "Submit"}
                 </button>
               </div>
             </form>
