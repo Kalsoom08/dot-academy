@@ -7,11 +7,14 @@ import { FiMenu } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 
 export default function Header({ onMenuClick }) {
-  const router = useRouter()
+  const router = useRouter();
+
+  const handleSearch = () => {
+    router.push('/components/AuthProfile/SearchCourses');
+  };
+
   return (
     <div className="flex flex-col w-full">
-      
-      
       <div className="flex flex-wrap items-center justify-center md:justify-between bg-[#00A1FF7D] px-4 py-2 text-sm">
         <div className="flex items-center gap-2 text-black">
           <RiDiscountPercentFill size={20} />
@@ -25,15 +28,12 @@ export default function Header({ onMenuClick }) {
       </div>
 
       <div className="flex justify-between items-center px-4 py-3 ">
-        
-       
         <div className="md:hidden">
           <button onClick={onMenuClick}>
             <FiMenu className="w-6 h-6 text-gray-800" />
           </button>
         </div>
 
-     
         <div className="flex-1 hidden md:block" />
 
         <div className="flex items-center gap-4">
@@ -45,7 +45,10 @@ export default function Header({ onMenuClick }) {
               <FaBell className="w-4 h-4 text-gray-600" />
             </div>
             <div className="border border-gray-300 p-2 rounded-full hover:bg-gray-100 cursor-pointer">
-              <CiSearch className="w-4 h-4 text-gray-600" onClick={()=> router.push('/AuthComponents/ExploreCourses/SearchCourses')}/>
+              <CiSearch
+                className="w-4 h-4 text-gray-600"
+                onClick={handleSearch}
+              />
             </div>
           </div>
         </div>

@@ -20,4 +20,4 @@ function RootLayout({ children }) {
   );
 }
 
-export default Protected(RootLayout);
+export default RootLayout;

@@ -8,7 +8,7 @@ import course1 from '../../../../../public/Courses/1.png';
 import SideShow from '../SideShow';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCourses, setFilters } from '../../../../../slices/courseSlice';
+import { fetchCourses } from '../../../../../slices/courseSlice';
 import LoadingSpinner from '@/components/loadingSpinner';
 
 const tabsData = [
@@ -61,7 +61,6 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
 
   return (
     <div className="relative w-full flex items-center">
-      {/* Left Button */}
       <button
         onClick={() => scroll("left")}
         className="absolute left-0 z-10 bg-black text-white shadow p-2 rounded-full"
@@ -69,7 +68,6 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
         <FiChevronLeft />
       </button>
 
-      {/* Tabs */}
       <motion.div
         ref={scrollRef}
         className="flex gap-3 overflow-x-auto scrollbar-hide mx-10 py-2 no-scrollbar"
@@ -95,7 +93,6 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
         ))}
       </motion.div>
 
-      {/* Right Button */}
       <button
         onClick={() => scroll("right")}
         className="absolute right-0 z-10 bg-black text-white shadow p-2 rounded-full"
@@ -106,53 +103,72 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
   );
 };
 
-const CourseCard = ({ course, onClick }) => (
-  <motion.div
-    className="border rounded-lg p-4 flex items-center justify-between gap-4 mb-4 cursor-pointer hover:shadow-md transition-shadow"
-    onClick={() => onClick(course._id)}
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3 }}
-    whileHover={{ scale: 1.02 }}
-    whileTap={{ scale: 0.98 }}
-  >
-    <div className="flex items-center gap-4">
-      <div className="w-20 h-20 relative">
-        <Image 
-          src={course.image || course1} 
-          alt={course.name} 
-          fill 
-          className="object-contain rounded" 
-        />
-      </div>
-      <div className="flex-1">
-        <h2 className="font-semibold text-lg">{course.name}</h2>
-        <p className="text-sm text-gray-600 line-clamp-2">
-          {course.description}
-        </p>
-        <div className="flex gap-2 mt-2">
-          <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-            {course.priceType === 'free' ? 'Free' : `₹${course.effectivePrice || course.basePrice || 0}`}
-          </span>
-          <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-            {course.students || 0} students
-          </span>
-          {course.duration && (
+const CourseCard = ({ course, onClick }) => {
+  // derive price status + amount + weekly learners (non-breaking, tiny chips)
+  const isFree = (course.priceType || '').toLowerCase() === 'free';
+  const amount = course.effectivePrice ?? course.basePrice ?? 0;
+  const weeklyLearners = course.studentsThisWeek ?? course.weeklyLearners ?? course.students ?? 0;
+
+  return (
+    <motion.div
+      className="border rounded-lg p-4 flex items-center justify-between gap-4 mb-4 cursor-pointer hover:shadow-md transition-shadow"
+      onClick={() => onClick(course._id)}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <div className="flex items-center gap-4">
+        <div className="w-20 h-20 relative">
+          <Image 
+            src={course.image || course1} 
+            alt={course.name} 
+            fill 
+            className="object-contain rounded" 
+          />
+        </div>
+        <div className="flex-1">
+          <h2 className="font-semibold text-lg">{course.name}</h2>
+          <p className="text-sm text-gray-600 line-clamp-2">
+            {course.description}
+          </p>
+          <div className="flex gap-2 mt-2 flex-wrap">
+            {/* Price status (Free / Premium) */}
             <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-              {course.duration}
+              {isFree ? 'Free' : 'Premium'}
             </span>
-          )}
-          {course.examCategory && (
+
+            {/* Amount only if Premium */}
+            {!isFree && (
+              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                ₹{amount}
+              </span>
+            )}
+
+            {/* Weekly learners */}
             <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-              {course.examCategory}
+              {weeklyLearners} learning this week
             </span>
-          )}
+
+            {/* keep the existing optional tags too */}
+            {course.duration && (
+              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                {course.duration}
+              </span>
+            )}
+            {course.examCategory && (
+              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+                {course.examCategory}
+              </span>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-    <div className="text-2xl"><FiChevronRight /></div>
-  </motion.div>
-);
+      <div className="text-2xl"><FiChevronRight /></div>
+    </motion.div>
+  );
+};
 
 const Page = () => {
   const router = useRouter();
@@ -161,10 +177,8 @@ const Page = () => {
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
   
-  // Get courses from Redux store
   const { courses, loading, error, pagination } = useSelector((state) => state.courses);
   
-  // Fetch courses on component mount
   useEffect(() => {
     const filters = {
       search: '',
@@ -174,62 +188,43 @@ const Page = () => {
       page: 1,
       limit: 12
     };
-    
     dispatch(fetchCourses(filters));
   }, [dispatch]);
 
-  // Filter courses based on active tab
   useEffect(() => {
     setIsFiltering(true);
-    
     if (courses && courses.length > 0) {
       let filtered = courses;
-      
-      // Client-side filtering based on examCategory
       if (activeTab !== 'all') {
         filtered = courses.filter(course => {
           const category = course.examCategory?.toLowerCase() || '';
           return category.includes(activeTab);
         });
       }
-      
       setFilteredCourses(filtered);
     } else {
       setFilteredCourses([]);
     }
-    
-    // Small delay to show loading state for better UX
-    const timer = setTimeout(() => {
-      setIsFiltering(false);
-    }, 300);
-    
+    const timer = setTimeout(() => setIsFiltering(false), 300);
     return () => clearTimeout(timer);
   }, [courses, activeTab]);
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     setIsFiltering(true);
-    
-    // Client-side filtering
     if (courses && courses.length > 0) {
       let filtered = courses;
-      
       if (tabId !== 'all') {
         filtered = courses.filter(course => {
           const category = course.examCategory?.toLowerCase() || '';
           return category.includes(tabId);
         });
       }
-      
       setFilteredCourses(filtered);
     } else {
       setFilteredCourses([]);
     }
-    
-    // Small delay to show loading state for better UX
-    setTimeout(() => {
-      setIsFiltering(false);
-    }, 300);
+    setTimeout(() => setIsFiltering(false), 300);
   };
 
   const handleCourseClick = (id) => {
@@ -247,7 +242,6 @@ const Page = () => {
           onTabChange={handleTabChange} 
         />
 
-        {/* Show loading spinner when data is loading or filtering */}
         {(loading || isFiltering) && (
           <div className="flex justify-center items-center py-12">
             <LoadingSpinner />
@@ -279,7 +273,6 @@ const Page = () => {
           )}
         </div>
 
-        {/* Pagination controls - only show for "all" tab */}
         {pagination && pagination.pages > 1 && activeTab === 'all' && !loading && !isFiltering && (
           <div className="flex justify-center mt-6 gap-2">
             {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(page => (

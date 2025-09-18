@@ -30,7 +30,9 @@ export const fetchCourseDetails = createAsyncThunk(
   'courses/fetchCourseDetails',
   async (courseId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/u/courses/${courseId}`);
+      // Ensure this endpoint returns course + lessons (or sections->lessons).
+      // If your backend uses a different shape, the UI adapter in CourseDetail handles both shapes.
+      const response = await api.get(`/user/api/courses/${courseId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -78,7 +80,7 @@ export const fetchLessonContent = createAsyncThunk(
   'courses/fetchLessonContent',
   async ({ courseId, lessonId }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/u/courses/${courseId}/lessons/${lessonId}`);
+      const response = await api.get(`/user/api/courses/${courseId}/lessons/${lessonId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -183,6 +185,7 @@ const courseSlice = createSlice({
       .addCase(fetchCourseDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.currentCourse = null; // avoid flashing old data when navigating between details
       })
       .addCase(fetchCourseDetails.fulfilled, (state, action) => {
         state.loading = false;
@@ -256,14 +259,10 @@ const courseSlice = createSlice({
       })
       
       // Update lesson progress
-      .addCase(updateLessonProgress.fulfilled, (state, action) => {
-        // You might want to update local state with progress data
-      })
+      .addCase(updateLessonProgress.fulfilled, () => {})
       
       // Submit quiz attempt
-      .addCase(submitQuizAttempt.fulfilled, (state, action) => {
-        // You might want to update lesson completion status
-      });
+      .addCase(submitQuizAttempt.fulfilled, () => {});
   }
 });
 
