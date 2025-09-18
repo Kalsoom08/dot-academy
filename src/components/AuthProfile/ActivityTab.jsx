@@ -115,7 +115,6 @@ const YourActivityTab = ({ setActiveTab }) => {
         <WatchedCarousel />
       </motion.div>
 
-      {/* Docs */}
       <motion.h2
         className="text-xl font-bold text-gray-800 mt-8"
         initial={{ opacity: 0 }}
