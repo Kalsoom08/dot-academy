@@ -43,7 +43,7 @@ export default function Header({ onMenuClick }) {
         <div className="flex-1 hidden md:block" />
 
         <div className="flex items-center gap-4">
-          <button className=" text-white px-3 py-1 rounded text-sm bg-black hover:bg-gray-700 transition-colors">
+          <button className=" text-white px-3 py-1 rounded text-sm bg-black hover:bg-gray-800 transition-colors">
             Upgrade
           </button>
           <div className="flex items-center gap-2">
