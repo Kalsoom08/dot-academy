@@ -68,6 +68,31 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
+export const forgotPassword = createAsyncThunk(
+  'auth/forgotPassword',
+  async (email, { rejectWithValue }) => {
+    try {
+      const res = await api.post('/api/auth/forgotPassword', { email });
+      return res.data.message;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.error || 'Failed to send reset link');
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async ({ token, password }, { rejectWithValue }) => {
+    try {
+      const res = await api.put(`/api/auth/resetPassword/${token}`, { password });
+      return res.data.message;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data?.error || 'Failed to reset password');
+    }
+  }
+);
+
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -17,9 +17,14 @@ export default function GoogleLoginSuccess() {
     if (token) {
       localStorage.setItem("token", token);
 
-      dispatch(fetchCurrentUser());
-
-      router.push("/AuthComponents/home"); 
+      dispatch(fetchCurrentUser()).then((res) => {
+        const user = res.payload;
+        if (!user.name || !user.gender || !user.province) {
+          router.push("/profile/setupProfile");
+        } else {
+          router.push("/AuthComponents/home");
+        }
+      });
     } else {
       router.push("/login");
     }

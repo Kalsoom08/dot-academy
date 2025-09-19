@@ -5,12 +5,12 @@ import { CiSearch } from "react-icons/ci";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { FiMenu } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleModal, fetchNotifications } from "../../slices/notificationSlice";
+import NotificationsModal from "../app/AuthComponents/notifications/notificationModal"; 
 
 export default function Header({ onMenuClick }) {
   const router = useRouter();
-
-  const handleSearch = () => {
-    router.push('/components/AuthProfile/SearchCourses');
   };
 
   return (
@@ -41,18 +41,29 @@ export default function Header({ onMenuClick }) {
             Upgrade
           </button>
           <div className="flex items-center gap-2">
+          <div
+  className="relative border border-gray-300 p-2 rounded-full hover:bg-gray-100 cursor-pointer"
+  onClick={handleNotificationClick}
+>
+  <FaBell className="w-4 h-4 text-gray-600" />
+  
+  {/* {unreadCount > 0 && (
+    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1">
+      {unreadCount}
+    </span>
+  )} */}
+        </div>
+
             <div className="border border-gray-300 p-2 rounded-full hover:bg-gray-100 cursor-pointer">
-              <FaBell className="w-4 h-4 text-gray-600" />
-            </div>
-            <div className="border border-gray-300 p-2 rounded-full hover:bg-gray-100 cursor-pointer">
-              <CiSearch
-                className="w-4 h-4 text-gray-600"
-                onClick={handleSearch}
+ onClick={handleSearch}
+ main
               />
             </div>
           </div>
         </div>
       </div>
+
+      <NotificationsModal />
     </div>
   );
 }

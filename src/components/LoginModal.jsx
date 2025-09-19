@@ -9,6 +9,7 @@ import Logo from '../../public/NavBar/logo.png';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch } from 'react-redux';
+
 import { loginUser, fetchCurrentUser } from '../../slices/authSlice';
 
 export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitchToSignup }) {
@@ -127,13 +128,17 @@ const handleGoogleLogin = () => {
                   <input type="checkbox" />
                   <span>Remember Me</span>
                 </label>
-                <button
-                  type="button"
-                  className="text-[#7D287E] hover:underline"
-                  onClick={() => alert('Forgot password flow')}
-                >
-                  Forget Password?
-                </button>
+<button
+  type="button"
+  className="text-[#7D287E] hover:underline"
+  onClick={() => {
+    onClose(); 
+    router.push("/forgotPassword"); 
+  }}
+>
+  Forgot Password?
+</button>
+
               </div>
               <motion.button
                 type="submit"

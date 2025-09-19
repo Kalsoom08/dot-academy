@@ -5,7 +5,7 @@ export default function StepOtp({ formData, setFormData, onSubmit }) {
 
   const handleOtpChange = (index, value) => {
     const sanitizedValue = value.replace(/\D/g, '').slice(0, 1);
-    const newOtpArray = formData.otp.split('');
+    const newOtpArray = formData.otp.split('')
     newOtpArray[index] = sanitizedValue;
     setFormData({ ...formData, otp: newOtpArray.join('') });
 

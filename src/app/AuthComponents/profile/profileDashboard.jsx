@@ -1,7 +1,9 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
-import { PiClock, PiMedal, PiCheckFat } from 'react-icons/pi';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProfileData, fetchProfileActivity, fetchLeaderboard } from "../../../../slices/profileSlice";
 import { useRouter } from 'next/navigation';
+import { PiClock, PiMedal, PiCheckFat } from 'react-icons/pi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import YourAnalysisTab from '../../../components/AuthProfile/AnalysisTab';
@@ -10,7 +12,13 @@ import LeaderboardTab from '../../../components/AuthProfile/LeaderboardTab';
 
 const UserProfileDashboard = () => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('your analysis');
+  const dispatch = useDispatch();
+
+  const {
+    courses, quizAttempts, unattemptedTests, docViews,
+    attemptedTests, watchedVideos, docsViewed, askedQuestions, doubts,
+    loading, error,
+  } = useSelector((state) => state.profile);
 
   const [userData, setUserData] = useState({
     firstName: 'Loading',
@@ -18,34 +26,67 @@ const UserProfileDashboard = () => {
     studentId: 'Loading...',
   });
 
-  const fetchUserData = useCallback(async () => {
+  const fetchUserDataLocal = useCallback(async () => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 300));
       const storedData = localStorage.getItem('userProfile');
       if (storedData) {
         setUserData(JSON.parse(storedData));
       } else {
-        setUserData({
-          firstName: 'Guest',
-          lastName: 'User',
-          studentId: 'N/A'
-        });
+        setUserData({ firstName: 'Guest', lastName: 'User', studentId: 'N/A' });
       }
     } catch (error) {
       console.error('Failed to fetch user data:', error);
     }
   }, []);
 
+  useEffect(() => { fetchUserDataLocal(); }, [fetchUserDataLocal]);
+
+  const authUser = useSelector((s) => s.auth?.user);
+  const userId = (authUser && authUser._id) || (typeof window !== "undefined" ? localStorage.getItem("userId") : null);
+
   useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+    if (userId) dispatch(fetchProfileData(userId));
+  }, [dispatch, userId]);
+
+  const [activeTab, setActiveTab] = useState('your analysis');
+
+  useEffect(() => {
+    if (activeTab === 'your activity' && userId) {
+      dispatch(fetchProfileActivity(userId));
+    }
+  }, [activeTab, userId, dispatch]);
+
+  useEffect(() => {
+    if (activeTab === 'leaderboard') {
+      dispatch(fetchLeaderboard());
+    }
+  }, [activeTab, dispatch]);
 
   const renderContent = () => {
     switch (activeTab) {
       case 'your analysis':
-        return <YourAnalysisTab router={router} />;
+        return (
+          <YourAnalysisTab
+            router={router}
+            userId={userId}
+            courses={courses}
+            quizAttempts={quizAttempts}
+            unattemptedTests={unattemptedTests}
+            docViews={docViews}
+          />
+        );
       case 'your activity':
-        return <YourActivityTab setActiveTab={setActiveTab} />;
+        return (
+          <YourActivityTab
+            setActiveTab={setActiveTab}
+            attemptedTests={attemptedTests}
+            watchedVideos={watchedVideos}
+            docsViewed={docsViewed}
+            askedQuestions={askedQuestions}
+            doubts={doubts}
+          />
+        );
       case 'leaderboard':
         return <LeaderboardTab router={router} />;
       default:
@@ -60,7 +101,6 @@ const UserProfileDashboard = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Header */}
       <motion.div
         className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8"
         initial={{ opacity: 0, y: -20 }}
@@ -88,15 +128,11 @@ const UserProfileDashboard = () => {
         </button>
       </motion.div>
 
-      {/* Tabs */}
       <motion.div
         className="flex border-b border-gray-200 mb-8 overflow-x-auto"
         initial="hidden"
         animate="visible"
-        variants={{
-          hidden: {},
-          visible: { transition: { staggerChildren: 0.05 } }
-        }}
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
       >
         {['Your Analysis', 'Your Activity', 'Leaderboard'].map((tab) => (
           <motion.button
@@ -107,17 +143,13 @@ const UserProfileDashboard = () => {
                 ? 'text-gray-800 border-b-2 border-gray-800'
                 : 'text-gray-500 hover:text-gray-800'
             }`}
-            variants={{
-              hidden: { opacity: 0, y: 10 },
-              visible: { opacity: 1, y: 0 }
-            }}
+            variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
           >
             {tab}
           </motion.button>
         ))}
       </motion.div>
 
-      {/* Main Content with AnimatePresence for smooth tab switching */}
       <div className="grid grid-cols-1 gap-6">
         <AnimatePresence mode="wait">
           <motion.div
@@ -127,20 +159,16 @@ const UserProfileDashboard = () => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            {renderContent()}
+            {loading ? <p>Loading...</p> : (error ? <p className="text-red-500">{error}</p> : renderContent())}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Stats */}
       <motion.div
         className="flex justify-center sm:justify-normal"
         initial="hidden"
         animate="visible"
-        variants={{
-          hidden: {},
-          visible: { transition: { staggerChildren: 0.1 } }
-        }}
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
       >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10 w-[70%] bg-white border border-gray-200 rounded-md">
           {[
@@ -151,10 +179,7 @@ const UserProfileDashboard = () => {
             <motion.div
               key={idx}
               className="rounded-lg py-4 px-6 flex flex-col items-center"
-              variants={{
-                hidden: { opacity: 0, scale: 0.9 },
-                visible: { opacity: 1, scale: 1 }
-              }}
+              variants={{ hidden: { opacity: 0, scale: 0.9 }, visible: { opacity: 1, scale: 1 } }}
               transition={{ duration: 0.3 }}
             >
               {stat.icon}
