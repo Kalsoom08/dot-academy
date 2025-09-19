@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProfileData } from "../../../../slices/profileSlice";
+import { fetchProfileData, fetchProfileActivity, fetchLeaderboard } from "../../../../slices/profileSlice";
 import { useRouter } from 'next/navigation';
 import { PiClock, PiMedal, PiCheckFat } from 'react-icons/pi';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,8 +14,11 @@ const UserProfileDashboard = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const { courses, quizAttempts, unattemptedTests, docViews, loading, error } =
-    useSelector((state) => state.profile);
+  const {
+    courses, quizAttempts, unattemptedTests, docViews,
+    attemptedTests, watchedVideos, docsViewed, askedQuestions, doubts,
+    loading, error,
+  } = useSelector((state) => state.profile);
 
   const [userData, setUserData] = useState({
     firstName: 'Loading',
@@ -48,6 +51,18 @@ const UserProfileDashboard = () => {
 
   const [activeTab, setActiveTab] = useState('your analysis');
 
+  useEffect(() => {
+    if (activeTab === 'your activity' && userId) {
+      dispatch(fetchProfileActivity(userId));
+    }
+  }, [activeTab, userId, dispatch]);
+
+  useEffect(() => {
+    if (activeTab === 'leaderboard') {
+      dispatch(fetchLeaderboard());
+    }
+  }, [activeTab, dispatch]);
+
   const renderContent = () => {
     switch (activeTab) {
       case 'your analysis':
@@ -62,7 +77,16 @@ const UserProfileDashboard = () => {
           />
         );
       case 'your activity':
-        return <YourActivityTab setActiveTab={setActiveTab} />;
+        return (
+          <YourActivityTab
+            setActiveTab={setActiveTab}
+            attemptedTests={attemptedTests}
+            watchedVideos={watchedVideos}
+            docsViewed={docsViewed}
+            askedQuestions={askedQuestions}
+            doubts={doubts}
+          />
+        );
       case 'leaderboard':
         return <LeaderboardTab router={router} />;
       default:
