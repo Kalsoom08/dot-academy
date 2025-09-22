@@ -11,6 +11,12 @@ import NotificationsModal from "../app/AuthComponents/notifications/notification
 
 export default function Header({ onMenuClick }) {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const unreadCount = useSelector((s) => s.notifications.unreadCount); 
+
+  const handleNotificationClick = () => {
+    dispatch(fetchNotifications());
+    dispatch(toggleModal());
   };
 
   return (
@@ -55,8 +61,9 @@ export default function Header({ onMenuClick }) {
         </div>
 
             <div className="border border-gray-300 p-2 rounded-full hover:bg-gray-100 cursor-pointer">
- onClick={handleSearch}
- main
+              <CiSearch
+                className="w-4 h-4 text-gray-600"
+                onClick={() => router.push('/AuthComponents/ExploreCourses/SearchCourses')}
               />
             </div>
           </div>

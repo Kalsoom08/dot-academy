@@ -1,284 +1,182 @@
-'use client'
-import React, { useState } from 'react';
+'use client';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import UpNext from '../UpNext';
 import SideShow from '../SideShow';
-
-const worksheetData = [
-  {
-    id: 1,
-    question: 'Pick out the nouns in the following sentences and classify them.',
-    options: [
-      'MT. Everest is the highest peak in the world',
-      'There are fifty student in our class',
-      'The bible is a sacred book for the Christians',
-      'Beauty is a rare quality',
-      'Prevention is better than cure',
-    ],
-    correctAnswer: 'The bible is a sacred book for the Christians',
-    information:
-      'The green box means your answer is correct, and the red box means your answer is incorrect.',
-  },
-  {
-    id: 2,
-    question: 'Pick out the nouns in the following sentences and classify them.',
-    options: [
-      'MT. Everest is the highest peak in the world',
-      'There are fifty student in our class',
-      'The bible is a sacred book for the Christians',
-      'Beauty is a rare quality',
-      'Prevention is better than cure',
-    ],
-    correctAnswer: 'Prevention is better than cure',
-  },
-  {
-    id: 3,
-    question: 'Pick out the nouns in the following sentences and classify them.',
-    options: [
-      'MT. Everest is the highest peak in the world',
-      'The bible is a sacred book for the Christians',
-      'Beauty is a rare quality',
-      'Prevention is better than cure',
-      'There are fifty student in our class',
-    ],
-    correctAnswer: 'There are fifty student in our class',
-  },
-  {
-    id: 4,
-    question: 'Pick out the nouns in the following sentences and classify them.',
-    options: [
-      'MT. Everest is the highest peak in the world',
-      'The bible is a sacred book for the Christians',
-      'There are fifty student in our class',
-      'Prevention is better than cure',
-    ],
-    correctAnswer: 'There are fifty student in our class',
-  },
-  {
-    id: 5,
-    question: "State whether the underlined nouns are countable (C) or uncountable (U).",
-    problem: [
-      {
-        statment: "The children are playing in the park",
-        answers: ["Countable", "Uncountable", "Both"],
-        correctAnswer: "Countable",
-        information: 'The green box means your answer is correct, and the red box means your answer is incorrect.',
-      },
-      {
-        statment: "The bottle is in the cupboard",
-        answers: ["Countable", "Uncountable", "Both"],
-        correctAnswer: "Countable",
-      },
-      {
-        statment: "I'm drinking milk",
-        answers: ["Countable", "Uncountable", "Both"],
-        correctAnswer: "Countable",
-      },
-      {
-        statment: "I put too much oil in the dish",
-        answers: ["Countable", "Uncountable", "Both"],
-        correctAnswer: "Both",
-      },
-      {
-        statment: "Could you give me some glue, please",
-        answers: ["Countable", "Uncountable", "Both"],
-        correctAnswer: "Uncountable",
-      },
-      {
-        statment: "I'm drinking milk",
-        answers: ["Countable", "Uncountable", "Both"],
-        correctAnswer: "Both",
-      },
-    ],
-  },
-   {
-    id: 6,
-    question: 'Everyone appreciated the ______ of the idea. (novel)',
-    options: ['Novelty', 'Novel-ing', 'Novelist'],
-    correctAnswer: 'Novelty',
-    information: 'The green circle means your answer is correct, and the red circle means your answer is incorrect.',
-  },
-  {
-    id: 7,
-    question: 'Everyone appreciated the ______ of the idea. (novel)',
-    options: ['Novelty', 'Novel-ing', 'Novelist'],
-    correctAnswer: 'Novelty',
-  },
-];
+import { useSearchParams } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLessonContent } from '../../../../../slices/courseSlice';
+import LoadingSpinner from '@/components/loadingSpinner';
 
 const WorkSheetData = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
 
-  const handleSelect = (questionKey, selectedOption) => {
-    setSelectedAnswers((prev) => ({ ...prev, [questionKey]: selectedOption }));
+  const searchParams = useSearchParams();
+  const courseId = searchParams.get('course');
+  const sectionId = searchParams.get('section');
+  const lessonId = searchParams.get('lesson');
+
+  const dispatch = useDispatch();
+  const { currentLesson, loading, error } = useSelector((state) => state.courses);
+
+  useEffect(() => {
+    if (courseId && lessonId) {
+      dispatch(fetchLessonContent({ courseId, lessonId }));
+    }
+  }, [courseId, lessonId, dispatch]);
+
+  const handleSelect = (questionKey, selectedOptionKey) => {
+    setSelectedAnswers((prev) => ({ ...prev, [questionKey]: selectedOptionKey }));
   };
-   
-  const [openIndex, setOpenIndex] = useState(null)
+
+  // Convert lesson content to worksheet format
+  const worksheetData = currentLesson?.mcqs
+    ? currentLesson.mcqs.map((item, index) => {
+        // Filter out any MongoDB ID values from options
+        const validOptions = Object.entries(item.options || {})
+          .filter(([key, value]) => {
+            // Exclude values that look like MongoDB IDs (24-character hex strings)
+            const isMongoId = typeof value === 'string' && /^[0-9a-fA-F]{24}$/.test(value);
+            return !isMongoId && value !== null && value !== undefined && value !== '';
+          })
+          .map(([key, value]) => ({
+            key,
+            value,
+          }));
+        
+        return {
+          id: index + 1,
+          question: item.question,
+          options: validOptions,
+          correctAnswer: item.correctAnswer, // This should be "A", "B", "C", or "D"
+          information: item.explanation,
+        };
+      })
+    : [];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        Error loading worksheet: {error.message || 'Unknown error'}
+      </div>
+    );
+  }
 
   return (
-    <motion.section 
+    <motion.section
       className="lg:px-6 py-4 grid lg:grid-cols-[70%_30%]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <motion.div 
+      <motion.div
         className="lg:px-6 px-2"
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="font-bold text-[22px] mb-4">Worksheet: Noun & it's classification</h1>
-        <div className="flex flex-col gap-6 py-10">
-          {worksheetData.map((item, index) => (
-            <motion.div 
-              key={item.id} 
-              className="flex flex-col gap-8"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.4 }}
-            >
-              <h2 className="font-semibold">Q{item.id}: {item.question}</h2>
+        <h1 className="font-bold text-[22px] mb-4">Worksheet: {currentLesson?.title || 'Quiz'}</h1>
 
-              {item.options && (
-                <div className="flex flex-col gap-2">
-                  {item.options.map((option, idx) => {
-                    const isSelected = selectedAnswers[item.id] === option;
-                    const isCorrect = option === item.correctAnswer;
+        {worksheetData.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No quiz data available for this lesson.</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-6 py-10">
+            {worksheetData.map((item, index) => (
+              <motion.div
+                key={item.id}
+                className="flex flex-col gap-8"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.4 }}
+              >
+                <h2 className="font-semibold">Q{item.id}: {item.question}</h2>
 
-                    return (
-                      <motion.div
-                        key={idx}
-                        onClick={() => handleSelect(item.id, option)}
-                        className="flex items-center gap-3 cursor-pointer"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <div
-                          className="w-5 h-5 border border-gray-400 rounded-sm flex items-center justify-center text-white text-[12px]"
-                          style={{
-                            backgroundColor: isSelected
-                              ? isCorrect
-                                ? '#155724'
-                                : '#D96060'
-                              : 'white',
-                            color: isSelected ? 'white' : 'black',
-                            borderColor: isSelected ? 'transparent' : '#ccc',
-                          }}
+                {item.options && item.options.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    {item.options.map((option, idx) => {
+                      const isSelected = selectedAnswers[item.id] === option.key;
+                      const isCorrect = option.key === item.correctAnswer;
+
+                      return (
+                        <motion.div
+                          key={idx}
+                          onClick={() => handleSelect(item.id, option.key)}
+                          className="flex items-center gap-3 cursor-pointer"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
                         >
-                          {isSelected && (isCorrect ? '✓' : '✕')}
-                        </div>
-                        <p
-                          style={{
-                            color: isSelected ? (isCorrect ? '#155724' : '#D96060') : 'black',
-                          }}
-                        >
-                          {option}
-                        </p>
-                      </motion.div>
-                    );
-                  })}
-                  {item.information && (
-                    <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 italic mt-1 flex items-center gap-1 flex-wrap">
-                        The green box
-                        <span className="w-2 h-2 bg-[#155724] rounded-full inline-block"></span>
-                        means your answer is correct, and the red box
-                        <span className="w-2 h-2 bg-[#D96060] rounded-full inline-block"></span>
-                        means your answer is incorrect
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {item.problem && (
-                <div className="flex flex-col gap-6">
-                  {item.problem.map((subItem, idx) => {
-                    const key = `q${item.id}_${idx}`;
-                    return (
-                      <motion.div 
-                        key={idx} 
-                        className="flex flex-col gap-2"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: idx * 0.05 }}
-                      >
-                        <p className="font-medium">{idx + 1}. {subItem.statment}</p>
-                        <div className="flex flex-col gap-4 flex-wrap">
-                          {subItem.answers.map((answer, aIdx) => {
-                            const isSelected = selectedAnswers[key] === answer;
-                            const isCorrect = answer === subItem.correctAnswer;
-
-                            return (
-                              <motion.div
-                                key={aIdx}
-                                onClick={() => handleSelect(key, answer)}
-                                className="flex items-center gap-2 cursor-pointer"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                <div
-                                  className="w-4 h-4 rounded-full border border-gray-400"
-                                  style={{
-                                    backgroundColor: isSelected
-                                      ? isCorrect
-                                        ? '#155724'
-                                        : '#D96060'
-                                      : 'white',
-                                    borderColor: isSelected ? 'transparent' : '#ccc',
-                                  }}
-                                ></div>
-                                <p
-                                  style={{
-                                    color: isSelected
-                                      ? isCorrect
-                                        ? '#155724'
-                                        : '#D96060'
-                                      : 'black',
-                                  }}
-                                >
-                                  {answer}
-                                </p>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                        {subItem.information && (
-                          <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 italic mt-1 flex items-center gap-1 flex-wrap">
-                            The green box
-                            <span className="w-2 h-2 bg-[#155724] rounded-full inline-block"></span>
-                            means your answer is correct, and the red box
-                            <span className="w-2 h-2 bg-[#D96060] rounded-full inline-block"></span>
-                            means your answer is incorrect
+                          <div
+                            className="w-5 h-5 border border-gray-400 rounded-sm flex items-center justify-center text-white text-[12px]"
+                            style={{
+                              backgroundColor: isSelected
+                                ? isCorrect
+                                  ? '#10B981' // green for correct
+                                  : '#EF4444' // red for incorrect
+                                : 'white',
+                              color: isSelected ? 'white' : 'black',
+                              borderColor: isSelected ? 'transparent' : '#ccc',
+                            }}
+                          >
+                            {isSelected && (isCorrect ? '✓' : '✕')}
+                          </div>
+                          <p
+                            className={`${isSelected ? (isCorrect ? 'text-green-700 font-medium' : 'text-red-700 font-medium') : 'text-black'}`}
+                          >
+                            {option.value}
                           </p>
-                        )}
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </div>
-        <motion.div 
-          className='flex flex-col'
+                        </motion.div>
+                      );
+                    })}
+                    {item.information && (
+                      <p className="text-[8px] sm:text-[9px] md:text-[10px] text-gray-600 italic mt-1 flex items-center gap-1 flex-wrap">
+                        The green box
+                        <span className="w-2 h-2 bg-green-700 rounded-full inline-block"></span>
+                        means your answer is correct, and the red box
+                        <span className="w-2 h-2 bg-red-700 rounded-full inline-block"></span>
+                        means your answer is incorrect
+                      </p>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        <motion.div
+          className="flex flex-col mt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-            <p className='italic text-gray-600'>ECADEMY DOT is your go-to online learning platform designed to help you learn something valuable every day. Whether you're a student, a professional, or just curious.</p>
-            <p className='italic text-gray-600'> With flexible and affordable subscription plans, you get unlimited access to all learning materials anytime, anywhere. Start learning with ECADEMY DOT and turn your goals into achievements!</p>
-            <motion.button 
-              className='bg-[#282828] shadow-md px-6 py-2 text-white rounded-md my-4 m-auto cursor-pointer'
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              View Plan
-            </motion.button>
+          <p className="italic text-gray-600">
+            ECADEMY DOT is your go-to online learning platform designed to help you learn something valuable every day. Whether you're a student, a professional, or just curious.
+          </p>
+          <p className="italic text-gray-600">
+            With flexible and affordable subscription plans, you get unlimited access to all learning materials anytime, anywhere. Start learning with ECADEMY DOT and turn your goals into achievements!
+          </p>
+          <motion.button
+            className="bg-[#282828] shadow-md px-6 py-2 text-white rounded-md my-4 m-auto cursor-pointer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            View Plan
+          </motion.button>
         </motion.div>
-        
+
         <UpNext />
       </motion.div>
-      <motion.div 
+      <motion.div
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}

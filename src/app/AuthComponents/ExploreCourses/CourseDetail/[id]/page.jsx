@@ -88,7 +88,9 @@ function mapLessonToItem(lesson, sectionId, index) {
     weight,
     type: kind,
     icon: kind === 'workSheet' && lesson.locked ? <CiLock size={20} /> : null,
-    unlock: kind === 'workSheet' && lesson.locked ? 'Unlock' : undefined
+    unlock: kind === 'workSheet' && lesson.locked ? 'Unlock' : undefined,
+    // Store the full lesson object for later use
+    lessonData: lesson
   };
 }
 
@@ -137,8 +139,8 @@ function CourseDetail() {
   const courseSections = useCourseSections(currentCourse);
 
   const handleItemClick = (item) => {
-    if (item.type === 'workSheet') {
-      // MCQ/Worksheet
+    if (item.type === 'workSheet' || item.type === 'mcq') {
+      // MCQ/Worksheet - navigate to worksheet page with proper parameters
       router.push(`/AuthComponents/ExploreCourses/WorkSheetData?course=${courseId}&section=${item.sectionId}&lesson=${item.id}`);
       return;
     }
@@ -265,9 +267,6 @@ function CourseDetail() {
               )}
             </div>
           </motion.div>
-
-          {/* your promos/blocks… (unchanged) */}
-          {/* ...keep your bottom blocks exactly as you had them... */}
         </>
       )}
 

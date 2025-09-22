@@ -30,8 +30,6 @@ export const fetchCourseDetails = createAsyncThunk(
   'courses/fetchCourseDetails',
   async (courseId, { rejectWithValue }) => {
     try {
-      // Ensure this endpoint returns course + lessons (or sections->lessons).
-      // If your backend uses a different shape, the UI adapter in CourseDetail handles both shapes.
       const response = await api.get(`/user/api/courses/${courseId}`);
       return response.data;
     } catch (error) {
@@ -44,7 +42,7 @@ export const fetchCourseSummary = createAsyncThunk(
   'courses/fetchCourseSummary',
   async (courseId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/u/courses/${courseId}/summary`);
+      const response = await api.get(`/user/api/courses/${courseId}/summary`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -93,7 +91,7 @@ export const updateLessonProgress = createAsyncThunk(
   async ({ courseId, lessonId, progressData }, { rejectWithValue }) => {
     try {
       const response = await api.post(
-        `/api/u/courses/${courseId}/lessons/${lessonId}/progress`,
+        `/user/api/courses/${courseId}/lessons/${lessonId}/progress`,
         progressData
       );
       return response.data;

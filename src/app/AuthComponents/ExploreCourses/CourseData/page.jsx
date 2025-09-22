@@ -1,132 +1,226 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import noun from '../../../../../public/Courses/noun.png';
-import CommonProper from '../../../../../public/Courses/CommonProper.png';
 import UpNext from '../UpNext';
 import SideShow from '../SideShow';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLessonContent } from '../../../../../slices/courseSlice';
+import LoadingSpinner from '@/components/loadingSpinner';
 
-const courseContents = [
-  {
-    title: 'What is Noun?',
-    description: 'Definition and basic explanation of nouns with examples.',
-    content: {
-      heading: 'What is Noun?',
-      body: 'A noun is a word that names a person, place, thing, or idea. It is one of the most important parts of speech in English because nouns help us talk about everything around us.',
-      image: noun,
-      examples: null,
-    },
-  },
-  {
-    title: '1. Common Noun and Proper Noun',
-    description: 'Learn about general vs specific nouns and how to identify them.',
-    content: {
-      heading: '1. Common & Proper Noun',
-      body: 'A common noun refers to a general, non-specific person, place, thing, or idea. Common nouns do not usually start with a capital letter unless they are at the beginning of a sentence.',
-      image: CommonProper,
-      examples: [
-        { label: 'Person', items: 'Teacher, Student, Doctor' },
-        { label: 'Place', items: 'City, Country, Park' },
-        { label: 'Thing', items: 'Table, Car, Book' },
-        { label: 'Idea', items: 'Love, Happiness, Courage' },
-      ],
-    },
-  },
-  {
-    title: '2. Singular and Plural Noun',
-    description: 'Explanation of number forms in nouns with transformation rules.',
-    content: {
-      heading: '2. Singular and Plural Nouns',
-      body: 'A singular noun refers to one person, place, thing, or idea. A plural noun refers to more than one. Plural nouns are usually formed by adding -s or -es, but some are irregular.',
-      image: CommonProper,
-      examples: [
-        { items: 'cat → cats' },
-        { items: 'box → boxes' },
-        { items: 'child → children' },
-        { items: 'man → men' },
-      ],
-    },
-  },
-  {
-    title: '3. Concrete and Abstract Noun',
-    description: 'Learn the difference between nouns you can sense and those you can’t.',
-    content: {
-      heading: '3. Concrete and Abstract Noun',
-      body: 'Concrete nouns can be experienced through the five senses, like apple or music. Abstract nouns are ideas or qualities like freedom or bravery that cannot be touched or seen.',
-      image: null,
-      examples: [
-        { label: 'Concrete', items: 'Apple, Dog, Music' },
-        { label: 'Abstract', items: 'Freedom, Love, Bravery' },
-      ],
-    },
-  },
-  {
-    title: '4. Countable and Uncountable Noun',
-    description: 'Understand which nouns can be counted and which cannot.',
-    content: {
-      heading: '4. Countable and Uncountable Noun',
-      body: 'Countable nouns are things you can count (like chairs, pencils), while uncountable nouns are substances or concepts (like sugar, water) that you cannot count individually.',
-      image: null,
-      examples: [
-        { label: 'Countable', items: 'Book, Apple, Pen' },
-        { label: 'Uncountable', items: 'Milk, Air, Sugar' },
-      ],
-    },
-  },
-  {
-    title: '5. Compound Noun',
-    description: 'Learn about nouns made up of two or more words.',
-    content: {
-      heading: '5. Compound Noun',
-      body: 'A compound noun is formed by combining two or more words to create a single noun. It can be written as one word, separate words, or hyphenated.',
-      image: null,
-      examples: [
-        { items: 'Toothbrush, Sister-in-law, Bus stop' },
-      ],
-    },
-  },
-  {
-    title: '6. Possessive Noun',
-    description: 'Nouns that show ownership or possession.',
-    content: {
-      heading: '6. Possessive Noun',
-      body: 'A possessive noun shows ownership or relationship. It is formed by adding an apostrophe + s (\'s) or just an apostrophe to a noun.',
-      image: null,
-      examples: [
-        { items: "Sarah's book, boys' school" },
-      ],
-    },
-  },
-];
+// Article content component
+const ArticleContent = ({ articleContent, title, featuredImage }) => {
+  return (
+    <div className="prose max-w-none">
+      <h1 className="text-3xl font-bold mb-6">{title}</h1>
+      {featuredImage && (
+        <div className="mb-6">
+          <Image
+            src={featuredImage}
+            alt={title}
+            width={600}
+            height={400}
+            className="rounded-lg shadow-md"
+          />
+        </div>
+      )}
+      {articleContent.map((section, idx) => (
+        <div key={idx} className="py-6">
+          <h2 className="text-2xl font-semibold">{section.heading}</h2>
+          <p className="text-lg">{section.explanation}</p>
+          {section.examples && section.examples.length > 0 && (
+            <div className="pt-4">
+              <h3 className="text-xl font-bold">Examples</h3>
+              <ul className="space-y-2">
+                {section.examples.map((example, idx) => (
+                  <li key={idx} className="flex gap-2">
+                    <strong>{example.label}:</strong> {example.items}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
 
-const CourseData = () => {
-  const router = useRouter();
-  const [activeIndex, setActiveIndex] = useState(null);
-
-  const displayedContent =
-    activeIndex === null
-      ? [courseContents[0], courseContents[1]]
-      : [courseContents[activeIndex]];
-
+// Quiz component
+const QuizComponent = ({ quizData }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showSolution, setShowSolution] = useState(false);
 
-  const question = {
-    text: 'Which of the following Example is Singular and Common?',
+  if (!quizData) return null;
+
+  const handleOptionClick = (index) => {
+    setSelectedOption(index);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="flex flex-col min-h-screen px-4"
+    >
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+        <p className="mb-4 font-semibold">
+          Try Yourself:
+          <span className="font-normal ml-2">{quizData.question}</span>
+        </p>
+
+        <div className="flex flex-col gap-3">
+          {quizData.options.map((option, index) => (
+            <div key={index} className="flex flex-col gap-2">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleOptionClick(index)}
+                className={`flex items-center gap-2 px-4 py-2 border rounded-md text-left text-sm
+                ${selectedOption === index ? 'bg-gray-200 text-white' : 'bg-white text-black border-gray-300'}
+                ${showSolution && option.isCorrect ? 'border-green-600 bg-green-100' : ''} 
+                ${showSolution && selectedOption === index && !option.isCorrect ? 'bg-red-100 border-red-600' : ''}`}
+              >
+                <span className="font-bold">{option.label}.</span> {option.text}
+              </motion.button>
+
+              <AnimatePresence>
+                {showSolution && option.isCorrect && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.3 }}
+                    className="bg-[#D4EDDA] border border-green-600 px-2 py-2 rounded-md"
+                  >
+                    <h1 className="text-green-600 text-[14px] font-semibold">Explanation</h1>
+                    <p className="text-green-600 text-xs mt-2">{quizData.explanation}</p>
+                    <p className="text-green-600 text-xs mt-2 font-semibold">Correct answer</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+        </div>
+
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.96 }}
+          onClick={() => setShowSolution(true)}
+          className="mt-6 w-full bg-[#222] text-white py-2 rounded-md hover:bg-[#111] transition duration-200"
+        >
+          View Solution
+        </motion.button>
+      </div>
+
+      <div className="mt-10 text-center text-sm italic text-gray-600 max-w-sm">
+        Are you planning to get high score in your exam<br />
+        <span className="not-italic font-medium text-black">Ecademy</span> will help you to get high score in your exam
+      </div>
+
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.96 }}
+        className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-[#111] transition duration-200 w-[40%] mx-6"
+      >
+        View plan
+      </motion.button>
+    </motion.div>
+  );
+};
+
+const CourseData = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const courseId = searchParams.get('course');
+  const sectionId = searchParams.get('section');
+  const lessonId = searchParams.get('lesson');
+  
+  const dispatch = useDispatch();
+  const { currentLesson, loading, error } = useSelector((state) => state.courses);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showSolution, setShowSolution] = useState(false);
+
+  useEffect(() => {
+    if (courseId && lessonId) {
+      dispatch(fetchLessonContent({ courseId, lessonId }));
+    }
+  }, [courseId, lessonId, dispatch]);
+
+  // Default quiz data (only shown if lesson doesn't have its own quiz)
+  const defaultQuizData = {
+    question: 'Which of the following Example is Singular and Common?',
     options: [
       { label: 'A', text: 'Girl', isCorrect: true },
       { label: 'B', text: 'Water', isCorrect: false },
       { label: 'C', text: 'Fire', isCorrect: false },
       { label: 'D', text: 'Colors', isCorrect: false },
     ],
+    explanation: 'A common noun refers to a general name of a person, place, or thing, not specific. "Girl" is a singular noun because it refers to one person and is a common noun because it\'s not the name of a specific individual.'
   };
 
   const handleOptionClick = (index) => {
     setSelectedOption(index);
+  };
+
+  // Determine content based on lesson type
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <LoadingSpinner />
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          Error loading content: {error.message || 'Unknown error'}
+        </div>
+      );
+    }
+
+    if (currentLesson) {
+      const { type, articleContent, content, title, featuredImage, quiz } = currentLesson;
+      
+      // Render article content
+      if (type === 'article' && articleContent) {
+        return <ArticleContent articleContent={articleContent} title={title} featuredImage={featuredImage} />;
+      }
+      
+      // Render other content types like video, pdf, or generic content
+      return (
+        <div className="prose max-w-none">
+          <h1 className="text-3xl font-bold mb-6">{title}</h1>
+          {featuredImage && (
+            <div className="mb-6">
+              <Image
+                src={featuredImage}
+                alt={title}
+                width={600}
+                height={400}
+                className="rounded-lg shadow-md"
+              />
+            </div>
+          )}
+          <div className="text-lg">
+            {content || 'No content available for this lesson.'}
+          </div>
+        </div>
+      );
+    }
+
+    // Show loading state while fetching data
+    return (
+      <div className="flex justify-center items-center py-12">
+        <LoadingSpinner />
+      </div>
+    );
   };
 
   return (
@@ -134,7 +228,7 @@ const CourseData = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className='lg:px-6 py-4 grid lg:grid-cols-[70%_30%]'
+      className="lg:px-6 py-4 grid lg:grid-cols-[70%_30%]"
     >
       <motion.div
         initial={{ y: 20, opacity: 0 }}
@@ -143,156 +237,20 @@ const CourseData = () => {
         className="mx-auto px-6 py-8"
       >
         <h1 className="text-2xl font-bold mb-2">
-          Noun & its classifications (part-1) - English Grammar
+          {currentLesson?.title || "Loading..."}
         </h1>
-        <p className="text-lg mb-6">Table of Contents</p>
-        <div className="bg-white rounded-lg shadow-sm divide-y divide-gray-200">
-          {courseContents.map((item, index) => (
-            <div key={index}>
-              <div
-                className="flex items-center justify-between my-2 px-4 py-3 hover:bg-gray-100 cursor-pointer"
-                onClick={() => setActiveIndex(index)}
-              >
-                <span className="text-[16px] text-gray-800">{item.title}</span>
-                {activeIndex === index ? (
-                  <FiChevronUp className="text-xl text-gray-500" />
-                ) : (
-                  <FiChevronDown className="text-xl text-gray-500" />
-                )}
-              </div>
-              <AnimatePresence>
-                {activeIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="px-4 pb-4 text-sm text-gray-600"
-                  >
-                    {item.description}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-        </div>
+        
         <div className="px-6 py-10 space-y-10">
-          {displayedContent.map((section, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.2 }}
-            >
-              <h1 className="text-[30px] font-bold py-4">
-                {section.content.heading}
-              </h1>
-              <p className="text-[17px] mb-6">{section.content.body}</p>
-              {section.content.image && (
-                <motion.div
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <Image
-                    src={section.content.image}
-                    alt={section.title}
-                    width={600}
-                    height={400}
-                    className="py-8"
-                  />
-                </motion.div>
-              )}
-              {section.content.examples && (
-                <>
-                  <h1 className="text-[22px] font-bold">Example</h1>
-                  <ul className="py-4 space-y-2">
-                    {section.content.examples.map((example, idx) => (
-                      <li key={idx} className="flex gap-2">
-                        {example.label && (
-                          <h1 className="font-bold text-[18px]">
-                            {example.label}:
-                          </h1>
-                        )}
-                        <p>{example.items}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </motion.div>
-          ))}
+          {renderContent()}
         </div>
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col min-h-screen px-4"
-        >
-          <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
-            <p className="mb-4 font-semibold">
-              Try Yourself:
-              <span className="font-normal ml-2">{question.text}</span>
-            </p>
-
-            <div className="flex flex-col gap-3">
-             {question.options.map((option, index) => (
-              <div key={index} className="flex flex-col gap-2">
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleOptionClick(index)}
-                  className={`flex items-center gap-2 px-4 py-2 border rounded-md text-left text-sm
-                  ${selectedOption === index ? 'bg-gray-200 text-white' : 'bg-white text-black border-gray-300'}
-                  ${showSolution && option.isCorrect ? 'border-green-600 bg-green-100' : ''} 
-                  ${showSolution && selectedOption === index && !option.isCorrect ? 'bg-red-100 border-red-600' : ''}`}
-                >
-                  <span className="font-bold">{option.label}.</span> {option.text}
-                </motion.button>
-
-                <AnimatePresence>
-                  {showSolution && option.isCorrect && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -5 }}
-                      transition={{ duration: 0.3 }}
-                      className='bg-[#D4EDDA] border border-green-600 px-2 py-2 rounded-md'
-                    >
-                      <h1 className='text-green-600 text-[14px] font-semibold'>Explaination</h1>
-                      <p className="text-green-600 text-xs mt-2">
-                        A common noun refers to a general name of a person, place, or thing, not specific. "Girl" is a singular noun because it refers to one person and is a common noun because it's not the name of a specific individual.
-                      </p>
-                      <p className='text-green-600 text-xs mt-2 font-semibold'>Correct answer</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
-            </div>
-
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => setShowSolution(true)}
-              className="mt-6 w-full bg-[#222] text-white py-2 rounded-md hover:bg-[#111] transition duration-200"
-            >
-              View Solution
-            </motion.button>
-          </div>
-
-          <div className="mt-10 text-center text-sm italic text-gray-600 max-w-sm">
-            Are you planning to get high score in your exam<br />
-            <span className="not-italic font-medium text-black">Ecademy</span> will help you to get high score in your exam
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.96 }}
-            className="mt-6 bg-black text-white px-6 py-2 rounded-md hover:bg-[#111] transition duration-200 w-[40%] mx-6"
-          >
-            View plan
-          </motion.button>
-        </motion.div>
+        
+        {/* Show quiz component if lesson has quiz data, otherwise show default quiz */}
+        {currentLesson?.quiz ? (
+          <QuizComponent quizData={currentLesson.quiz} />
+        ) : (
+          <QuizComponent quizData={defaultQuizData} />
+        )}
+        
         <UpNext />
       </motion.div>
       <SideShow />
