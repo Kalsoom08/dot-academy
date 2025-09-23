@@ -86,8 +86,14 @@ const SearchCourses = () => {
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  const handleCourseClick = (courseId) => {
-    router.push(`/AuthComponents/ExploreCourses/CourseDetail/${courseId}`);
+  // UPDATED: route based on free/premium
+  const handleCourseClick = (courseId, isFree) => {
+    if (!courseId) return;
+    if (isFree) {
+      router.push(`/AuthComponents/ExploreCourses/CourseDetail/${courseId}`);
+    } else {
+      router.push('/AuthComponents/pricingPlan');
+    }
   };
 
   const handleSearchSubmit = (e) => {
@@ -170,6 +176,8 @@ const SearchCourses = () => {
           </div>
         ) : (
           rankedList.map((course, index) => {
+            const isFree = (course?.priceType || '').toLowerCase() === 'free';
+
             const detail = [
               course.duration && `${course.duration}`,
               (course.students || course.students === 0) && `${course.students} students`,
@@ -179,7 +187,7 @@ const SearchCourses = () => {
               <div
                 key={course._id || index}
                 className='border rounded-lg p-4 flex items-center justify-between gap-4 mb-4 cursor-pointer hover:shadow-md transition-shadow'
-                onClick={() => handleCourseClick(course._id)}
+                onClick={() => handleCourseClick(course._id, isFree)}
               >
                 <div className='flex items-center gap-4'>
                   <div className='w-20 h-20 relative'>
@@ -199,8 +207,8 @@ const SearchCourses = () => {
                       <p className='text-sm text-gray-500 mt-1'>{detail}</p>
                     )}
                     <div className="flex gap-2 mt-2 flex-wrap">
-                      <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                        {course.priceType === 'free' ? 'Free' : 'Premium'}
+                      <span className={`text-xs px-2 py-1 rounded ${isFree ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'}`}>
+                        {isFree ? 'Free' : 'Premium'}
                       </span>
                       {course.examCategory && (
                         <span className="text-xs bg-gray-100 px-2 py-1 rounded">

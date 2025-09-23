@@ -32,4 +32,4 @@ const page = () => {
   )
 }
 
-export default Protected(page)
+export default page;

@@ -112,7 +112,7 @@ const CourseCard = ({ course, onClick }) => {
   return (
     <motion.div
       className="border rounded-lg p-4 flex items-center justify-between gap-4 mb-4 cursor-pointer hover:shadow-md transition-shadow"
-      onClick={() => onClick(course._id)}
+      onClick={() => onClick(course._id, isFree)}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -135,19 +135,21 @@ const CourseCard = ({ course, onClick }) => {
           </p>
           <div className="flex gap-2 mt-2 flex-wrap">
             {/* Price status (Free / Premium) */}
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+            <span className={`text-xs px-2 py-1 rounded ${
+              isFree ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'
+            }`}>
               {isFree ? 'Free' : 'Premium'}
             </span>
 
             {/* Amount only if Premium */}
             {!isFree && (
               <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                ₹{amount}
+                PKR {amount}
               </span>
             )}
 
             {/* Weekly learners */}
-            <span className="text-xs bg-gray-100 px-2 py-1 rounded">
+            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
               {weeklyLearners} learning this week
             </span>
 
@@ -227,8 +229,14 @@ const Page = () => {
     setTimeout(() => setIsFiltering(false), 300);
   };
 
-  const handleCourseClick = (id) => {
-    router.push(`/AuthComponents/ExploreCourses/CourseDetail/${id}`);
+  const handleCourseClick = (courseId, isFree) => {
+    if (isFree) {
+      // Redirect free courses to detail page
+      router.push(`/AuthComponents/ExploreCourses/CourseDetail/${courseId}`);
+    } else {
+      // Redirect premium courses to pricing plan
+      router.push('/AuthComponents/pricingPlan');
+    }
   };
 
   return (

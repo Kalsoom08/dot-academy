@@ -195,13 +195,6 @@ function CourseDetail() {
         </div>
       )}
 
-      {/* Error */}
-      {!loading && error && (
-        <div className="mx-4 my-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          Error loading course: {error.message || 'Unknown error'}
-        </div>
-      )}
-
       {/* Sections */}
       {!loading && !error && (
         <>

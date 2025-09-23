@@ -30,7 +30,6 @@ import { useDispatch } from 'react-redux';
 export default function Sidebar({ isOpen = true, onClose }) {
   const dispatch = useDispatch();
 
-
   const router = useRouter();
   const pathname = usePathname();
 
@@ -40,32 +39,27 @@ export default function Sidebar({ isOpen = true, onClose }) {
   const [showDetailPopup, setShowDetailPopup] = useState(false);
   const [showAnalysisPopup, setShowAnalysisPopup] = useState(false);
 
-  
-
   const handleLeaveCourse = () => {
-  router.push('/AuthComponents/home'); 
-};
+    router.push('/AuthComponents/home'); 
+  };
 
-const handleLogout = async () => {
-  try {
-    dispatch(logout());
-    await fetch("/api/auth/logout", { method: "POST" });
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("token");
+  const handleLogout = async () => {
+    try {
+      dispatch(logout());
+      await fetch("/api/auth/logout", { method: "POST" });
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("token");
 
-    const provider = localStorage.getItem("authProvider"); 
-    if (provider === "google") {
-      window.location.href = "https://accounts.google.com/Logout";
-    } else {
-      router.push("/"); 
+      const provider = localStorage.getItem("authProvider"); 
+      if (provider === "google") {
+        window.location.href = "https://accounts.google.com/Logout";
+      } else {
+        router.push("/"); 
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
     }
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
-};
-
-
-
+  };
 
   const navItems = [
     { name: "Home", icon: <CiHome size={20} />, path: "/AuthComponents/home" },
@@ -85,11 +79,10 @@ const handleLogout = async () => {
 
   return (
     <>
-<aside
-  className={`bg-white border-r p-6 fixed md:static top-0 left-0 h-full w-64 z-40 transition-transform duration-300
-    ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 overflow-y-auto`}
->
-
+      <aside
+        className={`bg-white border-r p-6 fixed md:static top-0 left-0 h-full w-64 z-40 transition-transform duration-300
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 overflow-y-auto`}
+      >
         <div className="flex justify-between items-center mb-6">
           <Image src={Logo} width={150} height={150} alt="logo" />
           {onClose && (
@@ -159,7 +152,6 @@ const handleLogout = async () => {
         </nav>
       </aside>
 
-     
       {showDetailPopup && (
         <DetailPopup
           courseData={{ teacher: "John Doe" }}
@@ -167,7 +159,7 @@ const handleLogout = async () => {
         />
       )}
       {showAnalysisPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
           <CourseAnalysis
             itemData={{}}
             onClose={() => setShowAnalysisPopup(false)}
