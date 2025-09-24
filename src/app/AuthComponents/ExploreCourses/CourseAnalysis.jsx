@@ -14,7 +14,7 @@ import icon6 from '../../../../public/Courses/icon6.png';
 import icon7 from '../../../../public/Courses/icon7.png';
 import icon8 from '../../../../public/Courses/icon8.png'; 
 import icon9 from '../../../../public/Courses/icon9.png';
-import { fetchMyEnrollments } from '../../../../slices/courseSlice'; // Adjust import path as needed
+import { fetchMyEnrollments } from '../../../../slices/courseSlice';
 
 function CourseAnalysis({ onClose, itemData }) { 
   const dispatch = useDispatch();
@@ -36,11 +36,9 @@ function CourseAnalysis({ onClose, itemData }) {
   }, []);
 
   useEffect(() => {
-    // Fetch enrollments if not already loaded
-    if (enrollments.length === 0) {
-      dispatch(fetchMyEnrollments());
-    }
-  }, [dispatch, enrollments.length]);
+    // Fetch enrollments when component mounts or when itemData changes
+    dispatch(fetchMyEnrollments());
+  }, [dispatch, itemData?._id]);
 
   useEffect(() => {
     if (itemData?._id && enrollments.length > 0) {
@@ -50,14 +48,34 @@ function CourseAnalysis({ onClose, itemData }) {
       
       if (currentEnrollment) {
         calculateCourseStats(currentEnrollment);
+      } else {
+        // If no enrollment found, set default stats
+        setProgress(0);
+        setCourseStats(getDefaultStats());
       }
+    } else if (itemData?._id) {
+      // If enrollments are empty but we have itemData, set default stats
+      setProgress(0);
+      setCourseStats(getDefaultStats());
     }
   }, [itemData, enrollments]);
 
+  const getDefaultStats = () => ({
+    contentViewed: '0/0',
+    testAttempted: '0/0',
+    totalTestQuestions: '0/0',
+    totalTimeOnTest: '0s',
+    correctIncorrect: '0/0',
+    avgTimePerQuestion: '0s',
+    averageRank: '0',
+    averagePercentile: '0',
+    averageAccuracy: '0%'
+  });
+
   const calculateCourseStats = (enrollment) => {
     // Calculate overall progress percentage
-    const totalLessons = enrollment.course?.totalLessons || 1;
-    const completedLessons = enrollment.completedLessons?.length || 0;
+    const totalLessons = enrollment.course?.totalLessons || enrollment.totalLessons || 1;
+    const completedLessons = enrollment.completedLessons?.length || enrollment.progress?.completedLessons || 0;
     const progressPercentage = Math.round((completedLessons / totalLessons) * 100);
     setProgress(progressPercentage);
 
@@ -77,64 +95,62 @@ function CourseAnalysis({ onClose, itemData }) {
     setCourseStats(stats);
   };
 
-  // Mock calculation functions - replace with actual data from your backend
+  // Calculation functions
   const calculateTestAttempted = (enrollment) => {
-    // This should come from quiz/assessment data
-    const attemptedTests = enrollment.quizAttempts?.length || 0;
-    const totalTests = enrollment.course?.totalQuizzes || 138;
+    const attemptedTests = enrollment.quizAttempts?.length || enrollment.attemptedQuizzes || 0;
+    const totalTests = enrollment.course?.totalQuizzes || enrollment.totalQuizzes || 0;
     return `${attemptedTests}/${totalTests}`;
   };
 
   const calculateTotalTestQuestions = (enrollment) => {
     const attemptedQuestions = enrollment.quizAttempts?.reduce((total, attempt) => 
-      total + (attempt.questions?.length || 0), 0) || 0;
-    const totalQuestions = enrollment.course?.totalQuestions || 34;
+      total + (attempt.questions?.length || 0), 0) || enrollment.attemptedQuestions || 0;
+    const totalQuestions = enrollment.course?.totalQuestions || enrollment.totalQuestions || 0;
     return `${attemptedQuestions}/${totalQuestions}`;
   };
 
   const calculateTotalTestTime = (enrollment) => {
     const totalTime = enrollment.quizAttempts?.reduce((total, attempt) => 
-      total + (attempt.timeSpent || 0), 0) || 0;
+      total + (attempt.timeSpent || 0), 0) || enrollment.totalTimeSpent || 0;
     return formatTime(totalTime);
   };
 
   const calculateCorrectIncorrect = (enrollment) => {
     const correct = enrollment.quizAttempts?.reduce((total, attempt) => 
-      total + (attempt.correctAnswers || 0), 0) || 0;
+      total + (attempt.correctAnswers || 0), 0) || enrollment.correctAnswers || 0;
     const incorrect = enrollment.quizAttempts?.reduce((total, attempt) => 
-      total + (attempt.incorrectAnswers || 0), 0) || 0;
+      total + (attempt.incorrectAnswers || 0), 0) || enrollment.incorrectAnswers || 0;
     return `${correct}/${incorrect}`;
   };
 
   const calculateAvgTimePerQuestion = (enrollment) => {
     const totalQuestions = enrollment.quizAttempts?.reduce((total, attempt) => 
-      total + (attempt.questions?.length || 0), 0) || 1;
+      total + (attempt.questions?.length || 0), 0) || enrollment.attemptedQuestions || 1;
     const totalTime = enrollment.quizAttempts?.reduce((total, attempt) => 
-      total + (attempt.timeSpent || 0), 0) || 0;
+      total + (attempt.timeSpent || 0), 0) || enrollment.totalTimeSpent || 0;
     const avgTime = totalTime / totalQuestions;
     return formatTime(avgTime);
   };
 
   const calculateAverageRank = (enrollment) => {
-    // This should come from ranking data
-    return enrollment.averageRank || '167995';
+    return enrollment.averageRank || enrollment.rank || '0';
   };
 
   const calculateAveragePercentile = (enrollment) => {
-    // This should come from percentile data
-    return enrollment.averagePercentile || '1429';
+    return enrollment.averagePercentile || enrollment.percentile || '0';
   };
 
   const calculateAverageAccuracy = (enrollment) => {
     const totalQuestions = enrollment.quizAttempts?.reduce((total, attempt) => 
-      total + (attempt.questions?.length || 0), 0) || 1;
+      total + (attempt.questions?.length || 0), 0) || enrollment.attemptedQuestions || 1;
     const correctAnswers = enrollment.quizAttempts?.reduce((total, attempt) => 
-      total + (attempt.correctAnswers || 0), 0) || 0;
+      total + (attempt.correctAnswers || 0), 0) || enrollment.correctAnswers || 0;
     const accuracy = Math.round((correctAnswers / totalQuestions) * 100);
-    return `${accuracy}%`;
+    return `${isNaN(accuracy) ? 0 : accuracy}%`;
   };
 
   const formatTime = (seconds) => {
+    if (!seconds || seconds === 0) return '0s';
     if (seconds < 60) return `${Math.round(seconds)}s`;
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.round(seconds % 60);

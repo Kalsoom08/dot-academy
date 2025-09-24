@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLessonContent } from '../../../../../slices/courseSlice';
 import LoadingSpinner from '@/components/loadingSpinner';
+import CourseReview from '../CourseReview';
 
 const WorkSheetData = () => {
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -180,8 +181,10 @@ const WorkSheetData = () => {
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
+        className='flex flex-col justify-between'
       >
         <SideShow />
+        <CourseReview />
       </motion.div>
     </motion.section>
   );
