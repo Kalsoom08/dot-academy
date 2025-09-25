@@ -1,36 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Sidebar from '../../../components/AuthSiderbar';
 import Header from '../../../components/AuthHeader';
 import Footer from '../../../components/AuthFooter';
-import ChangeExamModal from './changeExam'; 
+import ChangeExamModal from './changeExam';
 import Protected from '@/components/ProtectedRoute';
-
+import { useChangeExamModal } from '../../../context/ChangeExamModalContext';
 
 const ChangeExamPage = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { openChangeExamModal } = useChangeExamModal();
 
   useEffect(() => {
-    setIsModalOpen(true);
-  }, []);
+    openChangeExamModal();
+  }, [openChangeExamModal]);
 
   return (
     <div className="flex h-screen flex-col">
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <Sidebar isOpen={false} onClose={() => {}} />
         <div className="flex-1 flex flex-col overflow-y-auto">
-          <Header onMenuClick={() => setSidebarOpen(true)} />
-       
+          <Header onMenuClick={() => {}} />
         </div>
       </div>
       <Footer />
 
-      <ChangeExamModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      <ChangeExamModal />
     </div>
   );
 };
