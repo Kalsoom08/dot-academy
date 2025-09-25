@@ -5,9 +5,12 @@ import { FaExchangeAlt, FaPlus } from 'react-icons/fa';
 import ChangeExamSubModal from './selectExamModal';
 import { useChangeExamModal } from '../../../context/ChangeExamModalContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import AddExamModal from './addExamModal';
 
 const ChangeExamModal = () => {
   const { isOpen, closeChangeExamModal } = useChangeExamModal();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
   const [isSubModalOpen, setIsSubModalOpen] = useState(false);
 
   const handleOpenSubModal = () => setIsSubModalOpen(true);
@@ -47,16 +50,21 @@ const ChangeExamModal = () => {
                 <FaExchangeAlt className="text-gray-600 text-xl" />
               </button>
 
-              <button
-                className="w-full flex items-center justify-between px-5 py-3 border border-gray-300 rounded-lg text-lg font-medium text-gray-800 hover:bg-gray-50 transition"
-                onClick={() => { 
-                  alert('Add Exam clicked!'); 
-                  closeChangeExamModal(); 
-                }}
-              >
-                <span>Add Exam</span>
-                <FaPlus className="text-gray-600 text-xl" />
-              </button>
+        <button
+          className="w-full flex items-center justify-between px-5 py-3 border border-gray-300 rounded-lg text-lg font-medium text-gray-800 hover:bg-gray-50 transition"
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          <span>Add Exam</span>
+          <FaPlus className="text-gray-600 text-xl" />
+        </button>
+
+<AddExamModal
+  isOpen={isAddModalOpen}
+  onClose={() => {
+    setIsAddModalOpen(false);
+    closeChangeExamModal();
+  }}
+/>
             </div>
 
             <button

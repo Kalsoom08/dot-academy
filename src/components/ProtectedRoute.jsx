@@ -1,38 +1,40 @@
 // 'use client';
 
-// import { useEffect } from 'react';
+// import { useEffect, useState } from 'react';
 // import { useSelector, useDispatch } from 'react-redux';
-// import { openLoginModal } from '../../slices/uiSlice';
 // import { fetchCurrentUser } from '../../slices/authSlice';
+// import { openLoginModal } from '../../slices/uiSlice';
 
-// const Protected = (WrappedComponent) => {
-//   return function ProtectedComponent(props) {
-//     const dispatch = useDispatch();
+// export default function ProtectedWrapper({ children }) {
+//   const dispatch = useDispatch();
+//   const { user, token, status } = useSelector((state) => state.auth);
 
-//     const { isLoggedIn, loading } = useSelector((state) => state.auth);
+//   const [checkedAuth, setCheckedAuth] = useState(false);
 
-//     useEffect(() => {
-//       if (!isLoggedIn && !loading) {
-//         // try fetching current user from API or token
-//         dispatch(fetchCurrentUser())
-//           .unwrap()
-//           .catch(() => {
-//             // open login modal if not logged in
-//             dispatch(openLoginModal(window.location.pathname));
-//           });
+//   useEffect(() => {
+//     const checkAuth = async () => {
+//       if (!user && token) {
+//         try {
+//           await dispatch(fetchCurrentUser()).unwrap();
+//         } catch {
+//           dispatch(openLoginModal(window.location.pathname));
+//         }
+//       } else if (!user && !token) {
+//         dispatch(openLoginModal(window.location.pathname));
 //       }
-//     }, [isLoggedIn, loading, dispatch]);
+//       setCheckedAuth(true);
+//     };
 
-//     if (loading) {
-//       return <div>Loading...</div>; // optional loader
-//     }
+//     checkAuth();
+//   }, [user, token, dispatch]);
 
-//     if (!isLoggedIn) {
-//       return null; // block protected content until login
-//     }
+//   if (!checkedAuth || status === 'loading') {
+//     return <div className="flex justify-center items-center h-screen">Loading...</div>;
+//   }
 
-//     return <WrappedComponent {...props} />;
-//   };
-// };
+//   if (!user) {
+//     return null;
+//   }
 
-// export default Protected;
+//   return <>{children}</>;
+// }
