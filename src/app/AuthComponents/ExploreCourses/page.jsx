@@ -11,7 +11,7 @@ export default function ExploreCoursesPage() {
       <div className="flex h-screen flex-col">
      
           <main className="flex-1">
-         <Explore/>
+         <Explore />
 
           </main>
        

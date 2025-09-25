@@ -20,4 +20,6 @@ function RootLayout({ children }) {
   );
 }
 
-export default (RootLayout);
+
+export default RootLayout;
+
