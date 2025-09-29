@@ -27,7 +27,7 @@ export default function SignupModal({ isOpen, onClose, defaultTab = null, onSwit
   if (!isOpen) return null;
 
   const handleGoogleSignup = async () => {
-window.location.href = `http://localhost:7000/api/auth/google`;
+    window.location.href = `http://localhost:7000/api/auth/google`;
   };
 
   const handleEmailFormSubmit = async (e) => {
@@ -36,26 +36,25 @@ window.location.href = `http://localhost:7000/api/auth/google`;
 
     try {
       await dispatch(sendOtp({ email: formData.email })).unwrap();
-      setStep('otp'); 
+      setStep('otp');
     } catch (err) {
       alert(err.error || 'Failed to send OTP');
     }
   };
 
   const handleOtpSubmit = async (e) => {
-  e.preventDefault();
-  if (!formData.otp) return alert('Enter the OTP');
+    e.preventDefault();
+    if (!formData.otp) return alert('Enter the OTP');
 
-  try {
-    await dispatch(verifyEmailOtp({ email: formData.email, code: formData.otp })).unwrap();
-    await dispatch(fetchCurrentUser()).unwrap(); 
-    alert('Signup successful!');
-    router.push('/profile/setupProfile');
-    onClose();
-  } catch (err) {
-    alert(err.error || 'OTP verification failed');
-  }
-};
+    try {
+      await dispatch(verifyEmailOtp({ email: formData.email, code: formData.otp })).unwrap();
+      alert('Email verified! Please complete your profile.');
+      router.push('/profile/setupProfile');
+      onClose();
+    } catch (err) {
+      alert(err.error || 'OTP verification failed');
+    }
+  };
 
 
   return (

@@ -9,6 +9,8 @@ import Logo from '../../public/NavBar/logo.png';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch } from 'react-redux';
+import { toast } from "react-toastify";
+
 
 import { loginUser, fetchCurrentUser } from '../../slices/authSlice';
 
@@ -32,18 +34,31 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
-    if (!email || !password) return alert('Enter email and password');
+
+    if (!email || !password) {
+      toast.error('Enter email and password');
+      return;
+    }
 
     try {
       await dispatch(loginUser({ email, password })).unwrap();
       await dispatch(fetchCurrentUser()).unwrap();
-      alert('Login successful!');
+      toast.success('Login successful!');
       router.push('/AuthComponents/home');
       onClose();
     } catch (err) {
-      alert(err.error || 'Login failed');
+      console.error("Login failed:", err);
+      const message =
+        err?.error ||
+        err?.message ||
+        err?.response?.data?.error ||
+        "Invalid email or password";
+
+      toast.error(message);
+      return false;
     }
   };
+
 
   const handlePhoneLogin = async (e) => {
     e.preventDefault();
@@ -51,9 +66,9 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
     alert(`Phone login with ${phone} & ${password}`);
   };
 
-const handleGoogleLogin = () => {
-  window.location.href = `http://localhost:7000/api/auth/google`;
-};
+  const handleGoogleLogin = () => {
+    window.location.href = `http://localhost:7000/api/auth/google`;
+  };
 
 
   return (
@@ -128,16 +143,16 @@ const handleGoogleLogin = () => {
                   <input type="checkbox" />
                   <span>Remember Me</span>
                 </label>
-<button
-  type="button"
-  className="text-[#7D287E] hover:underline"
-  onClick={() => {
-    onClose(); 
-    router.push("/forgotPassword"); 
-  }}
->
-  Forgot Password?
-</button>
+                <button
+                  type="button"
+                  className="text-[#7D287E] hover:underline"
+                  onClick={() => {
+                    onClose();
+                    router.push("/forgotPassword");
+                  }}
+                >
+                  Forgot Password?
+                </button>
 
               </div>
               <motion.button

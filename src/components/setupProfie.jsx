@@ -5,17 +5,19 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Anton } from 'next/font/google';
-import Logo from '../../public/NavBar/logo.png'; // Adjust path if needed
+import { useDispatch } from 'react-redux';
+import { updateProfile } from '../../slices/authSlice';
+import Logo from '../../public/NavBar/logo.png';
 
 const anton = Anton({ subsets: ['latin'], weight: '400' });
 
 export default function SetupProfile() {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
     gender: '',
     province: '',
     password: '',
@@ -34,18 +36,20 @@ export default function SetupProfile() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.agreed) return alert('Please accept terms and conditions.');
     if (formData.password !== formData.confirmPassword)
       return alert('Passwords do not match');
 
-    const { password, confirmPassword, agreed, ...userProfile } = formData;
-    localStorage.setItem('userProfile', JSON.stringify(userProfile));
-
-    alert('Account created successfully!');
-    router.push('/AuthComponents/home'); // Redirect to profile page
+    try {
+      await dispatch(updateProfile(formData)).unwrap();
+      alert('Account created successfully!');
+      router.push('/AuthComponents/home');
+    } catch (err) {
+      alert(err.error || 'Failed to complete profile');
+    }
   };
 
   return (
@@ -62,7 +66,6 @@ export default function SetupProfile() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
           <div className="flex flex-col sm:flex-row gap-4">
             <input
               type="text"
@@ -84,18 +87,6 @@ export default function SetupProfile() {
           </div>
           <p className="text-right text-[#959191]">(optional)</p>
 
-          {/* Email */}
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            className="w-full border border-gray-300 p-2 rounded-full"
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <p className="text-right text-[#959191]">(optional)</p>
-
-          {/* Gender */}
           <select
             name="gender"
             className="w-full border border-gray-300 p-2 rounded-full text-gray-500"
@@ -109,7 +100,6 @@ export default function SetupProfile() {
           </select>
           <p className="text-right text-[#959191]">(optional)</p>
 
-          {/* Province */}
           <select
             name="province"
             className="w-full border border-gray-300 p-2 rounded-full text-gray-500"
@@ -123,7 +113,6 @@ export default function SetupProfile() {
             <option value="Balochistan">Balochistan</option>
           </select>
 
-          {/* Passwords */}
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="relative flex-1 w-full">
               <input
@@ -133,6 +122,7 @@ export default function SetupProfile() {
                 className="w-full border border-gray-300 p-2 rounded-full pr-10"
                 value={formData.password}
                 onChange={handleChange}
+                required
               />
               <span
                 className="absolute top-2.5 right-4 text-gray-500 cursor-pointer"
@@ -150,6 +140,7 @@ export default function SetupProfile() {
                 className="w-full border border-gray-300 p-2 rounded-full pr-10"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                required
               />
               <span
                 className="absolute top-2.5 right-4 text-gray-500 cursor-pointer"
@@ -160,7 +151,6 @@ export default function SetupProfile() {
             </div>
           </div>
 
-          {/* Terms */}
           <div className="flex items-start gap-2 text-sm text-gray-600">
             <input
               type="checkbox"
@@ -175,7 +165,7 @@ export default function SetupProfile() {
             </p>
           </div>
 
-          {/* Submit */}
+
           <button
             type="submit"
             className="bg-[#7D287E] w-full text-white py-2 rounded-full font-medium mt-2"

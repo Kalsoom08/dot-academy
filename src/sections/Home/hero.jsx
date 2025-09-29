@@ -1,30 +1,92 @@
 'use client';
-
 import Image from 'next/image';
 import heroImage from '../../../public/Hero/hero.png';
 import icon from '../../../public/Hero/icon.jpg';
 import { IoLogoGooglePlaystore } from "react-icons/io5";
 import { FaApple } from "react-icons/fa";
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import LoginModal from '@/components/LoginModal'; 
+import LoginModal from '@/components/LoginModal';
+import api from '../../../APIs/api'; 
 const Hero = () => {
   const [isClient, setIsClient] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false); 
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [banner, setBanner] = useState(null);
+  const [showBanner, setShowBanner] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
+    const fetchBanner = async () => {
+      try {
+        const res = await api.get("/user/api/ads/hero");
+        if (res.data?.length > 0) {
+          setBanner(res.data[0]); 
+        }
+      } catch (err) {
+        console.error("Banner fetch error:", err);
+      }
+    };
+    fetchBanner();
   }, []);
 
   const router = useRouter();
-
-  const handleButton = () => {
-    setIsLoginOpen(true);
-  };
+  const handleButton = () => setIsLoginOpen(true);
 
   return (
-    <section className=" py-18 px-6 md:px-10 lg:px-20">
+    <section className="py-18 px-6 md:px-10 lg:px-20 relative">
+
+<AnimatePresence>
+  {banner && showBanner && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[1px]"
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="relative bg-white rounded-xl shadow-2xl w-[90%] max-w-md overflow-hidden"
+      >
+        <button
+          onClick={() => setShowBanner(false)}
+          className="absolute top-2 right-2 text-gray-600 font-bold text-2xl hover:text-gray-900"
+        >
+          &times;
+        </button>
+
+  
+        <Image
+          src={banner.fileUrl}
+          alt={banner.title}
+          width={500}
+          height={280}
+          className="w-full h-48 object-cover"
+        />
+
+        <div className="p-4">
+          <h3 className="text-lg font-semibold text-gray-800">{banner.title}</h3>
+          {banner.clickUrl && (
+            <a
+              href={banner.clickUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-purple-600 hover:underline"
+            >
+              Learn more
+            </a>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+
       <div className="max-w-5xl mx-auto flex flex-col-reverse md:flex-row items-center gap-10 ">
         
         <motion.div

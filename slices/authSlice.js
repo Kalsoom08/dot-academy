@@ -3,59 +3,57 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../APIs/api";
 
+// Helper to get token from localStorage
 const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
 
-export const registerUser = createAsyncThunk(
-  "auth/registerUser",
-  async (data, { rejectWithValue }) => {
-    try {
-      const res = await api.post("/api/auth/register", data);
-      if (res.data.token && typeof window !== 'undefined') localStorage.setItem("token", res.data.token);
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || { error: "Registration failed" });
-    }
-  }
-);
+// ------------------- THUNKS -------------------
 
+// Login user and fetch full profile
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (data, { rejectWithValue }) => {
+  async (data, { dispatch, rejectWithValue }) => {
     try {
+      // Login request
       const res = await api.post("/api/auth/login", data);
-      if (res.data.token && typeof window !== 'undefined') localStorage.setItem("token", res.data.token);
-      return res.data;
+      const token = res.data.token;
+
+      if (token && typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+        api.defaults.headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Fetch full user profile immediately
+      const profileRes = await dispatch(fetchCurrentUser());
+      return { token, user: profileRes.payload };
     } catch (err) {
       return rejectWithValue(err.response?.data || { error: "Login failed" });
     }
   }
 );
 
-export const sendOtp = createAsyncThunk(
-  "auth/sendOtp",
-  async ({ email }, { rejectWithValue }) => {
+// Register user and fetch full profile
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (data, { dispatch, rejectWithValue }) => {
     try {
-      const res = await api.post("/api/auth/otp/email/send", { email });
-      return res.data;
+      const res = await api.post("/api/auth/register", data);
+      const token = res.data.token;
+
+      if (token && typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+        api.defaults.headers.Authorization = `Bearer ${token}`;
+      }
+
+      // Fetch full user profile after registration
+      const profileRes = await dispatch(fetchCurrentUser());
+      return { token, user: profileRes.payload };
     } catch (err) {
-      return rejectWithValue(err.response?.data || { error: "Failed to send OTP" });
+      return rejectWithValue(err.response?.data || { error: "Registration failed" });
     }
   }
 );
 
-export const verifyEmailOtp = createAsyncThunk(
-  "auth/verifyEmailOtp",
-  async ({ email, code }, { rejectWithValue }) => {
-    try {
-      const res = await api.post("/api/auth/otp/email/verify", { email, code });
-      if (res.data.token && typeof window !== 'undefined') localStorage.setItem("token", res.data.token);
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || { error: "OTP verification failed" });
-    }
-  }
-);
-
+// Fetch current user profile
 export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
@@ -68,30 +66,20 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
-export const forgotPassword = createAsyncThunk(
-  'auth/forgotPassword',
-  async (email, { rejectWithValue }) => {
+// Update profile
+export const updateProfile = createAsyncThunk(
+  "auth/updateProfile",
+  async (data, { rejectWithValue }) => {
     try {
-      const res = await api.post('/api/auth/forgotPassword', { email });
-      return res.data.message;
+      const res = await api.put("/api/user/profile", data);
+      return res.data.user;
     } catch (err) {
-      return rejectWithValue(err?.response?.data?.error || 'Failed to send reset link');
+      return rejectWithValue(err.response?.data || { error: "Failed to update profile" });
     }
   }
 );
 
-export const resetPassword = createAsyncThunk(
-  'auth/resetPassword',
-  async ({ token, password }, { rejectWithValue }) => {
-    try {
-      const res = await api.put(`/api/auth/resetPassword/${token}`, { password });
-      return res.data.message;
-    } catch (err) {
-      return rejectWithValue(err?.response?.data?.error || 'Failed to reset password');
-    }
-  }
-);
-
+// ------------------- SLICE -------------------
 
 const authSlice = createSlice({
   name: "auth",
@@ -106,6 +94,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       if (typeof window !== 'undefined') localStorage.removeItem("token");
+      api.defaults.headers.Authorization = null;
     },
     setUser: (state, action) => {
       state.user = action.payload;
@@ -113,20 +102,47 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.user = action.payload.user || null;
-        state.token = action.payload.token || null;
-      })
+      // Login
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.user = action.payload.user || null;
-        state.token = action.payload.token || null;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.error = null;
       })
-      .addCase(verifyEmailOtp.fulfilled, (state, action) => {
-        state.token = action.payload.token || state.token;
-        state.user = action.payload.user || state.user;
+      .addCase(loginUser.rejected, (state, action) => {
+        state.user = null;
+        state.token = null;
+        state.error = action.payload?.error || "Login failed";
       })
+
+      // Register
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.error = null;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.user = null;
+        state.token = null;
+        state.error = action.payload?.error || "Registration failed";
+      })
+
+      // Fetch profile
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.user = null;
+        state.error = action.payload?.error || "Failed to fetch user";
+      })
+
+      // Update profile
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.error = action.payload?.error || "Failed to update profile";
       });
   },
 });

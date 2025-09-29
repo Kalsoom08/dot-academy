@@ -5,6 +5,8 @@ import { RxCross2 } from 'react-icons/rx';
 import { useSupportModal } from '../../../context/SupportModalContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createSupportMessage } from '../../../../APIs/SupportAPI'; 
+import { toast } from "react-toastify";
+
 
 const SupportModal = () => {
   const { isModalOpen, closeModal } = useSupportModal();
@@ -12,16 +14,20 @@ const SupportModal = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
+      if (message.trim().length < 4) {
+      toast.error('Message must be at least 4 characters long!');
+      return;
+    }
     e.preventDefault();
     try {
       setLoading(true);
-      await createSupportMessage(message);   // ✅ use API function
-      alert('Message submitted! We will get back to you soon.');
+      await createSupportMessage(message);   
+      toast.success('Message submitted! We will get back to you soon.');
       setMessage('');
       closeModal();
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.error || 'Failed to submit message');
+      toast.error(error.response?.data?.error || 'Failed to submit message');
     } finally {
       setLoading(false);
     }

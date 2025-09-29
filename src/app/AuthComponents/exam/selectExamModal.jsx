@@ -54,7 +54,7 @@ const SelectExamModal = ({ isOpen, onClose }) => {
 
       const slug = selected.item.slug || selected.item.name?.toLowerCase().replace(/\s+/g, '-');
       onClose?.();
-      router.push(`/AuthComponents/ExploreCourses/${slug}`);
+      router.push(`/AuthComponents/ExploreCourses`);
     } catch (err) {
       console.error(err);
       alert('Could not set exam. Please try again.');

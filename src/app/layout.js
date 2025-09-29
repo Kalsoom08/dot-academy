@@ -2,6 +2,8 @@ import './globals.css';
 import ProvidersWrapper from './ProviderWrapper';
 import { Inter, Anton } from 'next/font/google';
 import { Geist, Geist_Mono } from "next/font/google";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const anton = Anton({ weight: '400', subsets: ['latin'], variable: '--font-anton' });
@@ -15,6 +17,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} ${anton.variable} antialiased`}>
         <ProvidersWrapper>{children}</ProvidersWrapper>
+        <ToastContainer position="top-right" autoClose={3000} />
+
       </body>
     </html>
   );
