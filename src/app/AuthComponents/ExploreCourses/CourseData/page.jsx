@@ -10,11 +10,81 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLessonContent } from '../../../../../slices/courseSlice';
 import LoadingSpinner from '@/components/loadingSpinner';
+import api from "../../../../APIs/api";
 
-// Article content component
 const ArticleContent = ({ articleContent, title, featuredImage }) => {
+  const [banner, setBanner] = useState(null);
+  const [showBanner, setShowBanner] = useState(true);
+
+  useEffect(() => {
+    const fetchHeaderBanner = async () => {
+      try {
+        const res = await api.get("/user/api/ads/sidebar");
+        if (res.data?.length > 0) {
+          setBanner(res.data[0]);
+        }
+      } catch (err) {
+        console.error("Sidebar ad fetch error:", err);
+      }
+    };
+    fetchHeaderBanner();
+  }, []);
+
   return (
     <div className="prose max-w-none">
+      
+      <AnimatePresence>
+        {banner && showBanner && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-[1px]"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="relative bg-white rounded-xl shadow-2xl w-[90%] max-w-md overflow-hidden"
+            >
+              <button
+                onClick={() => setShowBanner(false)}
+                className="absolute top-2 right-2 text-gray-600 font-bold text-2xl hover:text-gray-900"
+              >
+                &times;
+              </button>
+
+              <Image
+                src={banner.fileUrl}
+                alt={banner.title}
+                width={500}
+                height={280}
+                className="w-full h-48 object-cover"
+              />
+
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {banner.title}
+                </h3>
+                {banner.clickUrl && (
+                  <a
+                    href={banner.clickUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-purple-600 hover:underline"
+                  >
+                    Learn more
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 🔹 Article Content */}
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
       {featuredImage && (
         <div className="mb-6">
@@ -31,7 +101,7 @@ const ArticleContent = ({ articleContent, title, featuredImage }) => {
         <div key={idx} className="py-6">
           <h2 className="text-2xl font-semibold">{section.heading}</h2>
           <p className="text-lg">{section.explanation}</p>
-          {section.examples && section.examples.length > 0 && (
+          {section.examples?.length > 0 && (
             <div className="pt-4">
               <h3 className="text-xl font-bold">Examples</h3>
               <ul className="space-y-2">
@@ -48,6 +118,7 @@ const ArticleContent = ({ articleContent, title, featuredImage }) => {
     </div>
   );
 };
+
 
 // Quiz component
 const QuizComponent = ({ quizData }) => {
