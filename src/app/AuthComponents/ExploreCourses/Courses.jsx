@@ -104,7 +104,6 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
 };
 
 const CourseCard = ({ course, onClick }) => {
-  // derive price status + amount + weekly learners (non-breaking, tiny chips)
   const isFree = (course.priceType || '').toLowerCase() === 'free';
   const amount = course.effectivePrice ?? course.basePrice ?? course.price;
   const weeklyLearners = course.studentsThisWeek ?? course.weeklyLearners ?? course.students ?? 0;
@@ -148,20 +147,10 @@ const CourseCard = ({ course, onClick }) => {
               </span>
             )}
 
-            {/* Weekly learners */}
-            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-              {weeklyLearners} learning this week
-            </span>
-
             {/* keep the existing optional tags too */}
             {course.duration && (
               <span className="text-xs bg-gray-100 px-2 py-1 rounded">
                 {course.duration}
-              </span>
-            )}
-            {course.examCategory && (
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                {course.examCategory}
               </span>
             )}
           </div>
