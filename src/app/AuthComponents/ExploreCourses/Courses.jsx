@@ -4,11 +4,11 @@ import React, { useRef, useState, useEffect } from 'react';
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import course1 from '../../../../../public/Courses/1.png';
-import SideShow from '../SideShow';
+import course1 from '../../../../public/Courses/1.png';
+import SideShow from './SideShow';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCourses } from '../../../../../slices/courseSlice';
+import { fetchCourses } from '../../../../slices/courseSlice';
 import LoadingSpinner from '@/components/loadingSpinner';
 
 const tabsData = [
@@ -106,7 +106,7 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
 const CourseCard = ({ course, onClick }) => {
   // derive price status + amount + weekly learners (non-breaking, tiny chips)
   const isFree = (course.priceType || '').toLowerCase() === 'free';
-  const amount = course.effectivePrice ?? course.basePrice ?? 0;
+  const amount = course.effectivePrice ?? course.basePrice ?? course.price;
   const weeklyLearners = course.studentsThisWeek ?? course.weeklyLearners ?? course.students ?? 0;
 
   return (

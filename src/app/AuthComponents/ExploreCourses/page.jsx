@@ -4,6 +4,9 @@ import Image from "next/image";
 import api from "../../../../APIs/api";
 import { motion, AnimatePresence } from "framer-motion";
 import Explore from "../ExploreCourses/explore";
+import Footer from '../../../components/AuthFooter';
+import QuizQuestionCard from '../../../components/Quiz/QuizQuestionCard';
+import Courses from '../ExploreCourses/Courses';
 
 export default function ExploreCoursesPage() {
   const [banner, setBanner] = useState(null);
@@ -25,6 +28,7 @@ export default function ExploreCoursesPage() {
 
   return (
     <div className="flex h-screen flex-col">
+      {/* Banner Modal */}
       <AnimatePresence>
         {banner && showBanner && (
           <motion.div
@@ -41,7 +45,7 @@ export default function ExploreCoursesPage() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="relative bg-white rounded-xl shadow-2xl w-[90%] max-w-md overflow-hidden"
             >
-             
+              {/* Close button */}
               <button
                 onClick={() => setShowBanner(false)}
                 className="absolute top-2 right-2 text-gray-600 font-bold text-2xl hover:text-gray-900"
@@ -49,6 +53,7 @@ export default function ExploreCoursesPage() {
                 &times;
               </button>
 
+              {/* Banner Content */}
               <Image
                 src={banner.fileUrl}
                 alt={banner.title}
@@ -77,9 +82,13 @@ export default function ExploreCoursesPage() {
         )}
       </AnimatePresence>
 
+      {/* Page Content */}
       <main className="flex-1">
-        <Explore />
+        <Courses />
+        {/* <Explore /> */}
       </main>
+
+ \
     </div>
   );
 }
