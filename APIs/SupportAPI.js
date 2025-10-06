@@ -9,18 +9,3 @@ export const createSupportMessage = async (message) => {
     throw error;
   }
 };
-
-export const getMySupportMessages = async () => {
-  const res = await api.get("/user/api/support/my");
-  return res.data;
-};
-
-export const getAllSupportMessages = async () => {
-  const res = await api.get("/user/api/support");
-  return res.data;
-};
-
-export const deleteSupportMessage = async (id) => {
-  const res = await api.delete(`/user/api/support/${id}`);
-  return res.data;
-};
