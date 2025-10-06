@@ -1,55 +1,46 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { CiSearch } from 'react-icons/ci';
 import { motion } from 'framer-motion';
-
-import ilets from '../../../../public/exams/ilets.png';
-import giki from '../../../../public/exams/giki.png';
-import ecat from '../../../../public/exams/ecat.png';
-import mdcat from '../../../../public/exams/mdcat.png';
-import net from '../../../../public/exams/net.png';
-import pms from '../../../../public/exams/pms.png';
-import icon1 from '../../../../public/Explore/1.png';
-import icon2 from '../../../../public/Explore/2.png';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCourses } from '../../../../slices/courseSlice';
 import ExamConfirmationModal from './examConfirmationPopup';
-
-const exams = [
-  { name: 'IELTS', icon: ilets },
-  { name: 'NET', icon: net },
-  { name: 'MDCAT', icon: mdcat },
-  { name: 'ECAT', icon: ecat },
-  { name: 'GIKI', icon: giki },
-  { name: 'PMS', icon: pms },
-];
 
 const ExamPopup = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { courses, loading, error } = useSelector((state) => state.courses);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedExam, setSelectedExam] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const openModal = (examName) => {
-    setSelectedExam(examName);
+  useEffect(() => {
+    dispatch(fetchCourses());
+  }, [dispatch]);
+
+  const openModal = (courseName) => {
+    setSelectedCourse(courseName);
     setIsModalOpen(true);
   };
 
   const handleProceed = () => {
-    const slug = selectedExam.toLowerCase().replace(/\s+/g, '-');
-    router.push(`/AuthComponents/ExploreCourses/${slug}`);
+    const course = courses.find(c => c.name === selectedCourse);
+    if (course) router.push(`/AuthComponents/ExploreCourses/CourseDetail/${course._id}`);
   };
 
-  const filteredExams = exams.filter((exam) =>
-    exam.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCourses = courses.filter(course =>
+    course.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isModalOpen) {
     return (
       <ExamConfirmationModal
-        examName={selectedExam}
+        examName={selectedCourse}
         onClose={() => setIsModalOpen(false)}
         onProceed={handleProceed}
       />
@@ -63,75 +54,50 @@ const ExamPopup = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
     >
-      {/* Select Exam Section */}
+    
       <section className="space-y-4">
-        <h2 className="text-xl font-bold text-center">Select Exam</h2>
-        <div className="flex flex-col gap-3">
-          <div className="relative">
-            <CiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
-            <input
-              className="border border-[#282828] rounded-full w-full p-2 pl-10"
-              type="search"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div
-            className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
-            onClick={() => openModal('Class 1 to Class 12')}
-          >
-            <div className="flex items-center gap-4">
-              <Image src={icon1} alt="Class Icon" width={30} height={30} />
-              <span>Class 1 to Class 12</span>
-            </div>
-            <FiChevronRight />
-          </div>
-
-          <div
-            className="bg-white rounded-xl shadow-md p-4 flex items-center justify-between cursor-pointer hover:shadow-lg transition"
-            onClick={() => openModal('Entrance Exam')}
-          >
-            <div className="flex items-center gap-4">
-              <Image src={icon2} alt="Entrance Exam" width={30} height={30} />
-              <span>Entrance Exam</span>
-            </div>
-            <FiChevronRight />
-          </div>
+        <h2 className="text-xl font-bold text-center">Search Courses</h2>
+        <div className="relative">
+          <CiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+          <input
+            className="border border-[#282828] rounded-full w-full p-2 pl-10"
+            type="search"
+            placeholder="Type few letters of course..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </section>
 
-      {/* Popular Exam Section */}
+    
       <section>
-        <h2 className="text-lg font-bold text-center mb-4">Popular Exam</h2>
+        <h2 className="text-lg font-bold text-center mb-4">Courses</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {filteredExams.map((exam, idx) => (
-            <button
-              key={idx}
-              className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
-              onClick={() => openModal(exam.name)}
-            >
-              <div className="flex items-center gap-2">
-                <Image src={exam.icon} alt={exam.name} width={24} height={24} />
-                <span>{exam.name}</span>
-              </div>
-            </button>
-          ))}
+          {!loading && !error && filteredCourses.length > 0 ? (
+            filteredCourses.map((course) => (
+              <button
+                key={course._id}
+                className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
+                onClick={() => openModal(course.name)}
+              >
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={course.image || '/dashboard/igc.png'}
+                    alt={course.name}
+                    width={24}
+                    height={24}
+                  />
+                  <span>{course.name}</span>
+                </div>
+                <FiChevronRight />
+              </button>
+            ))
+          ) : loading ? (
+            <p className="text-center col-span-full">Loading courses...</p>
+          ) : (
+            <p className="text-center col-span-full text-gray-400">No courses found</p>
+          )}
         </div>
-      </section>
-
-      {/* Others Section */}
-      <section className="text-center">
-        <button
-          className="w-full px-6 py-3 bg-[#282828] text-white rounded-md text-sm font-bold hover:bg-gray-900 transition"
-          onClick={() => openModal('Others')}
-        >
-          Others
-          <div className="text-xs font-normal mt-1 text-purple-100">
-            Graduation, Coding, Language, Startup etc.
-          </div>
-        </button>
       </section>
     </motion.div>
   );

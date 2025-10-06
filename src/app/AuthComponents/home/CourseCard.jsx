@@ -1,48 +1,44 @@
 'use client';
 
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from 'next/image';
-import Icon from '../../../../public/CourseCard/img.png';
 import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCourses } from "../../../../slices/courseSlice";
+import LoadingSpinner from "@/components/loadingSpinner";
 
 export default function CoursesSection() {
   const [activeTab, setActiveTab] = useState("All Courses");
   const [visibleCourses, setVisibleCourses] = useState(8);
   const [isExpanded, setIsExpanded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-
   const tabScrollRef = useRef(null);
+
+  const dispatch = useDispatch();
+  const { courses, loading, error } = useSelector((state) => state.courses);
+
+
+  useEffect(() => {
+    dispatch(fetchCourses());
+  }, [dispatch]);
 
   const tabs = [
     "All Courses",
     "Main Subject",
-    "Mock Test",
+    "Noun",
     "Science",
     "Math",
     "English",
     "History",
   ];
 
-  const allCourses = [
-    { type: "Science", icon: Icon },
-    { type: "Math", icon: Icon },
-    { type: "English", icon: Icon },
-    { type: "History", icon: Icon },
-    { type: "Mock Test", icon: Icon },
-    { type: "Main Subject", icon: Icon },
-    { type: "PMS test practice", icon: Icon },
-    { type: "PMS test practice", icon: Icon },
-    { type: "Math", icon: Icon },
-    { type: "Science", icon: Icon },
-    { type: "English", icon: Icon },
-  ];
-
   const filteredCourses =
     activeTab === "All Courses"
-      ? allCourses
-      : allCourses.filter(course =>
-          course.type.toLowerCase().includes(activeTab.toLowerCase())
+      ? courses
+      : courses.filter(course =>
+          course.category?.toLowerCase().includes(activeTab.toLowerCase()) ||
+          course.name?.toLowerCase().includes(activeTab.toLowerCase())
         );
 
   const coursesPerPage = 8;
@@ -71,7 +67,6 @@ export default function CoursesSection() {
     ? filteredCourses
     : filteredCourses.slice(currentSlide * coursesPerPage, (currentSlide + 1) * coursesPerPage);
 
-  // Touch handling for tab swipe
   const touchStartX = useRef(null);
   const touchEndX = useRef(null);
 
@@ -88,9 +83,9 @@ export default function CoursesSection() {
     const distance = touchStartX.current - touchEndX.current;
 
     if (distance > 30) {
-      tabScrollRef.current?.scrollBy({ left: 100, behavior: 'smooth' }); // swipe left
+      tabScrollRef.current?.scrollBy({ left: 100, behavior: 'smooth' });
     } else if (distance < -30) {
-      tabScrollRef.current?.scrollBy({ left: -100, behavior: 'smooth' }); // swipe right
+      tabScrollRef.current?.scrollBy({ left: -100, behavior: 'smooth' });
     }
 
     touchStartX.current = null;
@@ -109,7 +104,7 @@ export default function CoursesSection() {
         <h2 className="text-2xl font-bold">Your Courses</h2>
       </div>
 
-      {/* Tab menu with smooth scroll and swipe */}
+
       <div className="relative mb-6">
         <button
           onClick={() => tabScrollRef.current?.scrollBy({ left: -150, behavior: 'smooth' })}
@@ -128,11 +123,7 @@ export default function CoursesSection() {
         <motion.div
           ref={tabScrollRef}
           className="flex items-center overflow-x-auto px-10 space-x-2 custom-scroll"
-          style={{
-            scrollBehavior: 'smooth',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
-          }}
+          style={{ scrollBehavior: 'smooth' }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.4 }}
@@ -169,32 +160,49 @@ export default function CoursesSection() {
         </motion.div>
       </div>
 
-      {/* Courses Grid */}
-      <motion.div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 transition-all duration-500">
-        <AnimatePresence>
-          {visibleCoursesToRender.map((course, index) => (
-            <motion.div
-              key={`${currentSlide}-${index}`}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 15 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              whileHover={{ scale: 1.05 }}
-              className={`border border-gray-600 rounded-lg p-4 pb-2 shadow-sm transition-transform duration-300 hover:shadow-md ${
-                course.type === "GUIDE" ? "bg-blue-50" : "bg-white"
-              }`}
-            >
-              <Image src={course.icon} alt="Icon" />
-              <div className="text-md font-semibold text-center mb-1 py-2">
-                {course.type}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
 
-      {/* View more button */}
-      {filteredCourses.length > 8 && (
+      {loading && (
+        <div className="flex justify-center items-center py-12">
+          <LoadingSpinner />
+        </div>
+      )}
+      {error && (
+        <p className="text-center text-red-500 py-6">Failed to load courses. {String(error)}</p>
+      )}
+
+      {!loading && !error && (
+        <motion.div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 transition-all duration-500">
+          <AnimatePresence>
+            {visibleCoursesToRender.map((course, index) => (
+              <motion.div
+                key={course._id || index}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 15 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                whileHover={{ scale: 1.05 }}
+                className="border border-gray-600 rounded-lg p-4 pb-2 bg-white shadow-sm hover:shadow-md transition-transform duration-300"
+              >
+                {course.image && (
+                  <Image
+                    src={course.image}
+                    alt={course.name}
+                    width={200}
+                    height={120}
+                    className="w-full h-[120px] object-cover rounded-md mb-2"
+                  />
+                )}
+                <div className="text-md font-semibold text-center mb-1 py-2">
+                  {course.name}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      )}
+
+    
+      {!loading && filteredCourses.length > 8 && (
         <div className="text-center">
           <motion.button
             whileHover={{ scale: 1.05 }}
