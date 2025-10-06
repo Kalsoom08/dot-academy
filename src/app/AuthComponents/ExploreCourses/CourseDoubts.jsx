@@ -5,7 +5,7 @@ import { IoStar } from "react-icons/io5";
 import api from "@/../../APIs/api";
 import { useSearchParams } from "next/navigation";
 
-const CourseReview = () => {
+const CourseDoubts = () => {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [isVisible, setIsVisible] = useState(true);
@@ -155,4 +155,4 @@ const CourseReview = () => {
   );
 };
 
-export default CourseReview;
+export default CourseDoubts;

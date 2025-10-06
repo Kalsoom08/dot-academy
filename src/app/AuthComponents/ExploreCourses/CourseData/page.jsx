@@ -10,7 +10,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLessonContent } from '../../../../../slices/courseSlice';
 import LoadingSpinner from '@/components/loadingSpinner';
-import api from "../../../../APIs/api";
+import api from "../../../../../APIs/api";
 
 const ArticleContent = ({ articleContent, title, featuredImage }) => {
   const [banner, setBanner] = useState(null);

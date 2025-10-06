@@ -17,6 +17,7 @@ import cour1 from '../../../../../../public/Courses/cour1.png';
 import TestPopup from '../testPopup';
 import ConfirmTestPopup from '../confirmTestPopup';
 import LoadingSpinner from '@/components/loadingSpinner';
+import AskAnyDoubt from '../../askAnyDoubt';
 
 // Redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -124,6 +125,8 @@ function CourseDetail() {
   const [selectedTestItem, setSelectedTestItem] = useState(null);
   const [showConfirmTestPopup, setShowConfirmTestPopup] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showAskDoubt, setShowAskDoubt] = useState(false);
+
 
   const router = useRouter();
   const params = useParams();
@@ -180,7 +183,18 @@ function CourseDetail() {
           />
         </div>
         <div className='text-center md:text-left'>
+          <div className='flex items-center gap-3 justify-center md:justify-start mb-2'>
           <button className='bg-red-400 px-3 py-1 rounded-md text-white text-sm'>INFINITY COURSE</button>
+
+          <div className="flex justify-center my-10">
+  <button
+    onClick={() => setShowAskDoubt(true)}
+    className="bg-[#7c287d] text-white px-6 py-1 rounded-lg font-semibold hover:bg-[#6b1f6b] transition"
+  >
+    Ask Any Doubt
+  </button>
+</div>
+</div>
           <h1 className='text-[22px] md:text-[30px] font-bold'>{title}</h1>
           <p className='text-[12px] text-gray-400'>
             {Number(weeklyLearners || 0).toLocaleString('en-US')} Students Learning This Week
@@ -291,7 +305,17 @@ function CourseDetail() {
           }}
         />
       )}
+      
+
+
+
+<AskAnyDoubt
+  isVisible={showAskDoubt}
+  onClose={() => setShowAskDoubt(false)}
+/>
+
     </motion.section>
+    
   );
 }
 
