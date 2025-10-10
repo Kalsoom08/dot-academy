@@ -3,18 +3,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../APIs/api";
 
-// Helper to get token from localStorage
 const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
 
-// ------------------- THUNKS -------------------
-
-// Login user and fetch full profile
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (data, { dispatch, rejectWithValue }) => {
+  async ({ email, password, remember }, { dispatch, rejectWithValue }) => {
     try {
-      // Login request
-      const res = await api.post("/api/auth/login", data);
+      const res = await api.post("/api/auth/login", { email, password });
       const token = res.data.token;
 
       if (token && typeof window !== "undefined") {
@@ -22,7 +17,6 @@ export const loginUser = createAsyncThunk(
         api.defaults.headers.Authorization = `Bearer ${token}`;
       }
 
-      // Fetch full user profile immediately
       const profileRes = await dispatch(fetchCurrentUser());
       return { token, user: profileRes.payload };
     } catch (err) {
@@ -31,7 +25,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Register user and fetch full profile
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (data, { dispatch, rejectWithValue }) => {
@@ -44,7 +37,6 @@ export const registerUser = createAsyncThunk(
         api.defaults.headers.Authorization = `Bearer ${token}`;
       }
 
-      // Fetch full user profile after registration
       const profileRes = await dispatch(fetchCurrentUser());
       return { token, user: profileRes.payload };
     } catch (err) {
@@ -53,7 +45,6 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// Fetch current user profile
 export const fetchCurrentUser = createAsyncThunk(
   "auth/fetchCurrentUser",
   async (_, { rejectWithValue }) => {
@@ -66,7 +57,6 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
-// Update profile
 export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
   async (data, { rejectWithValue }) => {
@@ -79,7 +69,30 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
-// ------------------- SLICE -------------------
+export const forgotPassword = createAsyncThunk(
+  "auth/forgotPassword",
+  async (email, { rejectWithValue }) => {
+    try {
+      const res = await api.post("/api/auth/forgotPassword", { email });
+      return res.data.message;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { error: "Failed to send reset link" });
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async ({ token, password }, { rejectWithValue }) => {
+    try {
+      const res = await api.put(`/api/auth/resetPassword/${token}`, { password });
+      return res.data.message;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { error: "Failed to reset password" });
+    }
+  }
+);
+
 
 const authSlice = createSlice({
   name: "auth",
@@ -88,6 +101,8 @@ const authSlice = createSlice({
     token: getToken(),
     status: "idle",
     error: null,
+    forgotMessage: null,
+    resetMessage: null,
   },
   reducers: {
     logout: (state) => {
@@ -95,14 +110,23 @@ const authSlice = createSlice({
       state.token = null;
       if (typeof window !== 'undefined') localStorage.removeItem("token");
       api.defaults.headers.Authorization = null;
+      state.error = null;
+      state.forgotMessage = null;
+      state.resetMessage = null;
     },
     setUser: (state, action) => {
       state.user = action.payload;
     },
+    clearError: (state) => {
+      state.error = null;
+    },
+    clearMessages: (state) => {
+      state.forgotMessage = null;
+      state.resetMessage = null;
+    }
   },
   extraReducers: (builder) => {
     builder
-      // Login
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
@@ -114,7 +138,6 @@ const authSlice = createSlice({
         state.error = action.payload?.error || "Login failed";
       })
 
-      // Register
       .addCase(registerUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
@@ -126,7 +149,6 @@ const authSlice = createSlice({
         state.error = action.payload?.error || "Registration failed";
       })
 
-      // Fetch profile
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.user = action.payload;
         state.error = null;
@@ -136,16 +158,33 @@ const authSlice = createSlice({
         state.error = action.payload?.error || "Failed to fetch user";
       })
 
-      // Update profile
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.user = action.payload;
         state.error = null;
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.error = action.payload?.error || "Failed to update profile";
+      })
+
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.forgotMessage = action.payload;
+        state.error = null;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.error = action.payload?.error || "Failed to send reset link";
+        state.forgotMessage = null;
+      })
+
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.resetMessage = action.payload;
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.error = action.payload?.error || "Failed to reset password";
+        state.resetMessage = null;
       });
   },
 });
 
-export const { logout, setUser } = authSlice.actions;
+export const { logout, setUser, clearError, clearMessages } = authSlice.actions;
 export default authSlice.reducer;
