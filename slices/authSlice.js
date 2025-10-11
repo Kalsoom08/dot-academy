@@ -69,6 +69,38 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+export const sendOtp = createAsyncThunk(
+  "auth/sendOtp",
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const res = await api.post("/api/auth/otp/send", { email });
+      return res.data.message || "OTP sent successfully";
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { error: "Failed to send OTP" });
+    }
+  }
+);
+
+export const verifyEmailOtp = createAsyncThunk(
+  "auth/verifyEmailOtp",
+  async ({ email, code }, { rejectWithValue }) => {
+    try {
+      const res = await api.post("/api/auth/otp/verify", { email, code });
+      const token = res.data.token;
+
+      if (token && typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+        api.defaults.headers.Authorization = `Bearer ${token}`;
+      }
+
+      return res.data.user || null;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || { error: "OTP verification failed" });
+    }
+  }
+);
+
+
 export const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (email, { rejectWithValue }) => {
@@ -137,6 +169,24 @@ const authSlice = createSlice({
         state.token = null;
         state.error = action.payload?.error || "Login failed";
       })
+      .addCase(sendOtp.fulfilled, (state) => {
+  state.status = "succeeded";
+  state.error = null;
+})
+.addCase(sendOtp.rejected, (state, action) => {
+  state.status = "failed";
+  state.error = action.payload?.error || "Failed to send OTP";
+})
+
+.addCase(verifyEmailOtp.fulfilled, (state, action) => {
+  state.status = "succeeded";
+  state.user = action.payload;
+  state.error = null;
+})
+.addCase(verifyEmailOtp.rejected, (state, action) => {
+  state.status = "failed";
+  state.error = action.payload?.error || "OTP verification failed";
+})
 
       .addCase(registerUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
@@ -183,6 +233,7 @@ const authSlice = createSlice({
         state.error = action.payload?.error || "Failed to reset password";
         state.resetMessage = null;
       });
+  
   },
 });
 
