@@ -19,6 +19,7 @@ export const fetchCourses = createAsyncThunk(
       const response = await api.get('user/api/courses', {
         params: { search, priceType, tag, sort, page, limit }
       });
+      console.log(response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
