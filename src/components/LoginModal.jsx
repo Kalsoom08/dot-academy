@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react';
 import { FcGoogle } from 'react-icons/fc';
 import { TfiEmail } from 'react-icons/tfi';
-import { FaTimes, FaPhone } from 'react-icons/fa';
+import { FaTimes, FaPhone, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Image from 'next/image';
 import Logo from '../../public/NavBar/logo.png';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch } from 'react-redux';
-import { toast } from "react-toastify";
-
+import { toast } from 'react-toastify';
 
 import { loginUser, fetchCurrentUser } from '../../slices/authSlice';
 
@@ -22,6 +21,7 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     setActiveModal(defaultTab || null);
@@ -47,18 +47,16 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
       router.push('/AuthComponents/home');
       onClose();
     } catch (err) {
-      console.error("Login failed:", err);
+      console.error('Login failed:', err);
       const message =
         err?.error ||
         err?.message ||
         err?.response?.data?.error ||
-        "Invalid email or password";
+        'Invalid email or password';
 
       toast.error(message);
-      return false;
     }
   };
-
 
   const handlePhoneLogin = async (e) => {
     e.preventDefault();
@@ -70,7 +68,6 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
     window.location.href = `http://localhost:7000/api/auth/google`;
   };
 
-
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-[1px] bg-black/30">
       <motion.div
@@ -80,7 +77,10 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
         transition={{ duration: 0.4, ease: 'easeOut' }}
         className="bg-white rounded-2xl shadow-xl sm:w-[50%] lg:w-[30%] p-6 relative"
       >
-        <button onClick={onClose} className="absolute top-4 right-4 bg-black text-white rounded-full p-1">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 bg-black text-white rounded-full p-1"
+        >
           <FaTimes size={12} />
         </button>
 
@@ -99,19 +99,31 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
               transition={{ duration: 0.3 }}
               className="space-y-4"
             >
-              <LoginButton icon={<FcGoogle />} label="Continue with Google" onClick={handleGoogleLogin} />
-              <LoginButton icon={<TfiEmail />} label="Continue with Email" onClick={() => setActiveModal('email')} />
+              <LoginButton
+                icon={<FcGoogle />}
+                label="Continue with Google"
+                onClick={handleGoogleLogin}
+              />
+              <LoginButton
+                icon={<TfiEmail />}
+                label="Continue with Email"
+                onClick={() => setActiveModal('email')}
+              />
               {/* <LoginButton icon={<FaPhone />} label="Continue with Phone" onClick={() => setActiveModal('phone')} /> */}
 
               <p className="text-center text-sm text-[#777676] mt-6">
                 Don’t have an account?{' '}
-                <button onClick={onSwitchToSignup} className="text-[#7d2a7e] font-medium hover:underline">
+                <button
+                  onClick={onSwitchToSignup}
+                  className="text-[#7d2a7e] font-medium hover:underline"
+                >
                   Signup
                 </button>
               </p>
             </motion.div>
           )}
 
+    
           {activeModal === 'email' && (
             <motion.form
               key="emailForm"
@@ -130,14 +142,24 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full border border-gray-600 p-2 rounded-full"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  className="w-full border border-gray-600 p-2 rounded-full pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-3 text-gray-500 cursor-pointer"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+
               <div className="flex justify-between items-center text-sm">
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" />
@@ -148,13 +170,13 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
                   className="text-[#7D287E] hover:underline"
                   onClick={() => {
                     onClose();
-                    router.push("/forgotPassword");
+                    router.push('/forgotPassword');
                   }}
                 >
                   Forgot Password?
                 </button>
-
               </div>
+
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.03 }}
@@ -163,9 +185,13 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
               >
                 Login
               </motion.button>
+
               <p className="text-center text-sm text-[#777676] mt-6">
                 Don’t have an account?{' '}
-                <button onClick={onSwitchToSignup} className="text-[#7d2a7e] font-medium hover:underline">
+                <button
+                  onClick={onSwitchToSignup}
+                  className="text-[#7d2a7e] font-medium hover:underline"
+                >
                   Signup
                 </button>
               </p>
@@ -190,14 +216,23 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
                 onChange={(e) => setPhone(e.target.value)}
                 required
               />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full border border-gray-600 p-2 rounded-full"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  className="w-full border border-gray-600 p-2 rounded-full pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-3 text-gray-500 cursor-pointer"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+
               <div className="flex justify-between items-center text-sm">
                 <label className="flex items-center space-x-2">
                   <input type="checkbox" />
@@ -211,6 +246,7 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
                   Forget Password?
                 </button>
               </div>
+
               <motion.button
                 type="submit"
                 whileHover={{ scale: 1.03 }}
@@ -219,9 +255,13 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
               >
                 Login
               </motion.button>
+
               <p className="text-center text-sm text-[#777676] mt-6">
                 Don’t have an account?{' '}
-                <button onClick={onSwitchToSignup} className="text-[#7d2a7e] font-medium hover:underline">
+                <button
+                  onClick={onSwitchToSignup}
+                  className="text-[#7d2a7e] font-medium hover:underline"
+                >
                   Signup
                 </button>
               </p>
