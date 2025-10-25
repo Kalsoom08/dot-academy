@@ -5,7 +5,7 @@ import StatsCard from '../components/stats';
 import EntranceExams from '../sections/Home/entranceExams';
 import ExamFeatures from '../components/examFeatures';
 import AppSection from '../sections/Home/appSection';
-import Testimonial from '../components/testimonail';
+// import Testimonial from '../components/testimonail';
 
 
 
@@ -25,7 +25,7 @@ export default function Home() {
       </div>
       <ExamFeatures/> 
       <AppSection/>
-      <Testimonial/>
+      {/* <Testimonial/> */}
     </div>
   );
 }

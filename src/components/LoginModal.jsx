@@ -101,7 +101,7 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
             >
               <LoginButton icon={<FcGoogle />} label="Continue with Google" onClick={handleGoogleLogin} />
               <LoginButton icon={<TfiEmail />} label="Continue with Email" onClick={() => setActiveModal('email')} />
-              <LoginButton icon={<FaPhone />} label="Continue with Phone" onClick={() => setActiveModal('phone')} />
+              {/* <LoginButton icon={<FaPhone />} label="Continue with Phone" onClick={() => setActiveModal('phone')} /> */}
 
               <p className="text-center text-sm text-[#777676] mt-6">
                 Don’t have an account?{' '}

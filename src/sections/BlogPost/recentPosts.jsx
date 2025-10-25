@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import PostCard from "./PostCard";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { getAllPublishedBlogs } from "../../../APIs/BlogPostAPI";
-import Image from "next/image"; 
+import BlogCardSkeleton from "../../loaders/BlogSkeleton";
 
 function BlogPage() {
   const router = useRouter();
@@ -14,10 +14,8 @@ function BlogPage() {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        setLoading(true);
         const data = await getAllPublishedBlogs();
-        console.log("Fetched posts:", data);
-        setPosts(data || []); 
+        setPosts(data || []);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       } finally {
@@ -37,30 +35,30 @@ function BlogPage() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans flex items-center justify-center">
-        <p className="text-lg">Loading posts...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans">
-      <header className="flex flex-col items-center justify-center py-8">
-        <h1 className="text-3xl sm:text-4xl text-[#282828] anton mb-6">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans bg-gradient-to-b from-gray-50 to-white">
+      <header className="flex flex-col items-center justify-center py-10">
+        <h1 className="text-3xl sm:text-4xl anton text-[#282828] mb-4">
           Blog Post
         </h1>
+        <p className="text-gray-600 text-sm sm:text-base">
+          Explore the latest updates, stories, and insights from our blog.
+        </p>
       </header>
 
       <section className="mt-8 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-        <h2 className="text-2xl text-[#282828] anton mb-6">Recent posts</h2>
-        
-        {/* <div className="mb-4 p-2 bg-gray-100 rounded">
-          <p className="text-sm">Posts count: {posts.length}</p>
-        </div>
-         */}
-        {posts.length === 0 ? (
+        <h2 className="text-2xl anton text-[#282828] mb-6">Recent Posts</h2>
+
+        {loading ? (
+          // Skeleton grid
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {Array(8)
+              .fill(0)
+              .map((_, i) => (
+                <BlogCardSkeleton key={i} />
+              ))}
+          </div>
+        ) : posts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-lg text-gray-600">No blog posts found.</p>
           </div>
@@ -74,33 +72,34 @@ function BlogPage() {
           >
             {posts.map((post) => (
               <motion.div
-                className="border border-gray-100  cursor-pointer  rounded-lg shadow-md"
                 key={post._id}
                 variants={cardVariants}
                 onClick={() => router.push(`/blog/${post.slug}`)}
+                className="cursor-pointer bg-white rounded-2xl shadow-md border border-gray-100 hover:shadow-2xl transition-all duration-300 overflow-hidden"
               >
-                <div className="relative h-42 w-full mb-4">
+                <div className="relative h-44 w-full">
                   <Image
                     src={post.featureImage?.url || "/default.png"}
                     alt={post.title}
                     fill
+                    className="object-cover rounded-t-2xl"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover rounded"
                   />
                 </div>
-                <div className="p-2">
-                <div className="flex justify-between mb-2">
-                <p className="text-gray-600 text-sm">{new Date(post.createdAt).toDateString()}</p>
-                <p className="text-gray-500 text-xs">{post.view || 0} views</p>
-                
+                <div className="p-4">
+                  <div className="flex justify-between mb-2">
+                    <p className="text-gray-500 text-xs">
+                      {new Date(post.createdAt).toDateString()}
+                    </p>
+                    <p className="text-gray-400 text-xs">{post.view || 0} views</p>
+                  </div>
+                  <h3 className="font-bold text-lg text-black mb-1 line-clamp-1">
+                    {post.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 line-clamp-3">
+                    {post.content || "No description available."}
+                  </p>
                 </div>
-                <h3 className="font-bold text-lg mb-2 text-black">{post.title}</h3>
-                <p className="text-s text-gray-600 ">{post.content}</p>
-                </div>
-
-                {/* <div className="mt-2 p-2 bg-yellow-100">
-                  <p className="text-xs">DEBUG: Post ID: {post._id}</p>
-                </div> */}
               </motion.div>
             ))}
           </motion.div>

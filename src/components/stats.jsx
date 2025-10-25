@@ -1,15 +1,15 @@
 'use client';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getPublicStats } from "../../APIs/statsAPI";
-import { useEffect, useState } from 'react';
-
+import StatsCardSkeleton from "../loaders/statsCardSkeleton";
 
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2, 
+      staggerChildren: 0.2,
     },
   },
 };
@@ -41,24 +41,34 @@ const Stats = () => {
     fetchStats();
   }, []);
 
+
   if (loading) {
     return (
-      <div className="text-center py-10">Loading stats...</div>
+      <section className="bg-white shadow-md rounded-xl p-6 md:p-10 my-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 text-center">
+          {[1, 2, 3, 4].map((i) => (
+            <StatsCardSkeleton key={i} />
+          ))}
+        </div>
+      </section>
     );
   }
 
   if (!stats) {
     return (
-      <div className="text-center py-10 text-red-500">Failed to load stats.</div>
+      <div className="text-center py-10 text-red-500">
+        Failed to load stats.
+      </div>
     );
   }
 
-    const displayStats = [
-   { number: `${stats.registeredStudents}+`, label: "Registered Students" },
+  const displayStats = [
+    { number: `${stats.registeredStudents}+`, label: "Registered Students" },
     { number: `${stats.totalSubscribed}+`, label: "Subscribed Students" },
     { number: `${stats.totalCourses}+`, label: "Courses Available" },
     { number: `${stats.googlePlayRating}/6`, label: "Rating on Google Play" },
   ];
+
   return (
     <motion.section
       className="bg-white shadow-md rounded-xl p-6 md:p-10 my-8 max-w-5xl mx-auto"
@@ -71,12 +81,8 @@ const Stats = () => {
         variants={containerVariants}
       >
         {displayStats.map((stat, index) => (
-          <motion.div
-            key={index}
-            className="bg-white"
-            variants={itemVariants}
-          >
-            <h3 className='anton text-2xl sm:text-3xl text-black'>
+          <motion.div key={index} className="bg-white" variants={itemVariants}>
+            <h3 className="anton text-2xl sm:text-3xl text-black">
               {stat.number}
             </h3>
             <p className="text-sm text-gray-600 mt-1">{stat.label}</p>

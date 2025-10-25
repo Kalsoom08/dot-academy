@@ -9,3 +9,13 @@ export const createSupportMessage = async (message) => {
     throw error;
   }
 };
+
+export const getAllSupportMessages = async (params = {}) => {
+  try {
+    const res = await api.get("/user/api/support", { params });
+    return res.data;
+  } catch (error) {
+    console.error("Get All Support Messages Error:", error.response?.data || error.message);
+    throw error;
+  }
+};
