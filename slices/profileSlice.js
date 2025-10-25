@@ -14,15 +14,16 @@ export const fetchProfileData = createAsyncThunk(
 );
 export const fetchProfileActivity = createAsyncThunk(
   "profile/fetchProfileActivity",
-  async (userId, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/user/api/user/profile/activity?userId=${userId}`);
+      const res = await api.get(`/user/api/profile/activity`);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
+
 
 export const fetchLeaderboard = createAsyncThunk(
   "profile/fetchLeaderboard",

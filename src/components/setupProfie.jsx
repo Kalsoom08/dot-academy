@@ -51,9 +51,22 @@ export default function SetupProfile() {
     }
 
     try {
-      await dispatch(updateProfile(formData)).unwrap();
-      toast.success('Account created successfully! Redirecting to Dashboard ', { autoClose: 1500 });
-      setTimeout(() => router.push('/AuthComponents/home'), 1800);
+    const user = await dispatch(updateProfile(formData)).unwrap();
+
+if (user) {
+  localStorage.setItem(
+    'userProfile',
+    JSON.stringify({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      studentId: user.studentId,
+    })
+  );
+}
+
+toast.success('Account created successfully! Redirecting to Dashboard ', { autoClose: 1500 });
+setTimeout(() => router.push('/AuthComponents/home'), 1800);
+
     } catch (err) {
       toast.error(err.error || 'Failed to complete profile.');
     }

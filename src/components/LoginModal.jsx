@@ -41,22 +41,36 @@ export default function LoginModal({ isOpen, onClose, defaultTab = null, onSwitc
     }
 
     try {
-      await dispatch(loginUser({ email, password })).unwrap();
-      await dispatch(fetchCurrentUser()).unwrap();
-      toast.success('Login successful!');
-      router.push('/AuthComponents/home');
-      onClose();
-    } catch (err) {
-      console.error('Login failed:', err);
-      const message =
-        err?.error ||
-        err?.message ||
-        err?.response?.data?.error ||
-        'Invalid email or password';
+  await dispatch(loginUser({ email, password })).unwrap();
+ const user = await dispatch(fetchCurrentUser()).unwrap();
+console.log("Fetched user:", user);
 
-      toast.error(message);
-    }
-  };
+if (user && (user.id || user._id)) {
+  localStorage.setItem('userProfile', JSON.stringify({
+    firstName: user.name?.split(' ')[0] || 'Unknown',
+    lastName: user.name?.split(' ')[1] || '',
+    studentId: user.id || user._id,
+  }));
+  localStorage.setItem('userId', user.id || user._id);
+  console.log("✅ Saved userProfile:", localStorage.getItem('userProfile'));
+} else {
+  console.warn("⚠️ No user data returned from backend");
+}
+
+  toast.success('Login successful!');
+  router.push('/AuthComponents/home');
+  onClose();
+} catch (err) {
+  console.error('Login failed:', err);
+  const message =
+    err?.error ||
+    err?.message ||
+    err?.response?.data?.error ||
+    'Invalid email or password';
+
+  toast.error(message);
+}
+  }
 
   const handlePhoneLogin = async (e) => {
     e.preventDefault();

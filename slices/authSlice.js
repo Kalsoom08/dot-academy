@@ -7,19 +7,27 @@ const getToken = () => (typeof window !== 'undefined' ? localStorage.getItem('to
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async ({ email, password, remember }, { dispatch, rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     try {
       const res = await api.post("/api/auth/login", { email, password });
-      const token = res.data.token;
 
-      if (token && typeof window !== "undefined") {
+      // ✅ Directly get token and user from response
+      const { token, user } = res.data;
+
+      if (!token || !user) {
+        return rejectWithValue({ error: "Invalid server response" });
+      }
+
+      // ✅ Save token for next requests
+      if (typeof window !== "undefined") {
         localStorage.setItem("token", token);
         api.defaults.headers.Authorization = `Bearer ${token}`;
       }
 
-      const profileRes = await dispatch(fetchCurrentUser());
-      return { token, user: profileRes.payload };
+      // ✅ Return directly instead of calling fetchCurrentUser
+      return { token, user };
     } catch (err) {
+      console.error("Login error:", err.response?.data || err);
       return rejectWithValue(err.response?.data || { error: "Login failed" });
     }
   }
@@ -46,13 +54,29 @@ export const registerUser = createAsyncThunk(
 );
 
 export const fetchCurrentUser = createAsyncThunk(
-  "auth/fetchCurrentUser",
+  'auth/fetchCurrentUser',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/api/user/me");
-      return res.data.user || null;
-    } catch (err) {
-      return rejectWithValue(err.response?.data || { error: "Failed to fetch user" });
+      const token = localStorage.getItem('token');
+      if (!token) return rejectWithValue('No token found');
+
+      const response = await fetch('http://localhost:7000/api/auth/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch user');
+      }
+
+      const data = await response.json();
+
+      // 👇 Unwrap nested user object if needed
+      const user = data.user || data;
+
+      return user; // Return the real user object
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
