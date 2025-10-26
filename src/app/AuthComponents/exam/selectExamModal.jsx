@@ -110,12 +110,13 @@ const SelectExamModal = ({ isOpen, onClose }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div
-              className="bg-white rounded-2xl border border-gray-100 w-full max-w-lg mx-auto p-6 relative shadow-xl"
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
-            >
+         <motion.div
+          className="bg-white rounded-2xl border border-gray-100 w-full max-w-lg mx-auto p-6 relative shadow-xl max-h-[80vh] overflow-y-auto custom-scroll"
+          initial={{ opacity: 0, scale: 0.95, y: -10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: -10 }}
+        >
+
              
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-gray-800">Change Exam</h2>

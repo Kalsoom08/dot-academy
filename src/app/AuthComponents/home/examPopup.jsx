@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
+import { CiSearch } from 'react-icons/ci';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { CiSearch } from 'react-icons/ci';
 import { motion } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCourses } from '../../../../slices/courseSlice';
@@ -23,19 +23,22 @@ const ExamPopup = () => {
     dispatch(fetchCourses());
   }, [dispatch]);
 
+
+  const freeCourses = courses.filter((c) => c.price === 0);
+
+  const filteredCourses = freeCourses.filter((course) =>
+    course.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const openModal = (courseName) => {
     setSelectedCourse(courseName);
     setIsModalOpen(true);
   };
 
   const handleProceed = () => {
-    const course = courses.find(c => c.name === selectedCourse);
+    const course = courses.find((c) => c.name === selectedCourse);
     if (course) router.push(`/AuthComponents/ExploreCourses/CourseDetail/${course._id}`);
   };
-
-  const filteredCourses = courses.filter(course =>
-    course.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   if (isModalOpen) {
     return (
@@ -49,55 +52,88 @@ const ExamPopup = () => {
 
   return (
     <motion.div
-      className="space-y-10"
-      initial={{ opacity: 0, y: 20 }}
+      className="p-6 space-y-8  rounded-3xl  max-w-4xl mx-auto"
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-    
-      <section className="space-y-4">
-        <h2 className="text-xl font-bold text-center">Search Courses</h2>
-        <div className="relative">
-          <CiSearch className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
-          <input
-            className="border border-[#282828] rounded-full w-full p-2 pl-10"
-            type="search"
-            placeholder="Type few letters of course..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </section>
+      <motion.h2
+        className="text-3xl font-extrabold text-center  text-[#661f69]"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        Explore Free Courses
+      </motion.h2>
 
-    
+  
+      <motion.div
+        className="relative w-full max-w-md mx-auto"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        <CiSearch className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500 text-xl" />
+        <input
+          className="w-full border border-gray-300 rounded-full p-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+          type="search"
+          placeholder="Search free courses..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </motion.div>
+
+ 
       <section>
-        <h2 className="text-lg font-bold text-center mb-4">Courses</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { staggerChildren: 0.08 },
+            },
+          }}
+        >
           {!loading && !error && filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
-              <button
+              <motion.button
                 key={course._id}
-                className="flex items-center justify-between bg-white border rounded-lg px-4 py-2 shadow hover:shadow-md transition"
+                variants={{
+                  hidden: { opacity: 0, y: 10 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                whileHover={{ scale: 1.05, boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }}
+                whileTap={{ scale: 0.98 }}
+                className="flex flex-col items-center bg-white border border-gray-200 rounded-2xl p-5 text-left hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 transition-all duration-300"
                 onClick={() => openModal(course.name)}
               >
-                <div className="flex items-center gap-2">
+                <div className="relative w-16 h-16 mb-3">
                   <Image
                     src={course.image || '/dashboard/igc.png'}
                     alt={course.name}
-                    width={24}
-                    height={24}
+                    fill
+                    className="rounded-full object-cover border border-gray-200 shadow-sm"
                   />
-                  <span>{course.name}</span>
                 </div>
-                <FiChevronRight />
-              </button>
+                <span className="text-lg font-semibold text-gray-800 text-center">{course.name}</span>
+              
+                
+              </motion.button>
             ))
           ) : loading ? (
-            <p className="text-center col-span-full">Loading courses...</p>
+            <p className="text-center col-span-full text-gray-500 animate-pulse">
+              Loading free courses...
+            </p>
           ) : (
-            <p className="text-center col-span-full text-gray-400">No courses found</p>
+            <p className="text-center col-span-full text-gray-400">
+              No free courses found 
+            </p>
           )}
-        </div>
+        </motion.div>
       </section>
     </motion.div>
   );
