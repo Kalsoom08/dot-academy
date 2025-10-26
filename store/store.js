@@ -3,6 +3,7 @@ import authReducer from '../slices/authSlice';
 import profileReducer from '../slices/profileSlice';
 import notificationReducer from '../slices/notificationSlice';
 import courseReducer from '../slices/courseSlice'; 
+import categoryReducer from '../slices/categorySlice'
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     profile: profileReducer,
     notifications: notificationReducer,
     courses: courseReducer, 
+    categories: categoryReducer
   },
 });

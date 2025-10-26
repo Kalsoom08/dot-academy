@@ -1,219 +1,177 @@
 'use client';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateProfile } from '../../../../../slices/authSlice';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react'; // 👈 Added for password toggle
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-    },
-  },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { type: 'spring', stiffness: 100, damping: 15 },
-  },
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 120, damping: 14 } },
 };
 
 const EditProfilePage = () => {
+  const dispatch = useDispatch();
   const router = useRouter();
+  const { user } = useSelector((state) => state.auth);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [accountType, setAccountType] = useState('');
-  const [designation, setDesignation] = useState('');
-  const [province, setProvince] = useState('');
   const [gender, setGender] = useState('');
-  const [email, setEmail] = useState('');
-  const [number, setNumber] = useState('');
+  const [province, setProvince] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // 👈 Added
 
-  const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
-  const [showGenderDropdown, setShowGenderDropdown] = useState(false);
+  const provinces = ['Punjab', 'Sindh', 'Khyber Pakhtunkhwa', 'Balochistan'];
+  const genders = ['Girl', 'Boy', 'Prefer Not to Say'];
 
-  const provincesList = ['Punjab', 'Sindh', 'Khyber Pakhtunkhwa', 'Balochistan'];
-  const gendersList = ['Girl', 'Boy', 'Prefer Not to Say'];
+  // ✅ Prefill data
+  useEffect(() => {
+    if (user && user.name) {
+      const [first, ...rest] = user.name.split(' ');
+      setFirstName(first || '');
+      setLastName(rest.join(' ') || '');
+      setGender(user.gender || '');
+      setProvince(user.province || '');
+    }
+  }, [user]);
 
-  const handleSaveChanges = () => {
-    const updatedProfileData = {
-      firstName,
-      lastName,
-      accountType,
-      designation,
-      province,
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const updatedData = {
+      name: `${firstName} ${lastName}`.trim(),
       gender,
-      email,
-      number,
+      province,
+      ...(password && { password }), // only include password if changed
     };
 
-    localStorage.setItem('userProfile', JSON.stringify(updatedProfileData));
+    const res = await dispatch(updateProfile(updatedData));
 
-    alert('Profile updated successfully!');
-    router.push('/AuthComponents/profile');
+    if (res.meta.requestStatus === 'fulfilled') {
+      toast.success('Profile updated successfully!');
+      setTimeout(() => router.push('/AuthComponents/home'), 2000);
+    } else {
+      toast.error(res.payload?.error || 'Failed to update profile');
+    }
   };
 
   return (
     <motion.div
-      className="min-h-screen p-4 sm:p-6 lg:p-8 font-inter"
+      className="min-h-screen p-6 sm:p-8 bg-gray-50 font-inter"
       variants={containerVariants}
       initial="hidden"
       animate="show"
     >
       <motion.h1
-        className="text-3xl font-bold text-gray-800 mb-8"
+        className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6"
         variants={itemVariants}
       >
-        Edit your profile
+        Edit Profile
       </motion.h1>
 
-      <motion.div
-        className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto"
+      <motion.form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-xl shadow-md max-w-lg mx-auto space-y-6"
         variants={containerVariants}
       >
-        <motion.div className="flex items-center mb-8" variants={itemVariants}>
-          <img
-            src="https://placehold.co/100x100/a78bfa/ffffff?text=HA"
-            alt="User Profile"
-            className="w-24 h-24 rounded-full mr-6 shadow-md"
-          />
-        </motion.div>
-
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
-          variants={containerVariants}
-        >
-          <motion.div variants={itemVariants}>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">Name</label>
+        {/* First & Last Name */}
+        <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4" variants={itemVariants}>
+          <div>
+            <label className="text-sm text-gray-700 font-medium">First Name</label>
             <input
               type="text"
-              id="firstName"
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
+              className="w-full mt-1 border rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500"
+              placeholder="Enter first name"
             />
-          </motion.div>
-
-          <motion.div variants={itemVariants}>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">&nbsp;</label>
+          </div>
+          <div>
+            <label className="text-sm text-gray-700 font-medium">Last Name</label>
             <input
               type="text"
-              id="lastName"
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
+              className="w-full mt-1 border rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500"
+              placeholder="Enter last name"
             />
-          </motion.div>
+          </div>
+        </motion.div>
 
-          <motion.div variants={itemVariants}>
-            <label htmlFor="accountType" className="block text-sm font-medium text-gray-700">Account Type</label>
-            <div className="mt-1 flex items-center justify-between border-b border-gray-300 pb-2">
-              <span className="text-gray-800">{accountType}</span>
-              <button className="text-purple-600 text-sm font-medium">Upgrade</button>
-            </div>
-          </motion.div>
+        {/* Province */}
+        <motion.div variants={itemVariants}>
+          <label className="text-sm text-gray-700 font-medium">Province</label>
+          <select
+            value={province}
+            onChange={(e) => setProvince(e.target.value)}
+            className="w-full mt-1 border rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="">Select Province</option>
+            {provinces.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </motion.div>
 
-          <motion.div variants={itemVariants}>
-            <label htmlFor="designation" className="block text-sm font-medium text-gray-700">Designation</label>
+        {/* Gender */}
+        <motion.div variants={itemVariants}>
+          <label className="text-sm text-gray-700 font-medium">Gender</label>
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="w-full mt-1 border rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500"
+          >
+            <option value="">Select Gender</option>
+            {genders.map((g) => (
+              <option key={g} value={g}>
+                {g}
+              </option>
+            ))}
+          </select>
+        </motion.div>
+
+        {/* Password with Eye Icon */}
+        <motion.div variants={itemVariants}>
+          <label className="text-sm text-gray-700 font-medium">New Password</label>
+          <div className="relative">
             <input
-              type="text"
-              id="designation"
-              className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
-              value={designation}
-              onChange={(e) => setDesignation(e.target.value)}
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Leave empty to keep current password"
+              className="w-full mt-1 border rounded-md px-3 py-2 pr-10 focus:ring-2 focus:ring-purple-500"
             />
-          </motion.div>
-        </motion.div>
-
-        <motion.div className="mb-6 relative" variants={itemVariants}>
-          <label htmlFor="province" className="block text-sm font-medium text-gray-700 mb-1">Province</label>
-          <div onClick={() => setShowProvinceDropdown(!showProvinceDropdown)} className="cursor-pointer">
-            <div className="w-full px-3 py-2 border rounded-md shadow-sm flex justify-between items-center">
-              <span>{province}</span>
-              <svg className={`w-4 h-4 transform ${showProvinceDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-            {showProvinceDropdown && (
-              <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-40 overflow-y-auto">
-                {provincesList.map((item) => (
-                  <div key={item} className="px-3 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => {
-                    setProvince(item);
-                    setShowProvinceDropdown(false);
-                  }}>{item}</div>
-                ))}
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
         </motion.div>
 
-        <motion.div className="mb-6 relative" variants={itemVariants}>
-          <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-          <div onClick={() => setShowGenderDropdown(!showGenderDropdown)} className="cursor-pointer">
-            <div className="w-full px-3 py-2 border rounded-md shadow-sm flex justify-between items-center">
-              <span>{gender}</span>
-              <svg className={`w-4 h-4 transform ${showGenderDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
-            {showGenderDropdown && (
-              <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-40 overflow-y-auto">
-                {gendersList.map((item) => (
-                  <div key={item} className="px-3 py-2 hover:bg-gray-100 cursor-pointer" onClick={() => {
-                    setGender(item);
-                    setShowGenderDropdown(false);
-                  }}>{item}</div>
-                ))}
-              </div>
-            )}
-          </div>
-        </motion.div>
-
-        <motion.div className="mb-6" variants={itemVariants}>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-          <input
-            type="email"
-            id="email"
-            className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </motion.div>
-
-        <motion.div className="mb-6" variants={itemVariants}>
-          <label htmlFor="number" className="block text-sm font-medium text-gray-700">Number</label>
-          <input
-            type="tel"
-            id="number"
-            className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm"
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-          />
-        </motion.div>
-
-        <motion.div className="mb-8" variants={itemVariants}>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-          <div className="mt-1 flex items-center justify-between border-b border-gray-300 pb-2">
-            <span className="text-gray-800">{password}</span>
-            <button className="text-purple-600 text-sm font-medium">Change password</button>
-          </div>
-        </motion.div>
-
-        <motion.div className="flex justify-center" variants={itemVariants}>
+        {/* Submit */}
+        <motion.div variants={itemVariants}>
           <button
-            onClick={handleSaveChanges}
-            className="px-8 py-3 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition-colors"
+            type="submit"
+            className="w-full py-3 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition-colors"
           >
             Save Changes
           </button>
         </motion.div>
-      </motion.div>
+      </motion.form>
     </motion.div>
   );
 };

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { fetchCourses } from "../../../../slices/courseSlice";
+import { fetchCategories } from "../../../../slices/categorySlice"; 
 import DashboardCardSkeleton from "@/loaders/DashboardSkeleton";
 
 const CourseCard = ({ course }) => {
@@ -23,10 +24,26 @@ const CourseCard = ({ course }) => {
   if (!course) return null;
 
   const handleClick = () => {
-    if (course.priceType === "premium") {
-      router.push("/AuthComponents/pricingPlan");
-    } else {
-      router.push(`/course/${course._id}`);
+    const courseId = course._id;
+    const courseName = course.name;
+
+
+    const isFree = course.priceType === "free";
+    const isEnrolled = course.isEnrolled;
+    const hasPendingPayment = course.hasPendingPayment;
+    const hasRejectedPayment = course.hasRejectedPayment;
+
+    if (isEnrolled || isFree) {
+      router.push(`/AuthComponents/ExploreCourses/CourseDetail/${courseId}`);
+    } else if (hasRejectedPayment || (!isFree && !isEnrolled && !hasPendingPayment)) {
+      const queryParams = new URLSearchParams({
+        courseId: courseId,
+        courseName: courseName || 'Premium Course',
+        rejected: hasRejectedPayment ? 'true' : 'false'
+      }).toString();
+      router.push(`/AuthComponents/pricingPlan?${queryParams}`);
+    } else if (hasPendingPayment) {
+      router.push(`/AuthComponents/paymentStatus?courseId=${courseId}`);
     }
   };
 
@@ -141,53 +158,51 @@ export default function CoursesSection() {
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useDispatch();
   const { courses, loading, error } = useSelector((state) => state.courses);
+  const { items: categories, loading: catLoading } = useSelector((state) => state.categories);
 
-  useEffect(() => { dispatch(fetchCourses()); }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchCourses());
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
-  const tabs = ["All Courses", "FCS", "Premium", "Published", "Math", "Science", "English"];
+  const staticTabs = ["All Courses", "Premium", "Published"];
+  const dynamicTabs = categories?.map(cat => cat.name) || [];
+  const tabs = [...staticTabs, ...dynamicTabs];
+
   const filteredCourses =
     activeTab === "All Courses"
       ? courses
-      : courses.filter(course => {
-          if (activeTab === "Premium") return course.priceType === "premium";
-          if (activeTab === "Published") return course.status === "published";
-          if (activeTab === "FCS") return course.examCategory === "FCS";
-          return course.tags?.some(tag =>
-            typeof tag === 'object' ? tag.name === activeTab : tag === activeTab
-          ) || course.name?.toLowerCase().includes(activeTab.toLowerCase());
-        });
+      : activeTab === "Premium"
+      ? courses.filter(course => course.priceType === "premium")
+      : activeTab === "Published"
+      ? courses.filter(course => course.status === "published")
+      : courses.filter(course => course.examCategory === activeTab);
 
-  const toggleExpand = () => setIsExpanded(!isExpanded);
   const visibleCourses = isExpanded ? filteredCourses : filteredCourses.slice(0, 6);
 
-  const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
-  const cardVariants = { hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 20 } } };
-
   return (
-    <motion.section className="px-6 py-16 max-w-7xl mx-auto" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: "easeOut" }}>
-      <motion.div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-8"
-        initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            {/* <div className="w-12 h-12 bg-gradient-to-br from-[#661f69] to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-              <FiBook className="w-6 h-6 text-white" />
-            </div> */}
-            <div>
-              <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-               Courses
-              </h2>
-              <p className="text-gray-600 mt-2">Master new skills with our expert-led courses</p>
-            </div>
-          </div>
+    <motion.section className="px-6 py-16 max-w-7xl mx-auto" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-8">
+        <div>
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            Courses
+          </h2>
+          <p className="text-gray-600 mt-2">Master new skills with our expert-led courses</p>
         </div>
-      </motion.div>
+      </div>
 
+   
       <div className="flex flex-wrap gap-3 mb-12">
         {tabs.map(tab => (
-          <button key={tab} onClick={() => { setActiveTab(tab); setIsExpanded(false); }}
+          <button
+            key={tab}
+            onClick={() => { setActiveTab(tab); setIsExpanded(false); }}
             className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 border ${
-              activeTab === tab ? "bg-[#661f69] text-white shadow-lg border-transparent" : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200 hover:border-[#661f69] shadow-md hover:shadow-lg"
-            }`}>
+              activeTab === tab
+                ? "bg-[#661f69] text-white shadow-lg border-transparent"
+                : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200 hover:border-[#661f69] shadow-md hover:shadow-lg"
+            }`}
+          >
             {tab}
           </button>
         ))}
@@ -198,18 +213,12 @@ export default function CoursesSection() {
           {Array.from({ length: 6 }).map((_, index) => (<DashboardCardSkeleton key={index} />))}
         </div>
       ) : error ? (
-        <div className="text-center py-16">
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-8 max-w-md mx-auto">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"><span className="text-2xl">⚠️</span></div>
-            <h3 className="text-lg font-semibold text-red-800 mb-2">Unable to load courses</h3>
-            <p className="text-red-600 text-sm">{String(error)}</p>
-          </div>
-        </div>
+        <div className="text-center py-16 text-red-600">{String(error)}</div>
       ) : (
-        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" variants={containerVariants} initial="hidden" animate="visible" key={activeTab}>
-          <AnimatePresence mode="popLayout">
+        <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <AnimatePresence>
             {visibleCourses.map(course => (
-              <motion.div key={course._id} variants={cardVariants} initial="hidden" animate="visible" exit="hidden">
+              <motion.div key={course._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                 <CourseCard course={course} />
               </motion.div>
             ))}
@@ -222,15 +231,10 @@ export default function CoursesSection() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={toggleExpand}
-            className="inline-flex items-center gap-3 px-8 py-4 bg-[#661f69] text-white rounded-xl font-semibold shadow-lg shadow-[#661f69]/25 hover:shadow-xl hover:shadow-[#661f69]/40 transition-all duration-300 group"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="inline-flex items-center gap-3 px-8 py-4 bg-[#661f69] text-white rounded-xl font-semibold shadow-lg hover:bg-[#7b297a] transition-all"
           >
-         {isExpanded ? (
-  <>Show Less <FiChevronUp className="w-5 h-5 group-hover:scale-110 transition-transform" /></>
-) : (
-  <>View More Courses <FiChevronDown className="w-5 h-5 group-hover:scale-110 transition-transform" /></>
-)}
-
+            {isExpanded ? <>Show Less <FiChevronUp /></> : <>View More Courses <FiChevronDown /></>}
           </motion.button>
         </div>
       )}

@@ -1,13 +1,16 @@
+'use client';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ExamModal from '../home/modal'; 
 import { useRouter } from 'next/navigation';
-
+import { toast } from 'react-toastify';
+import { FiCheck, FiTrash2, FiX, FiSearch } from 'react-icons/fi';
+import ExamModal from '../home/modal'; 
 import {
   getMyExams as apiGetMyExams,
   getMainCategories as apiGetMainCategories,
   addExam as apiAddExam,
-  setCurrentExam as apiSetCurrentExam
+  setCurrentExam as apiSetCurrentExam,
+  removeExam as apiRemoveExam,
 } from '../../../../APIs/changeExamAPI'; 
 
 const SelectExamModal = ({ isOpen, onClose }) => {
@@ -16,10 +19,12 @@ const SelectExamModal = ({ isOpen, onClose }) => {
   const [myExams, setMyExams] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState(null); 
+  const [selected, setSelected] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentExamId, setCurrentExamId] = useState(null);
 
+ 
   useEffect(() => {
     if (!isOpen) return;
     setLoading(true);
@@ -27,11 +32,12 @@ const SelectExamModal = ({ isOpen, onClose }) => {
       .then(([prefsRes, catsRes]) => {
         const prefs = prefsRes || {};
         setMyExams(prefs.myExams || []);
+        setCurrentExamId(prefs.currentExam?._id || null);
         setCategories(catsRes || []);
       })
       .catch((err) => {
         console.error('Failed to load exams/categories', err);
-        alert('Failed to load exam data');
+        toast.error('Failed to load exam data');
       })
       .finally(() => setLoading(false));
   }, [isOpen]);
@@ -41,8 +47,13 @@ const SelectExamModal = ({ isOpen, onClose }) => {
     setConfirmOpen(true);
   };
 
+ 
   const handleProceed = async () => {
-    if (!selected) return;
+    if (!selected) {
+      toast.warn('Please select an exam');
+      return;
+    }
+
     setLoading(true);
     try {
       if (selected.type === 'myExam') {
@@ -52,16 +63,33 @@ const SelectExamModal = ({ isOpen, onClose }) => {
         await apiSetCurrentExam(selected.item._id);
       }
 
-      const slug = selected.item.slug || selected.item.name?.toLowerCase().replace(/\s+/g, '-');
+      toast.success(`"${selected.item.name}" set as current exam`);
       onClose?.();
-      router.push(`/AuthComponents/ExploreCourses`);
+      router.push('/AuthComponents/ExploreCourses');
     } catch (err) {
       console.error(err);
-      alert('Could not set exam. Please try again.');
+      toast.error('Could not set exam. Please try again.');
     } finally {
       setLoading(false);
       setConfirmOpen(false);
       setSelected(null);
+    }
+  };
+
+ 
+  const handleRemoveExam = async (examId) => {
+    setLoading(true);
+    try {
+      await apiRemoveExam(examId);
+      const prefs = await apiGetMyExams();
+      setMyExams(prefs.myExams || []);
+      setCurrentExamId(prefs.currentExam?._id || null);
+      toast.success('Exam removed successfully');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to remove exam');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,24 +105,36 @@ const SelectExamModal = ({ isOpen, onClose }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-[1px] p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
           >
             <motion.div
-              className="bg-white rounded-lg border border-[#f8f4f4] w-full max-w-lg mx-auto p-6 relative"
+              className="bg-white rounded-2xl border border-gray-100 w-full max-w-lg mx-auto p-6 relative shadow-xl"
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
             >
-              <h2 className="text-xl font-bold text-center mb-2">Change Exam</h2>
-              <p className="text-center text-sm text-gray-500 mb-4">Select an exam to make it your current exam</p>
+             
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-800">Change Exam</h2>
+                <button
+                  onClick={() => { setSelected(null); onClose?.(); }}
+                  className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100"
+                >
+                  <FiX className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-sm text-gray-500 mb-4 text-center">
+                Select or remove an exam to update your current one
+              </p>
 
+            
               <div className="relative mb-4">
+                <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
                 <input
-                  className="border border-[#282828] rounded-full w-full p-2 pl-4"
+                  className="border border-gray-300 rounded-full w-full p-2 pl-10 focus:ring-2 focus:ring-purple-500 outline-none"
                   type="search"
                   placeholder="Search exams..."
                   value={searchTerm}
@@ -102,79 +142,116 @@ const SelectExamModal = ({ isOpen, onClose }) => {
                 />
               </div>
 
-              <div className="space-y-4 max-h-[55vh] overflow-auto">
-                <section>
-                  <h3 className="font-semibold mb-2">Your Exams</h3>
-                  {loading && !myExams.length ? (
-                    <div>Loading...</div>
-                  ) : filteredMyExams.length ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {filteredMyExams.map((ex) => (
-                        <button
-                          key={ex._id}
-                          onClick={() => openConfirm('myExam', ex)}
-                          className="p-3 border rounded-lg flex items-center justify-between hover:shadow-sm"
-                        >
-                          <span>{ex.name}</span>
-                          <span className="text-xs text-gray-400">Use</span>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-sm text-gray-400">No saved exams yet</div>
-                  )}
-                </section>
+              
+              <section>
+                <h3 className="font-semibold mb-3 text-gray-800">Your Exams</h3>
+                {loading && !myExams.length ? (
+                  <div className="text-center text-gray-500 py-4">Loading...</div>
+                ) : filteredMyExams.length ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {filteredMyExams.map((ex) => (
+                      <motion.div
+                        key={ex._id}
+                        className={`group relative p-4 border rounded-xl flex items-center justify-between shadow-sm transition-all duration-200 ${
+                          currentExamId === ex._id
+                            ? 'border-purple-500 bg-purple-50'
+                            : 'border-gray-200 hover:border-purple-300 hover:shadow-md'
+                        }`}
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        <div className="flex items-center gap-3">
+                          {ex.image && (
+                            <img
+                              src={ex.image}
+                              alt={ex.name}
+                              className="w-10 h-10 rounded object-cover"
+                            />
+                          )}
+                          <span className="font-medium text-gray-800 truncate max-w-[120px]">
+                            {ex.name}
+                          </span>
+                        </div>
 
-                <section>
-                  <h3 className="font-semibold mb-2">All Exams</h3>
-                  {loading && !categories.length ? (
-                    <div>Loading...</div>
-                  ) : filteredCategories.length ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      {filteredCategories.map((cat) => (
-                        <button
-                          key={cat._id}
-                          onClick={() => openConfirm('category', cat)}
-                          className="p-3 border rounded-lg flex items-center justify-between hover:shadow-sm"
-                        >
-                          <span>{cat.name}</span>
-                          <span className="text-xs text-gray-400">Select</span>
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-sm text-gray-400">No categories found</div>
-                  )}
-                </section>
-              </div>
+                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <button
+                            onClick={() => openConfirm('myExam', ex)}
+                            className="p-2 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200"
+                            title="Set as current exam"
+                          >
+                            <FiCheck className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleRemoveExam(ex._id)}
+                            className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200"
+                            title="Remove exam"
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                          </button>
+                        </div>
 
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold p-2"
-                onClick={() => { setSelected(null); onClose?.(); }}
-              >
-                &times;
-              </button>
+                        {currentExamId === ex._id && (
+                          <span className="absolute top-2 right-3 text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full shadow">
+                            Current
+                          </span>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-400 text-center py-4">
+                    No saved exams yet.
+                  </div>
+                )}
+              </section>
+
+            
+              <section className="mt-5">
+                <h3 className="font-semibold mb-3 text-gray-800">All Exams</h3>
+                {loading && !categories.length ? (
+                  <div className="text-center text-gray-500 py-4">Loading...</div>
+                ) : filteredCategories.length ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {filteredCategories.map((cat) => (
+                      <button
+                        key={cat._id}
+                        onClick={() => openConfirm('category', cat)}
+                        className="p-3 border border-gray-200 rounded-xl flex items-center justify-between hover:shadow-md hover:border-purple-300 transition"
+                      >
+                        <span className="font-medium text-gray-800">{cat.name}</span>
+                        <FiCheck className="text-purple-600" />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-400 text-center py-4">
+                    No categories found.
+                  </div>
+                )}
+              </section>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
+   
       <AnimatePresence>
         {confirmOpen && selected && (
           <ExamModal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)}>
-            <div className="p-4">
-              <h3 className="text-lg font-bold mb-2">Confirm</h3>
-              <p className="mb-4">Make <strong>{selected.item.name}</strong> your current exam?</p>
-              <div className="flex gap-2 justify-end">
+            <div className="p-5 text-center">
+              <h3 className="text-lg font-semibold mb-2">Confirm Selection</h3>
+              <p className="text-gray-600 mb-4">
+                Make <strong>{selected.item.name}</strong> your current exam?
+              </p>
+              <div className="flex gap-3 justify-center">
                 <button
                   onClick={() => { setConfirmOpen(false); setSelected(null); }}
-                  className="px-4 py-2 border rounded"
+                  className="px-5 py-2 border rounded-lg text-gray-600 hover:bg-gray-100"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleProceed}
-                  className="px-4 py-2 bg-[#7C287D] text-white rounded"
+                  className="px-5 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
                   disabled={loading}
                 >
                   {loading ? 'Working...' : 'Yes, proceed'}
