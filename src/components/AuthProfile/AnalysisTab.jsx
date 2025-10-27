@@ -22,15 +22,12 @@ const YourAnalysisTab = ({ router, courses, quizAttempts, unattemptedTests, docV
                   />
                   <span className="text-lg font-semibold text-gray-800">{course.name}</span>
                 </div>
-                <div className="flex space-x-3 mt-4 sm:mt-0">
-                  <button className="px-4 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-                    Explore
-                  </button>
+                <div className="flex space-x-3 justify-center mt-4 sm:mt-0">
                   <button
-                    onClick={() => router.push(`/courses/${course._id}`)}
+                    onClick={() => router.push(`/AuthComponents/ExploreCourses/CourseDetail/${course._id}`)}
                     className="px-4 py-1 bg-black text-white rounded-lg hover:bg-purple-700 transition-colors duration-200"
                   >
-                    View Plan
+                    Explore
                   </button>
                 </div>
               </div>
@@ -45,7 +42,7 @@ const YourAnalysisTab = ({ router, courses, quizAttempts, unattemptedTests, docV
           )}
         </div>
 
-        <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-md">
+        {/* <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-md">
           <PiFileTextLight className="h-24 w-24 text-yellow-600 mb-4" />
           {quizAttempts && quizAttempts.length > 0 ? (
             <>
@@ -70,9 +67,9 @@ const YourAnalysisTab = ({ router, courses, quizAttempts, unattemptedTests, docV
               </button>
             </>
           )}
-        </div>
+        </div> */}
 
-        <div className="space-y-6">
+        {/* <div className="space-y-6">
           <h3 className="text-xl font-bold text-gray-800">Docs and videos</h3>
           {docViews && docViews.length > 0 ? (
             <ul className="space-y-3">
@@ -92,7 +89,7 @@ const YourAnalysisTab = ({ router, courses, quizAttempts, unattemptedTests, docV
               </button>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
 
       <div className="lg:col-span-1">

@@ -16,7 +16,7 @@ const CourseCard = ({ course }) => {
   const formatPrice = (course) => {
     if (!course) return "Free";
     if (course.priceType === "free") return "Free";
-    return `${course.currency || 'PKR'} ${course.price ? (course.price / 100).toLocaleString() : '0'}`;
+    return `${course.currency || 'PKR'} ${course.price ? (course.price).toLocaleString() : '0'}`;
   };
 
   const formatDuration = (duration) => duration || "Self-paced";

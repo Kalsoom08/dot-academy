@@ -106,7 +106,7 @@ const PkgCard = () => {
                 <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
                   <span className="text-lg font-bold text-[#661f69]">
                     {course.currency || "PKR"}{" "}
-                    {course.price ? (course.price / 100).toLocaleString() : "0"}
+                    {course.price ? (course.price).toLocaleString() : "0"}
                   </span>
                   <button
                     onClick={() => handleBuyNow(course)}

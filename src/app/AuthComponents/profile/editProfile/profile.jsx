@@ -1,11 +1,12 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from '../../../../../slices/authSlice';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react'; // 👈 Added for password toggle
+import { Eye, EyeOff } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -25,21 +26,20 @@ const EditProfilePage = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [gender, setGender] = useState('');
-  const [province, setProvince] = useState('');
+  const [country, setCountry] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // 👈 Added
+  const [showPassword, setShowPassword] = useState(false);
 
-  const provinces = ['Punjab', 'Sindh', 'Khyber Pakhtunkhwa', 'Balochistan'];
+  const countries = ['Pakistan', 'India', 'Bangladesh', 'Nepal', 'Sri Lanka'];
   const genders = ['Girl', 'Boy', 'Prefer Not to Say'];
 
-  // ✅ Prefill data
   useEffect(() => {
     if (user && user.name) {
       const [first, ...rest] = user.name.split(' ');
       setFirstName(first || '');
       setLastName(rest.join(' ') || '');
       setGender(user.gender || '');
-      setProvince(user.province || '');
+      setCountry(user.country || '');
     }
   }, [user]);
 
@@ -49,8 +49,8 @@ const EditProfilePage = () => {
     const updatedData = {
       name: `${firstName} ${lastName}`.trim(),
       gender,
-      province,
-      ...(password && { password }), // only include password if changed
+      country,
+      ...(password && { password }),
     };
 
     const res = await dispatch(updateProfile(updatedData));
@@ -70,10 +70,7 @@ const EditProfilePage = () => {
       initial="hidden"
       animate="show"
     >
-      <motion.h1
-        className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6"
-        variants={itemVariants}
-      >
+      <motion.h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6" variants={itemVariants}>
         Edit Profile
       </motion.h1>
 
@@ -82,7 +79,6 @@ const EditProfilePage = () => {
         className="bg-white p-6 rounded-xl shadow-md max-w-lg mx-auto space-y-6"
         variants={containerVariants}
       >
-        {/* First & Last Name */}
         <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4" variants={itemVariants}>
           <div>
             <label className="text-sm text-gray-700 font-medium">First Name</label>
@@ -106,24 +102,22 @@ const EditProfilePage = () => {
           </div>
         </motion.div>
 
-        {/* Province */}
         <motion.div variants={itemVariants}>
-          <label className="text-sm text-gray-700 font-medium">Province</label>
+          <label className="text-sm text-gray-700 font-medium">Country</label>
           <select
-            value={province}
-            onChange={(e) => setProvince(e.target.value)}
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
             className="w-full mt-1 border rounded-md px-3 py-2 focus:ring-2 focus:ring-purple-500"
           >
-            <option value="">Select Province</option>
-            {provinces.map((p) => (
-              <option key={p} value={p}>
-                {p}
+            <option value="">Select Country</option>
+            {countries.map((c) => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>
         </motion.div>
 
-        {/* Gender */}
         <motion.div variants={itemVariants}>
           <label className="text-sm text-gray-700 font-medium">Gender</label>
           <select
@@ -140,7 +134,6 @@ const EditProfilePage = () => {
           </select>
         </motion.div>
 
-        {/* Password with Eye Icon */}
         <motion.div variants={itemVariants}>
           <label className="text-sm text-gray-700 font-medium">New Password</label>
           <div className="relative">
@@ -155,14 +148,12 @@ const EditProfilePage = () => {
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </motion.div>
 
-        {/* Submit */}
         <motion.div variants={itemVariants}>
           <button
             type="submit"
