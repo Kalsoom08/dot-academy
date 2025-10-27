@@ -16,6 +16,8 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [showResultsPopup, setShowResultsPopup] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
 
   const dispatch = useDispatch();
   
@@ -47,6 +49,8 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
       setResults(null);
       setError(null);
       setShowResultsPopup(false);
+      setStartTime(null);
+      setEndTime(null);
     }
   }, [lesson, isVisible]);
 
@@ -95,6 +99,10 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
       answer: answer
     }));
 
+    // Calculate time spent
+    const timeSpent = startTime ? (new Date() - startTime) / 1000 : 1800 - timeLeft;
+    setEndTime(new Date());
+
     try {
       console.log('Submitting quiz with answers:', answers);
       const result = await dispatch(submitQuizAttempt({
@@ -105,24 +113,26 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
 
       console.log('Quiz submission result:', result);
       const finalResults = result.data || calculateClientResults();
+      finalResults.timeSpent = timeSpent; // Add time spent to results
       setResults(finalResults);
       setQuizCompleted(true);
       setShowResultsPopup(true);
       
-      // Call the parent callback
+      // Call the parent callback with time spent
       if (onQuizComplete) {
-        onQuizComplete(finalResults);
+        onQuizComplete(finalResults, timeSpent);
       }
     } catch (error) {
       console.error('Error submitting quiz:', error);
       // Fallback: Calculate results client-side if backend fails
       const clientResults = calculateClientResults();
+      clientResults.timeSpent = timeSpent;
       setResults(clientResults);
       setQuizCompleted(true);
       setShowResultsPopup(true);
       
       if (onQuizComplete) {
-        onQuizComplete(clientResults);
+        onQuizComplete(clientResults, timeSpent);
       }
     }
   };
@@ -161,6 +171,7 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
       return;
     }
     setQuizStarted(true);
+    setStartTime(new Date());
     setError(null);
   };
 
@@ -285,6 +296,7 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
                       <li>• You can navigate between questions</li>
                       <li>• Timer will start when you begin</li>
                       <li>• Explanation will show automatically after answering</li>
+                      <li>• Your progress will be saved automatically</li>
                     </ul>
                   </div>
                 </div>
