@@ -1,6 +1,5 @@
-// slices/courseSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../APIs/api'; // Your axios instance
+import api from '../APIs/api';
 
 // Async thunks
 export const fetchCourses = createAsyncThunk(
@@ -19,7 +18,6 @@ export const fetchCourses = createAsyncThunk(
       const response = await api.get('user/api/courses', {
         params: { search, priceType, tag, sort, page, limit }
       });
-      console.log(response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -55,7 +53,7 @@ export const enrollInCourse = createAsyncThunk(
   'courses/enrollInCourse',
   async ({ courseId, paymentData = {} }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/u/courses/${courseId}/enroll`, paymentData);
+      const response = await api.post(`/user/api/courses/${courseId}/enroll`, paymentData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -67,7 +65,7 @@ export const fetchMyEnrollments = createAsyncThunk(
   'courses/fetchMyEnrollments',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('/api/u/me/enrollments');
+      const response = await api.get('/user/api/me/enrollments');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -106,10 +104,26 @@ export const submitQuizAttempt = createAsyncThunk(
   'courses/submitQuizAttempt',
   async ({ courseId, lessonId, answers }, { rejectWithValue }) => {
     try {
+      console.log('Submitting quiz attempt:', { courseId, lessonId, answers });
       const response = await api.post(
-        `/api/u/courses/${courseId}/lessons/${lessonId}/quiz/attempt`,
+        `/user/api/courses/${courseId}/lessons/${lessonId}/quiz/attempt`,
         { answers }
       );
+      console.log('Quiz submission response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Quiz submission error:', error);
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+// Get course enrollment info
+export const getCourseEnrollmentInfo = createAsyncThunk(
+  'courses/getCourseEnrollmentInfo',
+  async (courseId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/user/api/courses/${courseId}/enrollment-info`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -123,7 +137,9 @@ const initialState = {
   currentCourse: null,
   courseSummary: null,
   enrollments: [],
+  enrollmentInfo: null,
   currentLesson: null,
+  quizResults: null, // Added to store quiz results
   loading: false,
   error: null,
   pagination: {
@@ -161,6 +177,12 @@ const courseSlice = createSlice({
     resetCourses: (state) => {
       state.courses = [];
       state.pagination = initialState.pagination;
+    },
+    clearEnrollmentInfo: (state) => {
+      state.enrollmentInfo = null;
+    },
+    clearQuizResults: (state) => {
+      state.quizResults = null; // Added to clear quiz results
     }
   },
   extraReducers: (builder) => {
@@ -184,7 +206,7 @@ const courseSlice = createSlice({
       .addCase(fetchCourseDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.currentCourse = null; // avoid flashing old data when navigating between details
+        state.currentCourse = null;
       })
       .addCase(fetchCourseDetails.fulfilled, (state, action) => {
         state.loading = false;
@@ -216,7 +238,6 @@ const courseSlice = createSlice({
       })
       .addCase(enrollInCourse.fulfilled, (state, action) => {
         state.loading = false;
-        // Add to enrollments if not already there
         const exists = state.enrollments.some(
           e => e.course._id === action.payload.data.course
         );
@@ -257,11 +278,36 @@ const courseSlice = createSlice({
         state.error = action.payload;
       })
       
+      // Get course enrollment info
+      .addCase(getCourseEnrollmentInfo.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getCourseEnrollmentInfo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.enrollmentInfo = action.payload.data;
+      })
+      .addCase(getCourseEnrollmentInfo.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
       // Update lesson progress
       .addCase(updateLessonProgress.fulfilled, () => {})
       
-      // Submit quiz attempt
-      .addCase(submitQuizAttempt.fulfilled, () => {});
+      // Submit quiz attempt - FIXED to store results
+      .addCase(submitQuizAttempt.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(submitQuizAttempt.fulfilled, (state, action) => {
+        state.loading = false;
+        state.quizResults = action.payload.data; // Store quiz results
+      })
+      .addCase(submitQuizAttempt.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   }
 });
 
@@ -270,7 +316,9 @@ export const {
   clearCurrentCourse,
   clearCurrentLesson,
   setFilters,
-  resetCourses
+  resetCourses,
+  clearEnrollmentInfo,
+  clearQuizResults
 } = courseSlice.actions;
 
 export default courseSlice.reducer;

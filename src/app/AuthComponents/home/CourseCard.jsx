@@ -76,16 +76,17 @@ const CourseCard = ({ course }) => {
               {course.priceType === "premium" ? "PREMIUM" : "FREE"}
             </motion.div>
           </div>
-          {course.examCategory && (
-            <div className="absolute top-3 right-3">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                className="px-3 py-1 bg-blue-500 text-white rounded-full text-xs font-bold shadow-lg"
-              >
-                {course.examCategory}
-              </motion.div>
-            </div>
-          )}
+{course.examCategory && (
+  <div className="absolute top-3 right-3">
+    <motion.div
+      whileHover={{ scale: 1.1 }}
+      className="px-3 py-1 bg-blue-500 text-white rounded-full text-xs font-bold shadow-lg"
+    >
+      {course.examCategory.name || course.examCategory}
+    </motion.div>
+  </div>
+)}
+
           <div className="absolute bottom-0 left-0 w-full p-4 text-white">
             <h3 className="font-bold text-lg leading-tight line-clamp-2">
               {course.name || "Untitled Course"}
@@ -158,14 +159,15 @@ export default function CoursesSection() {
   const [isExpanded, setIsExpanded] = useState(false);
   const dispatch = useDispatch();
   const { courses, loading, error } = useSelector((state) => state.courses);
-  const { items: categories, loading: catLoading } = useSelector((state) => state.categories);
+  const { categories, loading: catLoading, error: catError } = useSelector((state) => state.categories);
+
 
   useEffect(() => {
     dispatch(fetchCourses());
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  const staticTabs = ["All Courses", "Premium", "Published"];
+  const staticTabs = ["All Courses", "Premium"];
   const dynamicTabs = categories?.map(cat => cat.name) || [];
   const tabs = [...staticTabs, ...dynamicTabs];
 
@@ -176,7 +178,7 @@ export default function CoursesSection() {
       ? courses.filter(course => course.priceType === "premium")
       : activeTab === "Published"
       ? courses.filter(course => course.status === "published")
-      : courses.filter(course => course.examCategory === activeTab);
+      : courses.filter(course => course.examCategory?.name === activeTab);
 
   const visibleCourses = isExpanded ? filteredCourses : filteredCourses.slice(0, 6);
 

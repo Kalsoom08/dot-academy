@@ -4,25 +4,15 @@ import React, { useRef, useState, useEffect } from 'react';
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import course1 from '../../../../public/Courses/1.png';
-import SideShow from './SideShow';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCourses } from '../../../../slices/courseSlice';
+import { fetchCourses, getCourseEnrollmentInfo } from '../../../../slices/courseSlice';
+import { fetchCategories } from '../../../../slices/categorySlice';
+import SideShow from './SideShow';
 import LoadingSpinner from '@/components/loadingSpinner';
+import course1 from '../../../../public/Courses/1.png';
 
-const tabsData = [
-  { id: 'all', label: 'All Courses' },
-  { id: 'mock', label: 'Mock Tests' },
-  { id: 'subjects', label: 'Main Subjects' },
-  { id: 'practice', label: 'Practice' },
-  { id: 'guidance', label: 'Guidance' },
-  { id: 'cuet', label: 'CUET' },
-  { id: 'revision', label: 'Revision' },
-  { id: 'reference', label: 'Reference Books' },
-];
-
-const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
+const Tabs = ({ activeTab, setActiveTab, onTabChange, tabs }) => {
   const scrollRef = useRef(null);
 
   const scroll = (dir) => {
@@ -34,7 +24,6 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
     }
   };
 
-  // Mouse drag scrolling
   let isDown = false;
   let startX;
   let scrollLeft;
@@ -61,10 +50,7 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
 
   return (
     <div className="relative w-full flex items-center">
-      <button
-        onClick={() => scroll("left")}
-        className="absolute left-0 z-10 bg-black text-white shadow p-2 rounded-full"
-      >
+      <button onClick={() => scroll("left")} className="absolute left-0 z-10 bg-black text-white shadow p-2 rounded-full">
         <FiChevronLeft />
       </button>
 
@@ -76,7 +62,7 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
       >
-        {tabsData.map((tab) => (
+        {tabs.map((tab) => (
           <motion.button
             key={tab.id}
             onClick={() => handleTabClick(tab.id)}
@@ -93,25 +79,47 @@ const Tabs = ({ activeTab, setActiveTab, onTabChange }) => {
         ))}
       </motion.div>
 
-      <button
-        onClick={() => scroll("right")}
-        className="absolute right-0 z-10 bg-black text-white shadow p-2 rounded-full"
-      >
+      <button onClick={() => scroll("right")} className="absolute right-0 z-10 bg-black text-white shadow p-2 rounded-full">
         <FiChevronRight />
       </button>
     </div>
   );
 };
 
-const CourseCard = ({ course, onClick }) => {
-  const isFree = (course.priceType || '').toLowerCase() === 'free';
+
+const CourseCard = ({ course, onClick, enrollmentStatus }) => {
+  const isFree = course.priceType === 'free';
   const amount = course.effectivePrice ?? course.basePrice ?? course.price;
-  const weeklyLearners = course.studentsThisWeek ?? course.weeklyLearners ?? course.students ?? 0;
+  
+  const courseEnrollment = enrollmentStatus?.find(e => e.courseId === course._id);
+  const hasPendingPayment = courseEnrollment?.pendingPayment;
+  const isEnrolled = courseEnrollment?.enrolled;
+  const hasRejectedPayment = courseEnrollment?.rejectedPayment;
+
+  const getStatusText = () => {
+    if (isFree) return "Free";
+    if (isEnrolled) return "Enrolled";
+    if (hasPendingPayment) return "Pending";
+    if (hasRejectedPayment) return "Rejected";
+    return "Premium";
+  };
+
+  const getStatusColor = () => {
+    if (isFree) return "text-green-600";
+    if (isEnrolled) return "text-blue-600";
+    if (hasPendingPayment) return "text-yellow-600";
+    if (hasRejectedPayment) return "text-red-600";
+    return "text-purple-600";
+  };
+
+  const handleClick = () => {
+    onClick(course._id, isFree, course.name, hasPendingPayment, isEnrolled, hasRejectedPayment);
+  };
 
   return (
     <motion.div
       className="border rounded-lg p-4 flex items-center justify-between gap-4 mb-4 cursor-pointer hover:shadow-md transition-shadow"
-      onClick={() => onClick(course._id, isFree)}
+      onClick={handleClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -129,117 +137,117 @@ const CourseCard = ({ course, onClick }) => {
         </div>
         <div className="flex-1">
           <h2 className="font-semibold text-lg">{course.name}</h2>
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {course.description}
-          </p>
-          <div className="flex gap-2 mt-2 flex-wrap">
-            {/* Price status (Free / Premium) */}
-            <span className={`text-xs px-2 py-1 rounded ${
-              isFree ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800'
-            }`}>
-              {isFree ? 'Free' : 'Premium'}
+          <p className="text-sm text-gray-600 line-clamp-2">{course.description}</p>
+          <div className="flex gap-2 mt-2 flex-wrap items-center">
+            <span className={`text-xs px-2 py-1 rounded font-medium ${getStatusColor().replace('text', 'bg') + '100'} ${getStatusColor()}`}>
+              {getStatusText()}
             </span>
-
-            {/* Amount only if Premium */}
-            {!isFree && (
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                PKR {amount}
-              </span>
+            {!isFree && !isEnrolled && !hasPendingPayment && !hasRejectedPayment && (
+              <span className="text-sm font-semibold text-gray-800">PKR {amount}</span>
             )}
-
-            {/* keep the existing optional tags too */}
-            {course.duration && (
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                {course.duration}
-              </span>
-            )}
+            {course.duration && <span className="text-xs text-gray-500">{course.duration}</span>}
           </div>
         </div>
       </div>
-      <div className="text-2xl"><FiChevronRight /></div>
+      <div className="flex flex-col items-end gap-2">
+        <div className={`text-sm font-medium ${getStatusColor()}`}>{getStatusText()}</div>
+        <div className="text-2xl text-gray-400"><FiChevronRight /></div>
+      </div>
     </motion.div>
   );
 };
 
-const Page = () => {
+
+const Courses = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('all');
   const [filteredCourses, setFilteredCourses] = useState([]);
+  const [enrollmentStatus, setEnrollmentStatus] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
-  
-  const { courses, loading, error, pagination } = useSelector((state) => state.courses);
-  
+  const [enrollmentLoading, setEnrollmentLoading] = useState(false);
+
+  const { courses, loading, error, pagination } = useSelector(state => state.courses);
+  const { categories, loading: catLoading } = useSelector(state => state.categories);
+
+
   useEffect(() => {
-    const filters = {
-      search: '',
-      priceType: '',
-      tag: '',
-      sort: 'newest',
-      page: 1,
-      limit: 12
-    };
-    dispatch(fetchCourses(filters));
+    dispatch(fetchCourses({ page: 1, limit: 12 }));
+    dispatch(fetchCategories());
   }, [dispatch]);
+
+
+  useEffect(() => {
+    if (courses && courses.length > 0) {
+      setEnrollmentLoading(true);
+      const fetchAllEnrollmentStatus = async () => {
+        const statuses = await Promise.all(courses.map(async (course) => {
+          try {
+            const result = await dispatch(getCourseEnrollmentInfo(course._id)).unwrap();
+            return {
+              courseId: course._id,
+              enrolled: result.data.hasAccess,
+              pendingPayment: result.data.pendingPayment !== null,
+              rejectedPayment: result.data.rejectedPayment !== null,
+            };
+          } catch {
+            return { courseId: course._id, enrolled: false, pendingPayment: false, rejectedPayment: false };
+          }
+        }));
+        setEnrollmentStatus(statuses);
+        setEnrollmentLoading(false);
+      };
+      fetchAllEnrollmentStatus();
+    }
+  }, [courses, dispatch]);
+
+
+  const dynamicTabs = categories?.map(cat => ({ id: cat.name.toLowerCase(), label: cat.name })) || [];
+  const staticTabs = [{ id: 'all', label: 'All Courses' }];
+  const tabs = [...staticTabs, ...dynamicTabs];
 
   useEffect(() => {
     setIsFiltering(true);
     if (courses && courses.length > 0) {
       let filtered = courses;
       if (activeTab !== 'all') {
-        filtered = courses.filter(course => {
-          const category = course.examCategory?.toLowerCase() || '';
-          return category.includes(activeTab);
-        });
+        filtered = courses.filter(course => course.examCategory?.name?.toLowerCase() === activeTab);
       }
       setFilteredCourses(filtered);
-    } else {
-      setFilteredCourses([]);
-    }
+    } else setFilteredCourses([]);
     const timer = setTimeout(() => setIsFiltering(false), 300);
     return () => clearTimeout(timer);
   }, [courses, activeTab]);
 
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-    setIsFiltering(true);
-    if (courses && courses.length > 0) {
-      let filtered = courses;
-      if (tabId !== 'all') {
-        filtered = courses.filter(course => {
-          const category = course.examCategory?.toLowerCase() || '';
-          return category.includes(tabId);
-        });
-      }
-      setFilteredCourses(filtered);
-    } else {
-      setFilteredCourses([]);
-    }
-    setTimeout(() => setIsFiltering(false), 300);
-  };
+  const handleTabChange = (tabId) => setActiveTab(tabId);
 
-  const handleCourseClick = (courseId, isFree) => {
-    if (isFree) {
-      // Redirect free courses to detail page
+  const handleCourseClick = (courseId, isFree, courseName, hasPendingPayment, isEnrolled, hasRejectedPayment = false) => {
+    if (isEnrolled || isFree) {
       router.push(`/AuthComponents/ExploreCourses/CourseDetail/${courseId}`);
     } else {
-      // Redirect premium courses to pricing plan
-      router.push('/AuthComponents/pricingPlan');
+      const queryParams = new URLSearchParams({
+        courseId,
+        courseName: courseName || 'Premium Course',
+        pending: hasPendingPayment ? 'true' : 'false',
+        rejected: hasRejectedPayment ? 'true' : 'false'
+      }).toString();
+      router.push(`/AuthComponents/pricingPlan?${queryParams}`);
     }
   };
 
   return (
     <section className="grid lg:grid-cols-[70%_30%] grid-cols-1 gap-2">
       <div className='flex flex-col gap-6 py-6 w-[90%] mx-auto'>
-        <h1 className='text-[22px] font-semibold text-center'>All NEET Courses</h1>
-        
+        <h1 className='text-[22px] font-semibold text-center'>All Courses</h1>
+
         <Tabs 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 
           onTabChange={handleTabChange} 
+          tabs={tabs} 
         />
 
-        {(loading || isFiltering) && (
+        {(loading || isFiltering || enrollmentLoading) && (
           <div className="flex justify-center items-center py-12">
             <LoadingSpinner />
           </div>
@@ -252,37 +260,31 @@ const Page = () => {
         )}
 
         <div>
-          {!loading && !isFiltering && filteredCourses.length > 0 ? (
-            filteredCourses.map((course) => (
+          {!loading && !isFiltering && !enrollmentLoading && filteredCourses.length > 0 ? (
+            filteredCourses.map(course => (
               <CourseCard 
                 key={course._id} 
                 course={course} 
                 onClick={handleCourseClick} 
+                enrollmentStatus={enrollmentStatus} 
               />
             ))
           ) : (
-            !loading && !isFiltering && (
+            !loading && !isFiltering && !enrollmentLoading && (
               <div className="text-center py-12">
                 <p className="text-gray-500 text-lg">No courses found for this category.</p>
-                <p className="text-gray-400 text-sm mt-2">Try selecting a different category or check back later.</p>
               </div>
             )
           )}
         </div>
 
-        {pagination && pagination.pages > 1 && activeTab === 'all' && !loading && !isFiltering && (
+        {pagination && pagination.pages > 1 && activeTab === 'all' && !loading && !isFiltering && !enrollmentLoading && (
           <div className="flex justify-center mt-6 gap-2">
             {Array.from({ length: pagination.pages }, (_, i) => i + 1).map(page => (
               <button
                 key={page}
-                onClick={() => {
-                  dispatch(fetchCourses({ page }));
-                }}
-                className={`px-3 py-1 rounded ${
-                  page === pagination.page
-                    ? 'bg-black text-white'
-                    : 'bg-gray-200 text-gray-700'
-                }`}
+                onClick={() => dispatch(fetchCourses({ page }))}
+                className={`px-3 py-1 rounded ${page === pagination.page ? 'bg-black text-white' : 'bg-gray-200 text-gray-700'}`}
               >
                 {page}
               </button>
@@ -290,10 +292,10 @@ const Page = () => {
           </div>
         )}
       </div>
-      
+
       <SideShow />
     </section>
   );
 };
 
-export default Page;
+export default Courses;

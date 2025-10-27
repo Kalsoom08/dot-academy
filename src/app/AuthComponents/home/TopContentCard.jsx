@@ -80,9 +80,10 @@ const TopContentCard = () => {
                 <p className="text-sm font-semibold text-gray-800 line-clamp-2">
                   {course.name || "Untitled Course"}
                 </p>
-                <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                  {course.examCategory || "General"}
-                </p>
+ <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+  {course.examCategory?.name || course.examCategory || "General"}
+</p>
+
               </div>
 
               <div className="flex items-center justify-between mt-2 text-xs text-gray-500">

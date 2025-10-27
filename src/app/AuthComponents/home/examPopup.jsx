@@ -84,20 +84,21 @@ const ExamPopup = () => {
       </motion.div>
 
  
-      <section>
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: {
-              opacity: 1,
-              y: 0,
-              transition: { staggerChildren: 0.08 },
-            },
-          }}
-        >
+<section className="max-h-[50vh] overflow-y-auto px-1 custom-scrollbar">
+  <motion.div
+    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+    initial="hidden"
+    animate="visible"
+    variants={{
+      hidden: { opacity: 0, y: 20 },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: { staggerChildren: 0.08 },
+      },
+    }}
+  >
+
           {!loading && !error && filteredCourses.length > 0 ? (
             filteredCourses.map((course) => (
               <motion.button
