@@ -8,16 +8,15 @@ import Protected from '@/components/ProtectedRoute';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap', // Add this for better loading
+  display: 'swap',
 });
 
 function RootLayout({ children }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="antialiased">
-        <LayoutWrapper>{children}</LayoutWrapper>
-      </body>
-    </html>
+    // Remove html and body tags - just return the content directly
+    <div className={inter.variable}>
+      <LayoutWrapper>{children}</LayoutWrapper>
+    </div>
   );
 }
 

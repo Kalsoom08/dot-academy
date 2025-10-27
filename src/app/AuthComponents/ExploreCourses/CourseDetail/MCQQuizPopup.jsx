@@ -18,6 +18,7 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
   const [showResultsPopup, setShowResultsPopup] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const dispatch = useDispatch();
   
@@ -51,6 +52,7 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
       setShowResultsPopup(false);
       setStartTime(null);
       setEndTime(null);
+      setIsSubmitting(false);
     }
   }, [lesson, isVisible]);
 
@@ -94,46 +96,94 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
       return;
     }
 
+    if (isSubmitting) {
+      return; // Prevent multiple submissions
+    }
+
+    setIsSubmitting(true);
+
+    // FIXED: Ensure questionIndex is properly formatted as number and matches the actual question order
     const answers = Object.entries(selectedAnswers).map(([questionIndex, answer]) => ({
-      questionIndex: parseInt(questionIndex),
+      questionIndex: parseInt(questionIndex), // Ensure it's a number
       answer: answer
     }));
+
+    console.log('🟡 Submitting quiz with data:', { 
+      courseId, 
+      lessonId, 
+      answers,
+      selectedAnswers,
+      questionsCount: questions.length
+    });
 
     // Calculate time spent
     const timeSpent = startTime ? (new Date() - startTime) / 1000 : 1800 - timeLeft;
     setEndTime(new Date());
 
     try {
-      console.log('Submitting quiz with answers:', answers);
+      console.log('🟡 Dispatching quiz attempt...');
       const result = await dispatch(submitQuizAttempt({
         courseId,
         lessonId: lessonId,
         answers
       })).unwrap();
 
-      console.log('Quiz submission result:', result);
-      const finalResults = result.data || calculateClientResults();
-      finalResults.timeSpent = timeSpent; // Add time spent to results
+      console.log('🟢 Quiz submission successful - Full result:', result);
+      
+      // FIXED: Create a new mutable object instead of modifying the immutable response
+      let finalResults;
+      if (result && result.data) {
+        // Backend returned proper structure - create new object
+        finalResults = {
+          ...result.data,
+          timeSpent: timeSpent // Add timeSpent to new object
+        };
+      } else if (result && result.score !== undefined) {
+        // Backend might return results directly
+        finalResults = {
+          ...result,
+          timeSpent: timeSpent
+        };
+      } else {
+        // Fallback to client-side calculation
+        console.warn('🟡 Using client-side fallback due to unexpected response structure');
+        finalResults = {
+          ...calculateClientResults(),
+          timeSpent: timeSpent
+        };
+      }
+      
       setResults(finalResults);
       setQuizCompleted(true);
       setShowResultsPopup(true);
       
-      // Call the parent callback with time spent
+      console.log('🟢 Final results to display:', finalResults);
+      
       if (onQuizComplete) {
         onQuizComplete(finalResults, timeSpent);
       }
     } catch (error) {
-      console.error('Error submitting quiz:', error);
-      // Fallback: Calculate results client-side if backend fails
+      console.error('🔴 Quiz submission failed:', error);
+      
+      // Use client-side calculation as fallback
       const clientResults = calculateClientResults();
-      clientResults.timeSpent = timeSpent;
-      setResults(clientResults);
+      // FIXED: Create new object with timeSpent
+      const finalClientResults = {
+        ...clientResults,
+        timeSpent: timeSpent
+      };
+      
+      setResults(finalClientResults);
       setQuizCompleted(true);
       setShowResultsPopup(true);
       
+      console.log('🟡 Using client-side results as fallback:', finalClientResults);
+      
       if (onQuizComplete) {
-        onQuizComplete(clientResults, timeSpent);
+        onQuizComplete(finalClientResults, timeSpent);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -141,21 +191,40 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
     let correctCount = 0;
     const detail = [];
 
+    console.log('🟡 Calculating client-side results...');
+    console.log('🟡 Questions:', questions);
+    console.log('🟡 Selected answers:', selectedAnswers);
+
     questions.forEach((question, index) => {
       const userAnswer = selectedAnswers[index];
-      const isCorrect = userAnswer === question.correctAnswer;
       
+      // FIXED: Handle undefined correctAnswer and properly access the question data
+      const correctAnswer = question?.correctAnswer;
+      const isCorrect = userAnswer === correctAnswer;
+      
+      console.log(`🟡 Client-side check - Q${index}:`, {
+        userAnswer,
+        correctAnswer: correctAnswer,
+        isCorrect,
+        question: question?.question?.substring(0, 50) + '...',
+        fullQuestion: question
+      });
+
       if (isCorrect) correctCount++;
       
       detail.push({
         questionIndex: index,
-        correctAnswer: question.correctAnswer,
+        question: question?.question,
+        correctAnswer: correctAnswer,
         userAnswer: userAnswer || null,
-        isCorrect
+        isCorrect,
+        explanation: question?.explanation
       });
     });
 
     const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+
+    console.log('🟡 Client-side results:', { score, correctCount, totalQuestions });
 
     return {
       score,
@@ -195,7 +264,6 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
 
   // Show results popup if quiz is completed and results are available
   if (showResultsPopup && results) {
-    console.log('Rendering QuizResultsPopup with results:', results);
     return (
       <QuizResultsPopup
         isVisible={showResultsPopup}
@@ -462,9 +530,17 @@ const MCQQuizPopup = ({ isVisible, onClose, lesson, courseId, onQuizComplete }) 
 
               <button
                 onClick={handleNext}
-                className="px-6 py-2 bg-[#7c287d] text-white rounded-lg font-medium hover:bg-[#6b1f6b] transition-colors"
+                disabled={isSubmitting}
+                className="px-6 py-2 bg-[#7c287d] text-white rounded-lg font-medium hover:bg-[#6b1f6b] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
-                {currentQuestion === totalQuestions - 1 ? 'Submit Quiz' : 'Next Question'}
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Submitting...
+                  </>
+                ) : (
+                  currentQuestion === totalQuestions - 1 ? 'Submit Quiz' : 'Next Question'
+                )}
               </button>
             </div>
           </div>

@@ -1,19 +1,48 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FiAward, FiCheck, FiX, FiTarget } from 'react-icons/fi';
+import { FiAward, FiCheck, FiX, FiTarget, FiClock } from 'react-icons/fi';
 
 const QuizResultsPopup = ({ isVisible, onClose, results, lessonTitle, totalQuestions }) => {
   if (!isVisible) return null;
 
-  // Handle both backend and client-side result structures
-  const score = results?.score || 0;
-  const correctCount = results?.correctCount || 0;
-  const total = results?.total || totalQuestions;
-  const detail = results?.detail || [];
+  // FIXED: Handle different response structures
+  let score, correctCount, total, detail, timeSpent;
+
+  if (results && typeof results === 'object') {
+    // Handle backend response structure
+    if (results.data) {
+      // Results wrapped in data property
+      score = results.data.score || 0;
+      correctCount = results.data.correctCount || 0;
+      total = results.data.total || totalQuestions;
+      detail = results.data.detail || [];
+      timeSpent = results.data.timeSpent || 0;
+    } else {
+      // Results directly in the object
+      score = results.score || 0;
+      correctCount = results.correctCount || 0;
+      total = results.total || totalQuestions;
+      detail = results.detail || [];
+      timeSpent = results.timeSpent || 0;
+    }
+  } else {
+    // Fallback values
+    score = 0;
+    correctCount = 0;
+    total = totalQuestions;
+    detail = [];
+    timeSpent = 0;
+  }
 
   const incorrectCount = total - correctCount;
   const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+  const formatTimeSpent = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const statCards = [
     {
@@ -38,9 +67,9 @@ const QuizResultsPopup = ({ isVisible, onClose, results, lessonTitle, totalQuest
       bgColor: 'bg-red-100'
     },
     {
-      icon: FiTarget,
-      label: 'Accuracy',
-      value: `${accuracy}%`,
+      icon: FiClock,
+      label: 'Time',
+      value: formatTimeSpent(timeSpent),
       color: 'text-blue-600',
       bgColor: 'bg-blue-100'
     }
@@ -63,7 +92,7 @@ const QuizResultsPopup = ({ isVisible, onClose, results, lessonTitle, totalQuest
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.8, opacity: 0 }}
@@ -77,8 +106,9 @@ const QuizResultsPopup = ({ isVisible, onClose, results, lessonTitle, totalQuest
           <p className="text-purple-100 text-sm mt-1">{lessonTitle}</p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="p-4">
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             {statCards.map((stat, index) => (
               <motion.div
@@ -111,11 +141,11 @@ const QuizResultsPopup = ({ isVisible, onClose, results, lessonTitle, totalQuest
             </div>
           </div>
 
-          {/* Question Review - Compact */}
-          {detail.length > 0 && (
+          {/* Question Review - Compact with limited height */}
+          {detail && detail.length > 0 && (
             <div className="mb-4">
               <h4 className="font-semibold text-gray-800 text-sm mb-2">Question Review</h4>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
+              <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                 {detail.map((item, index) => (
                   <div
                     key={index}
@@ -135,16 +165,25 @@ const QuizResultsPopup = ({ isVisible, onClose, results, lessonTitle, totalQuest
                         Q{item.questionIndex + 1}
                       </span>
                     </div>
-                    <div className="text-gray-600">
-                      {item.isCorrect ? 'Correct' : `Correct: ${item.correctAnswer}`}
+                    <div className="text-gray-600 text-right">
+                      {item.isCorrect ? (
+                        <span className="text-green-600">Correct</span>
+                      ) : (
+                        <div>
+                          <div>Your: {item.userAnswer || 'N/A'}</div>
+                          <div>Correct: {item.correctAnswer}</div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
+        </div>
 
-          {/* Action Buttons */}
+        {/* Action Buttons */}
+        <div className="border-t border-gray-200 p-4 bg-gray-50">
           <div className="flex gap-2">
             <button
               onClick={onClose}
@@ -153,10 +192,10 @@ const QuizResultsPopup = ({ isVisible, onClose, results, lessonTitle, totalQuest
               Close
             </button>
             <button
-              onClick={() => window.location.reload()}
+              onClick={onClose}
               className="flex-1 px-4 py-2 bg-[#7c287d] text-white rounded-lg font-medium hover:bg-[#6b1f6b] transition-colors shadow-lg text-sm"
             >
-              Try Again
+              Done
             </button>
           </div>
         </div>
