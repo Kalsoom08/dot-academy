@@ -73,7 +73,6 @@ export default function Sidebar({ isOpen = true, onClose }) {
 
   const courseOptions = [
     { name: "About the course", icon: <FiBook size={20} />, onClick: () => setShowDetailPopup(true) },
-    { name: "Course Analysis", icon: <FaChartBar size={20} />, onClick: () => setShowAnalysisPopup(true) },
     { name: "Leave Course", icon: <FiLogOut size={20} />, onClick: handleLeaveCourse },
   ];
 

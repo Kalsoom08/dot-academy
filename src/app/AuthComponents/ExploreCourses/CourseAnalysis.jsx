@@ -46,6 +46,71 @@ function CourseAnalysis({ onClose, itemData, userProgress }) {
     }
   }, [itemData, userProgress]);
 
+  // Helper functions to calculate course metrics - SAME AS IN CourseDetail
+  const calculateTotalLessons = (course) => {
+    if (!course) return 0;
+    let total = 0;
+    if (Array.isArray(course.sections)) {
+      course.sections.forEach(section => {
+        total += (section.lessons || []).length;
+      });
+    } else if (Array.isArray(course.lessons)) {
+      // Fallback for flat lessons structure
+      total = course.lessons.length;
+    }
+    return total;
+  };
+
+  const countQuizzes = (course) => {
+    if (!course) return 0;
+    let quizCount = 0;
+    
+    if (Array.isArray(course.sections)) {
+      course.sections.forEach(section => {
+        (section.lessons || []).forEach(lesson => {
+          const typeRaw = String(lesson.type || lesson.contentType || '').toLowerCase();
+          if (typeRaw === 'mcq') {
+            quizCount++;
+          }
+        });
+      });
+    } else if (Array.isArray(course.lessons)) {
+      // Fallback for flat lessons structure
+      course.lessons.forEach(lesson => {
+        const typeRaw = String(lesson.type || lesson.contentType || '').toLowerCase();
+        if (typeRaw === 'mcq') {
+          quizCount++;
+        }
+      });
+    }
+    return quizCount;
+  };
+
+  const countTotalQuizQuestions = (course) => {
+    if (!course) return 0;
+    let totalQuestions = 0;
+    
+    if (Array.isArray(course.sections)) {
+      course.sections.forEach(section => {
+        (section.lessons || []).forEach(lesson => {
+          const typeRaw = String(lesson.type || lesson.contentType || '').toLowerCase();
+          if (typeRaw === 'mcq' && Array.isArray(lesson.mcqs)) {
+            totalQuestions += lesson.mcqs.length;
+          }
+        });
+      });
+    } else if (Array.isArray(course.lessons)) {
+      // Fallback for flat lessons structure
+      course.lessons.forEach(lesson => {
+        const typeRaw = String(lesson.type || lesson.contentType || '').toLowerCase();
+        if (typeRaw === 'mcq' && Array.isArray(lesson.mcqs)) {
+          totalQuestions += lesson.mcqs.length;
+        }
+      });
+    }
+    return totalQuestions;
+  };
+
   const calculateCourseStats = () => {
     if (!userProgress || !itemData) {
       setProgress(0);
@@ -53,11 +118,11 @@ function CourseAnalysis({ onClose, itemData, userProgress }) {
       return;
     }
 
-    // Calculate total lessons from course structure
+    // Calculate total lessons from course structure - USING SAME LOGIC AS CourseDetail
     const totalLessons = calculateTotalLessons(itemData);
     const completedLessons = userProgress.completedLessons?.length || 0;
     
-    // Calculate progress percentage
+    // Calculate progress percentage - SAME LOGIC AS CourseDetail
     const progressPercentage = totalLessons > 0 ? 
       Math.round((completedLessons / totalLessons) * 100) : 0;
     setProgress(progressPercentage);
@@ -90,10 +155,14 @@ function CourseAnalysis({ onClose, itemData, userProgress }) {
     const avgTimePerQuestion = totalQuestionsAttempted > 0 ? 
       Math.round(totalTimeSpent / totalQuestionsAttempted) : 0;
 
+    // Get total quizzes count using same logic as CourseDetail
+    const totalQuizzes = countQuizzes(itemData);
+    const totalQuizQuestions = countTotalQuizQuestions(itemData);
+
     const stats = {
       contentViewed: `${completedLessons}/${totalLessons}`,
-      testAttempted: `${totalQuizAttempts}/${countQuizzes(itemData)}`,
-      totalTestQuestions: `${totalQuestionsAttempted}/${countTotalQuizQuestions(itemData)}`,
+      testAttempted: `${totalQuizAttempts}/${totalQuizzes}`,
+      totalTestQuestions: `${totalQuestionsAttempted}/${totalQuizQuestions}`,
       totalTimeOnTest: formatTime(totalTimeSpent),
       correctIncorrect: `${totalCorrect}/${totalIncorrect}`,
       avgTimePerQuestion: formatTime(avgTimePerQuestion),
@@ -102,7 +171,12 @@ function CourseAnalysis({ onClose, itemData, userProgress }) {
       averageAccuracy: `${averageAccuracy}%`,
       averageScore: `${averageScore}%`,
       totalStudyTime: formatTime(totalTimeSpent),
-      lastAccessed: userProgress.lastAccessed ? new Date(userProgress.lastAccessed).toLocaleDateString() : 'Never'
+      lastAccessed: userProgress.lastAccessed ? new Date(userProgress.lastAccessed).toLocaleDateString() : 'Never',
+      // Additional stats for consistency
+      totalLessons,
+      completedLessons,
+      totalQuizzes,
+      totalQuizQuestions
     };
 
     setCourseStats(stats);
@@ -120,50 +194,12 @@ function CourseAnalysis({ onClose, itemData, userProgress }) {
     averageAccuracy: '0%',
     averageScore: '0%',
     totalStudyTime: '0s',
-    lastAccessed: 'Never'
+    lastAccessed: 'Never',
+    totalLessons: 0,
+    completedLessons: 0,
+    totalQuizzes: 0,
+    totalQuizQuestions: 0
   });
-
-  // Helper functions to calculate course metrics
-  const calculateTotalLessons = (course) => {
-    if (!course) return 0;
-    let total = 0;
-    if (Array.isArray(course.sections)) {
-      course.sections.forEach(section => {
-        total += (section.lessons || []).length;
-      });
-    }
-    return total;
-  };
-
-  const countQuizzes = (course) => {
-    if (!course) return 0;
-    let quizCount = 0;
-    if (Array.isArray(course.sections)) {
-      course.sections.forEach(section => {
-        (section.lessons || []).forEach(lesson => {
-          if (lesson.type === 'mcq') {
-            quizCount++;
-          }
-        });
-      });
-    }
-    return quizCount;
-  };
-
-  const countTotalQuizQuestions = (course) => {
-    if (!course) return 0;
-    let totalQuestions = 0;
-    if (Array.isArray(course.sections)) {
-      course.sections.forEach(section => {
-        (section.lessons || []).forEach(lesson => {
-          if (lesson.type === 'mcq' && Array.isArray(lesson.mcqs)) {
-            totalQuestions += lesson.mcqs.length;
-          }
-        });
-      });
-    }
-    return totalQuestions;
-  };
 
   const calculateRank = (averageScore) => {
     if (averageScore >= 90) return 'Top 10%';
@@ -192,14 +228,14 @@ function CourseAnalysis({ onClose, itemData, userProgress }) {
 
   const getProgressColor = (percentage) => {
     if (percentage >= 80) return 'text-green-600';
-    if (percentage >= 60) return 'text-purple-600'; // 75% will fall in this range
+    if (percentage >= 60) return 'text-purple-600';
     if (percentage >= 40) return 'text-yellow-600';
     return 'text-red-600';
   };
 
   const getProgressBgColor = (percentage) => {
     if (percentage >= 80) return 'bg-green-100';
-    if (percentage >= 60) return 'bg-purple-100'; // 75% will fall in this range
+    if (percentage >= 60) return 'bg-purple-100';
     if (percentage >= 40) return 'bg-yellow-100';
     return 'bg-red-100';
   };
@@ -340,7 +376,7 @@ function CourseAnalysis({ onClose, itemData, userProgress }) {
                     
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="text-center p-3 bg-purple-50 rounded-lg">
-                        <div className="font-bold text-purple-600">{userProgress?.completedLessons?.length || 0}</div>
+                        <div className="font-bold text-purple-600">{courseStats?.completedLessons || 0}</div>
                         <div className="text-purple-600">Lessons Done</div>
                       </div>
                       <div className="text-center p-3 bg-green-50 rounded-lg">

@@ -104,20 +104,40 @@ export const submitQuizAttempt = createAsyncThunk(
   'courses/submitQuizAttempt',
   async ({ courseId, lessonId, answers }, { rejectWithValue }) => {
     try {
-      console.log('Submitting quiz attempt:', { courseId, lessonId, answers });
+      console.log('🟡 Submitting quiz attempt:', { 
+        courseId, 
+        lessonId, 
+        answers,
+        answersCount: answers?.length 
+      });
+
+      // FIXED: Send the complete request body including courseId and lessonId
+      const requestBody = {
+        courseId,
+        lessonId, 
+        answers
+      };
+
+      console.log('🟡 Request body:', requestBody);
+
       const response = await api.post(
         `/user/api/courses/${courseId}/lessons/${lessonId}/quiz/attempt`,
-        { answers }
+        requestBody  // Send the complete object
       );
-      console.log('Quiz submission response:', response.data);
+      
+      console.log('🟢 Quiz submission successful:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Quiz submission error:', error);
+      console.error('🔴 Quiz submission error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config
+      });
       return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
-
 // Get course enrollment info
 export const getCourseEnrollmentInfo = createAsyncThunk(
   'courses/getCourseEnrollmentInfo',
@@ -130,6 +150,7 @@ export const getCourseEnrollmentInfo = createAsyncThunk(
     }
   }
 );
+
 
 // Initial state
 const initialState = {
