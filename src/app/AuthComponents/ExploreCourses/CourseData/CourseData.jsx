@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { FiChevronDown, FiChevronUp, FiX, FiExternalLink } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiX, FiExternalLink, FiArrowLeft } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
@@ -398,6 +398,7 @@ const CourseDataClient = () => {
   const searchParams = useSearchParams();
   const courseId = searchParams.get('course');
   const lessonId = searchParams.get('lesson');
+  const router = useRouter();
 
   const dispatch = useDispatch();
   const { currentLesson, loading, error } = useSelector((state) => state.courses);
@@ -407,6 +408,10 @@ const CourseDataClient = () => {
       dispatch(fetchLessonContent({ courseId, lessonId }));
     }
   }, [courseId, lessonId, dispatch]);
+
+  const handleGoBack = () => {
+    router.back();
+  };
 
   const defaultQuizData = {
     question: 'Which of the following is a singular common noun?',
@@ -456,6 +461,24 @@ const CourseDataClient = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen"
     >
+      {/* Go Back Button */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="lg:col-span-2 px-6 mb-4"
+      >
+        <motion.button
+          whileHover={{ scale: 1.05, backgroundColor: '#6b21a8' }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleGoBack}
+          className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+        >
+          <FiArrowLeft className="text-sm" />
+          <span>Go Back</span>
+        </motion.button>
+      </motion.div>
+
       <div className="lg:px-6 py-8 grid lg:grid-cols-[70%_30%] gap-8 max-w-7xl mx-auto">
         {/* Main Content */}
         <motion.div

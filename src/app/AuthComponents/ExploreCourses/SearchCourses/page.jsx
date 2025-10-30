@@ -151,33 +151,18 @@ const SearchCoursesPage = () => {
     }
   }, [courses, dispatch]);
 
-  // Filter and rank courses based on search query
+  // Filter courses based ONLY on course name (exact match not required)
   const filteredCourses = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return courses;
 
-    const matches = [];
-    const rest = [];
+    // Filter courses where course name contains the search query
+    const matchedCourses = courses.filter(course => {
+      const courseName = (course.name || '').toLowerCase();
+      return courseName.includes(q);
+    });
 
-    for (const course of courses) {
-      const name = (course.name || '').toLowerCase();
-      const desc = (course.description || '').toLowerCase();
-      const category = (course.examCategory?.name || '').toLowerCase();
-
-      const nameHit = name.includes(q);
-      const descHit = desc.includes(q);
-      const categoryHit = category.includes(q);
-
-      if (nameHit || descHit || categoryHit) {
-        const score = (nameHit ? 3 : 0) + (descHit ? 2 : 0) + (categoryHit ? 1 : 0);
-        matches.push({ course, score });
-      } else {
-        rest.push(course);
-      }
-    }
-
-    matches.sort((a, b) => b.score - a.score);
-    return [...matches.map(m => m.course), ...rest];
+    return matchedCourses;
   }, [courses, searchQuery]);
 
   // Local search indicator
@@ -208,11 +193,10 @@ const SearchCoursesPage = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    dispatch(fetchCourses({
-      search: searchQuery.trim(),
-      page: 1,
-      limit: 50
-    }));
+    // Since we're filtering locally, we don't need to dispatch for search
+    // Just trigger the local filtering
+    setIsSearching(true);
+    setTimeout(() => setIsSearching(false), 100);
   };
 
   const handleGoBack = () => {
@@ -245,7 +229,7 @@ const SearchCoursesPage = () => {
             </motion.button>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Search Courses</h1>
-              <p className="text-gray-600 mt-1">Find the perfect course for your learning journey</p>
+              <p className="text-gray-600 mt-1">Search courses by name only</p>
             </div>
           </div>
 
@@ -261,7 +245,7 @@ const SearchCoursesPage = () => {
               <input
                 id="search-input"
                 type="text"
-                placeholder="Search by course name, description, or category..."
+                placeholder="Search by course name only..."
                 className="w-full h-16 pl-16 pr-6 text-lg border-2 border-gray-300 rounded-2xl bg-white outline-none transition-all duration-300 focus:border-purple-500 focus:shadow-lg hover:border-gray-400 placeholder-gray-400 text-gray-900"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -302,7 +286,9 @@ const SearchCoursesPage = () => {
           >
             <span className="text-sm text-gray-600 font-medium">
               {searchQuery.trim() 
-                ? `Found ${filteredCourses.length} course${filteredCourses.length !== 1 ? 's' : ''} for "${searchQuery}"`
+                ? filteredCourses.length > 0 
+                  ? `Found ${filteredCourses.length} course${filteredCourses.length !== 1 ? 's' : ''} matching "${searchQuery}"`
+                  : `No courses found for "${searchQuery}"`
                 : `${filteredCourses.length} total courses available`
               }
             </span>
@@ -368,10 +354,12 @@ const SearchCoursesPage = () => {
                 <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <CiSearch className="w-10 h-10 text-gray-400" />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-3">No courses found</h3>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-3">
+                  {searchQuery.trim() ? 'No courses found' : 'No courses available'}
+                </h3>
                 <p className="text-gray-600 max-w-md mx-auto text-lg mb-6">
                   {searchQuery.trim() 
-                    ? `We couldn't find any courses matching "${searchQuery}". Try different keywords.`
+                    ? `No courses found matching "${searchQuery}". Try searching by course name only.`
                     : 'No courses available at the moment. Please check back later.'
                   }
                 </p>
@@ -405,7 +393,7 @@ const SearchCoursesPage = () => {
           </motion.div>
         )}
 
-        {/* Pagination */}
+        {/* Pagination - Only show when not searching */}
         {pagination && pagination.pages > 1 && !searchQuery.trim() && !loading && !isSearching && !enrollmentLoading && (
           <motion.div 
             className="flex justify-center mt-12 gap-2"

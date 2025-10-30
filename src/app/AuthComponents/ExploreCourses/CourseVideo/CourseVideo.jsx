@@ -1,7 +1,7 @@
 'use client';
 import React, { useLayoutEffect, useMemo, useState, useEffect } from 'react';
 import Image from 'next/image';
-import { FaPlayCircle } from 'react-icons/fa';
+import { FaPlayCircle, FaArrowLeft } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import courseVideoThumbnail from '../../../../../public/Courses/courseVideo.png';
 import UpNext from '../UpNext';
@@ -10,7 +10,7 @@ import CourseReview from '../CourseReview';
 import LoadingSpinner from '@/components/loadingSpinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLessonContent } from '../../../../../slices/courseSlice';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 function CourseVideoClient() {
   const [isClient, setIsClient] = useState(false);
@@ -18,6 +18,7 @@ function CourseVideoClient() {
 
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const courseId  = searchParams?.get('course')  || null;
   const sectionId = searchParams?.get('section') || null;
@@ -60,6 +61,10 @@ function CourseVideoClient() {
     setIsVideoPlaying(false);
   }, [currentLesson?._id, currentLesson?.id]);
 
+  const handleGoBack = () => {
+    router.back();
+  };
+
   const pageTitle = selectedVideo?.title || currentLesson?.title || 'Course Lesson';
 
   if (!isClient) return null;
@@ -99,6 +104,24 @@ function CourseVideoClient() {
       transition={{ duration: 0.6 }}
       className="lg:px-6 py-4 grid lg:grid-cols-[70%_30%]"
     >
+      {/* Go Back Button */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="lg:col-span-2 px-6 mb-4"
+      >
+        <motion.button
+          whileHover={{ scale: 1.05, backgroundColor: '#6b21a8' }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleGoBack}
+          className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+        >
+          <FaArrowLeft className="text-sm" />
+          <span>Go Back</span>
+        </motion.button>
+      </motion.div>
+
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
