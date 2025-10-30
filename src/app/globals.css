@@ -10,6 +10,16 @@ html {
   font-family: var(--font-inter);
 }
 
+/* Completely hide horizontal scrollbar for the category carousel */
+#categoryCarousel {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+#categoryCarousel::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 
 .anton {
   font-family: var(--font-anton), sans-serif;

@@ -223,17 +223,24 @@ const Courses = () => {
   }, [courses, dispatch]);
 
 
-  const dynamicTabs = categories?.map(cat => ({ id: cat.name.toLowerCase(), label: cat.name })) || [];
-  const staticTabs = [{ id: 'all', label: 'All Courses' }];
-  const tabs = [...staticTabs, ...dynamicTabs];
+const dynamicTabs = categories?.map(cat => ({ id: cat.name.toLowerCase(), label: cat.name })) || [];
+const staticTabs = [
+  { id: 'all', label: 'All Courses' },
+  { id: 'premium', label: 'Premium' }
+];
+const tabs = [...staticTabs, ...dynamicTabs];
+
 
   useEffect(() => {
     setIsFiltering(true);
     if (courses && courses.length > 0) {
       let filtered = courses;
-      if (activeTab !== 'all') {
-        filtered = courses.filter(course => course.examCategory?.name?.toLowerCase() === activeTab);
-      }
+if (activeTab === 'premium') {
+  filtered = courses.filter(course => course.priceType === 'premium');
+} else if (activeTab !== 'all') {
+  filtered = courses.filter(course => course.examCategory?.name?.toLowerCase() === activeTab);
+}
+
       setFilteredCourses(filtered);
     } else setFilteredCourses([]);
     const timer = setTimeout(() => setIsFiltering(false), 300);

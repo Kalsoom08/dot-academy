@@ -63,7 +63,7 @@ const TopContentCard = () => {
             whileHover={{ scale: 1.02 }}
             className="group flex gap-4 p-3 rounded-xl border border-gray-200 bg-gradient-to-br from-gray-50 to-white hover:shadow-md hover:border-[#661f69]/30 transition-all cursor-pointer"
           >
-            <div className="relative flex-shrink-0 w-28 h-20 overflow-hidden rounded-lg">
+            <div className="relative flex-shrink-0 w-28 h-20 overflow-hidden object-fill rounded-lg">
               <Image
                 src={course.image || Pic}
                 alt={course.name || "Course"}

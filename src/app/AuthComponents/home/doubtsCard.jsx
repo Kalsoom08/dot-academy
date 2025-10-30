@@ -16,9 +16,9 @@ const DoubtsCard = () => {
       </div>
 
       <div className="flex justify-center sm:justify-start">
-        <button className="bg-white text-[#661f69] hover:bg-gray-100 font-semibold px-6 py-3 rounded-md transition">
+        {/* <button className="bg-white text-[#661f69] hover:bg-gray-100 font-semibold px-6 py-3 rounded-md transition">
           Discuss Doubts
-        </button>
+        </button> */}
       </div>
     </div>
   );
