@@ -5,6 +5,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const anton = Anton({ weight: '400', subsets: ['latin'], variable: '--font-anton' });
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
